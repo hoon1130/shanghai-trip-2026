@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shanghai-trip-v5';
+const CACHE_NAME = 'shanghai-trip-v6';
 const urlsToCache = ['./', './index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', event => {
@@ -12,6 +12,7 @@ self.addEventListener('activate', event => {
       if (key !== CACHE_NAME) return caches.delete(key);
     })))
   );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {

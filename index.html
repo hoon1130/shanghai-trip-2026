@@ -133,7 +133,7 @@
         </div>
     </main>
 
-    <!-- Bottom Nav -->
+    <!-- Bottom Navigation -->
     <nav class="fixed bottom-0 left-0 right-0 glass-header flex bottom-nav z-50 shadow-2xl">
         <button onclick="showTab('schedule')" class="tab-btn flex-1 flex flex-col items-center justify-center text-brand-500">
             <i class="fas fa-route text-[22px] mb-1"></i><span class="text-[9px] font-black uppercase tracking-tighter">Plan</span>
@@ -203,7 +203,7 @@
     </div>
 
     <script>
-        // 🌟 Configuration & Data 🌟
+        // 🌟 Configuration 🌟
         const basePath = 'shanghai_2026_v30_final'; 
         const exchangeRate = 215.94;
         let db = null;
@@ -211,21 +211,15 @@
 
         const smartMapDict = {
             "공항": {name: "浦东国际机场", addr: "上海市"},
-            "푸동공항": {name: "浦东国际机场", addr: "上海市"},
             "루자쭈이": {name: "陆家嘴", addr: "上海市"},
-            "ifcresidence": {name: "国金汇", addr: "上海市"},
+            "ifc": {name: "国金汇", addr: "上海市"},
             "호텔": {name: "国金汇", addr: "上海市"},
-            "숙소": {name: "国金汇", addr: "上海시"},
-            "ifc몰": {name: "上海国金中心商场", addr: "上海市"},
-            "점보시푸드": {name: "珍宝海鲜", addr: "上海市"},
             "예원": {name: "豫园", addr: "上海市"},
             "마시청": {name: "上海马戏城", addr: "上海市"},
             "궁연": {name: "宫宴", addr: "上海市"},
-            "징안쓰": {name: "静安寺", addr: "上海市"},
             "임시정부": {name: "大韩民国临时政府旧址", addr: "上海市"},
             "신천지": {name: "新天地", addr: "上海市"},
             "디즈니": {name: "上海迪士尼度假区", addr: "上海市"},
-            "릴리안": {name: "莉莲蛋挞", addr: "上海市"},
             "양꼬치": {name: "很久以前羊肉串", addr: "上海市"},
             "동방명주": {name: "东方明珠", addr: "上海市"},
             "우캉멘션": {name: "武康大楼", addr: "上海市"},
@@ -288,7 +282,7 @@
             "taxi": "반드시 6인승 비즈니스 디디를 호출하세요.",
             "hotel": "동방명주 뷰 객실 요청 추천.",
             "ifc": "점보시푸드는 쿠폰 구매 시 비용 절감 가능.",
-            "yuyuan": "아버지를 위한 정원이라는 스토리를 강조해주세요.",
+            "yuyuan": "아버지을 위한 정원이라는 스토리를 강조해주세요.",
             "circus": "퇴장 시 인파가 많으니 아이 손을 꼭 잡아주세요.",
             "gongyan": "예약 시간 1시간 전 도착하여 의상 대여를 추천합니다.",
             "history": "아이에게 역사의 중요성을 들려주세요.",
@@ -318,7 +312,7 @@
             { title: "릴리안 에그타르트", type: "shopping" }
         ];
 
-        // 🌟 Core Logic 🌟
+        // 🌟 Initializer 🌟
         try {
             firebase.initializeApp({ databaseURL: "https://nhatrang-trip-default-rtdb.asia-southeast1.firebasedatabase.app" });
             db = firebase.database();
@@ -477,7 +471,7 @@
                         itineraryData.sort((a, b) => a.date.replace(/[^0-9]/g, "").localeCompare(b.date.replace(/[^0-9]/g, "")) || a.time.localeCompare(b.time));
                         renderList(itineraryData); scrollToCurrentTask();
                     } else initialShanghai.forEach(i => db.ref(`${basePath}/itinerary`).push(i));
-                });
+                }, (error) => { console.error(error); });
             }
         }
 
