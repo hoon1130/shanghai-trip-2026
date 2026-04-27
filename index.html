@@ -518,7 +518,7 @@
 
         function renderPhrases() { 
             const pEl = document.getElementById('phrase-list');
-            if(pEl) {
+            if(pEl && phraseData) {
                 pEl.innerHTML = phraseData.map(group => `
                     <div class="space-y-4">
                         <h4 class="text-[12px] font-black text-slate-400 uppercase tracking-widest pl-1 italic border-b pb-2 dark:border-slate-800">${group.cat}</h4>
