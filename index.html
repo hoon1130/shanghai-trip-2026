@@ -407,14 +407,18 @@
         function openDidi(place) {
             try {
                 const info = getSmartInfo(place); 
-                const name = encodeURIComponent(info.name); 
-                const addr = encodeURIComponent(info.addr);
-                // 안드로이드/iOS 통합 디디추싱 딥링크 스킴
-                const appUrl = `OneTravel://route/?end_name=${name}&end_address=${addr}`;
-                const fallbackUrl = `diditaxi://route/?end_name=${name}&end_address=${addr}`;
-                const alipayDidi = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${name}%26end_address%3D${addr}`;
+                const name = info.name; 
+                const addr = info.addr;
+                const encName = encodeURIComponent(name); 
+                const encAddr = encodeURIComponent(addr);
                 
-                navigator.clipboard.writeText(info.addr || info.name).catch(()=>{});
+                // 안드로이드/iOS 통합 디디추싱 딥링크 스킴
+                const appUrl = `OneTravel://route/?end_name=${encName}&end_address=${encAddr}`;
+                const fallbackUrl = `diditaxi://route/?end_name=${encName}&end_address=${encAddr}`;
+                const alipayDidi = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${encName}%26end_address%3D${encAddr}`;
+                
+                // 🌟 핵심 개선: 목적지 중문 명칭을 클립보드에 복사 (앱에서 검색 시 가장 정확함)
+                navigator.clipboard.writeText(name).catch(()=>{});
                 
                 const start = Date.now();
                 window.location.href = appUrl;
@@ -515,19 +519,63 @@
             }
         }
 
+        // 🌟 가이드 특별 코스 (동선 최적화 및 가족 맞춤형 큐레이션) 🌟
+        const guideItinerary = [
+            {
+                date: "05-05(화) [Day 1] 푸동 입성 & 화려한 첫날", 
+                items: [
+                    { time: "12:30", place: "IFC 몰 (Lujiazui)", memo: "아버님과 아이의 첫 식사는 IFC몰 내 '점보시푸드'를 추천합니다. 깨끗한 시설과 에어컨이 빵빵하여 피로를 풀기 좋습니다. 식사 후 지하 2층 마트에서 과일을 사두세요.", map: "上海国金中心商场" },
+                    { time: "15:30", place: "예원 & 상성", memo: "명나라 정원의 정수를 보여주는 이곳은 아버님께 '효도 정원'이라 설명해 드리면 좋습니다. 구곡교에서 조카와 예쁜 사진을 찍고, 근처에서 '대백토 사탕' 쇼핑을 해결하세요.", map: "豫园" },
+                    { time: "19:30", place: "마시청 서커스", memo: "상해 여행의 하이라이트! 아이는 물론 어르신들도 넋을 놓고 보십니다. 퇴장 시 인파가 많으니 미리 6인승 디디를 예약해두는 센스가 필요합니다.", map: "上海马戏城" }
+                ]
+            },
+            {
+                date: "05-06(수) [Day 2] 올드 상해 & 몰입형 체험", 
+                items: [
+                    { time: "11:00", place: "궁연 (Gongyan)", memo: "단순한 식당이 아닌 '당나라 공연장'입니다. 조카에게 한푸 체험을 시켜주고, 화려한 공연을 보며 귀빈 대접을 받는 느낌을 가족 모두에게 선사하세요.", map: "宫宴(上海)" },
+                    { time: "15:00", place: "임시정부 & 신천지", memo: "대한민국 국민이라면 꼭 가야 할 곳입니다. 관람 후 바로 옆 신천지 노천 카페에서 차 한 잔의 여유를 가지며 유럽풍 분위기를 즐기세요.", map: "新天地" },
+                    { time: "18:00", place: "우캉루 (프랑스 조계지)", memo: "택시로 10분 거리인 우캉멘션 앞에서 가족 단체 사진을 남기세요. 상해에서 가장 사진이 예쁘게 나오는 거리입니다.", map: "武康大楼" }
+                ]
+            },
+            {
+                date: "05-07(목) [Day 3] 꿈의 나라 디즈니랜드", 
+                items: [
+                    { time: "08:30", place: "상해 디즈니랜드", memo: "조카를 위한 날! 주토피아 구역은 무조건 먼저 가세요. 아버님을 위해 중간중간 실내 공연(캐리비안의 해적 등)을 배치해 휴식 시간을 드리는 것이 핵심입니다.", map: "上海迪士尼度假区" }
+                ]
+            },
+            {
+                date: "05-08(금) [Day 4] 도심 탐험 & 로컬 맛집", 
+                items: [
+                    { time: "10:30", place: "상해 자연박물관", memo: "초등학생 조카가 가장 좋아할 코스입니다. 실물 크기의 공룡과 동물을 보며 지루함 없이 시간을 보낼 수 있습니다.", map: "上海自然博物馆" },
+                    { time: "13:30", place: "난징동루 & 양꼬치", memo: "로컬 맛집 '현저우이치엔'에서 양꼬치를 드세요. 자동으로 구워져 연기 걱정 없이 아버님도 편하게 식사 가능합니다.", map: "很久以前羊肉串" },
+                    { time: "16:00", place: "티엔즈팡", memo: "미로 같은 골목 사이에서 아기자기한 기념품을 쇼핑하세요. 깎아달라는 한마디(타이궤이러!)로 쇼핑의 재미를 더해보세요.", map: "田子坊" }
+                ]
+            }
+        ];
+
         function renderGuideItinerary() {
             try {
-                const groups = {};
-                guideItinerary.forEach(item => { if(!groups[item.date]) groups[item.date] = []; groups[item.date].push(item); });
-                document.getElementById('guide-itinerary-list').innerHTML = Object.keys(groups).map(date => `
-                    <div><h3 class="text-[12px] font-black text-purple-600 mb-4 tracking-widest uppercase">${date}</h3>
-                    <div class="space-y-5">${groups[date].map(item => `
-                        <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-md">
-                            <span class="text-[11px] font-black text-purple-700 bg-purple-100 dark:bg-purple-900/40 px-3 py-1.5 rounded-lg mb-3 inline-block shadow-sm">${item.time}</span>
-                            <h4 class="font-black text-[19px] mb-3 leading-snug tracking-tighter">${item.place}</h4>
-                            <div class="bg-indigo-50/50 dark:bg-indigo-900/10 p-5 rounded-2xl mb-4 text-[13.5px] font-bold text-slate-700 dark:text-slate-300 leading-relaxed border border-indigo-100 dark:border-slate-800 italic decoration-indigo-200 whitespace-pre-wrap">${item.memo}</div>
-                            <button onclick="openAmap('${item.map}')" class="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-xs shadow-lg"><i class="fas fa-location-arrow mr-2"></i>지도에서 위치 확인하기</button>
-                        </div>`).join('')}</div></div>`).join('');
+                document.getElementById('guide-itinerary-list').innerHTML = guideItinerary.map(day => `
+                    <div class="mb-10">
+                        <div class="flex items-center mb-5">
+                            <div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black mr-3 shadow-lg">D</div>
+                            <h3 class="text-[16px] font-black text-slate-800 dark:text-slate-100">${day.date}</h3>
+                        </div>
+                        <div class="space-y-6 ml-5 border-l-2 border-indigo-100 dark:border-slate-800 pl-6 relative">
+                            ${day.items.map(item => `
+                                <div class="relative">
+                                    <div class="absolute -left-[31px] top-1 w-3 h-3 bg-indigo-600 rounded-full border-2 border-white dark:border-slate-900"></div>
+                                    <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                                        <span class="text-[10px] font-black text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-md mb-2 inline-block">${item.time}</span>
+                                        <h4 class="font-black text-lg mb-2">${item.place}</h4>
+                                        <p class="text-[13px] font-medium text-slate-600 dark:text-slate-400 leading-relaxed mb-4">${item.memo}</p>
+                                        <button onclick="openAmap('${item.map}')" class="w-full py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-black text-xs transition-active active:scale-95 border border-slate-200 dark:border-slate-700"><i class="fas fa-map-marked-alt mr-2 text-indigo-500"></i>가이드 추천 위치 확인</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
             } catch(e) { console.error(e); }
         }
 
