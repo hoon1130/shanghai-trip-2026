@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#de2910" />
+  <g fill="#ffffff">
+    <!-- Center pillar -->
+    <rect x="246" y="80" width="20" height="350" />
+    
+    <!-- Top antenna -->
+    <rect x="252" y="30" width="8" height="50" />
+    
+    <!-- Top small sphere -->
+    <circle cx="256" cy="90" r="18" />
+    
+    <!-- Upper main sphere -->
+    <circle cx="256" cy="180" r="65" fill="none" stroke="#ffffff" stroke-width="16" />
+    <circle cx="256" cy="180" r="45" />
+    
+    <!-- Middle small sphere -->
+    <circle cx="256" cy="275" r="18" />
+    
+    <!-- Lower main sphere -->
+    <circle cx="256" cy="350" r="45" fill="none" stroke="#ffffff" stroke-width="12" />
+    <circle cx="256" cy="350" r="30" />
+    
+    <!-- Base legs -->
+    <path d="M 230 430 L 170 512 L 195 512 L 246 430 Z" />
+    <path d="M 282 430 L 342 512 L 317 512 L 266 430 Z" />
+    <path d="M 240 430 L 272 430 L 280 512 L 232 512 Z" />
+  </g>
+</svg>

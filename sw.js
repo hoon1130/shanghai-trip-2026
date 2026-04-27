@@ -1,10 +1,9 @@
-const CACHE_NAME = 'shanghai-trip-v2'; // 버전을 올려서 강제 업데이트 트리거
+const CACHE_NAME = 'shanghai-trip-v3'; // 버전을 올려서 강제 업데이트 트리거
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  './icon.svg'
 ];
 
 self.addEventListener('install', event => {

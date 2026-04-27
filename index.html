@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="상해투어">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brand: { 50: '#f8fafc', 500: '#de2910', 600: '#b91c1c', 900: '#0f172a' } } } } }</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -409,7 +409,9 @@
                 const info = getSmartInfo(place); 
                 const name = encodeURIComponent(info.name); 
                 const addr = encodeURIComponent(info.addr);
-                const appUrl = `diditaxi://route/?end_name=${name}&end_address=${addr}`;
+                // 안드로이드/iOS 통합 디디추싱 딥링크 스킴
+                const appUrl = `OneTravel://route/?end_name=${name}&end_address=${addr}`;
+                const fallbackUrl = `diditaxi://route/?end_name=${name}&end_address=${addr}`;
                 const alipayDidi = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${name}%26end_address%3D${addr}`;
                 
                 navigator.clipboard.writeText(info.addr || info.name).catch(()=>{});
@@ -417,11 +419,19 @@
                 const start = Date.now();
                 window.location.href = appUrl;
                 
+                // 1차 실패 시 diditaxi 스킴 재시도
                 setTimeout(() => {
-                    if (Date.now() - start < 2000) {
-                        window.location.href = alipayDidi;
+                    if (Date.now() - start < 1500) {
+                        window.location.href = fallbackUrl;
+                        
+                        // 2차 실패 시 알리페이 미니앱 실행
+                        setTimeout(() => {
+                            if (Date.now() - start < 3000) {
+                                window.location.href = alipayDidi;
+                            }
+                        }, 1500);
                     }
-                }, 1500);
+                }, 1000);
             } catch(e) { alert("디디추싱 앱 호출 중 오류가 발생했습니다."); }
         }
 
