@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>상해 패밀리 투어 가이드 🇨🇳</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brand: { 50: '#f8fafc', 500: '#de2910', 600: '#b91c1c', 900: '#0f172a' } } } } }</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Pretendard', sans-serif; -webkit-tap-highlight-color: transparent; word-break: keep-all; user-select: none; letter-spacing: -0.03em; }
+        .tab-content { display: none; } .tab-content.active { display: block; animation: fadeIn 0.3s ease-out; }
+        .glass-header { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid #f1f5f9; }
+        .dark .glass-header { background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid #1e293b; }
+        .bottom-nav { height: 60px; border-top: 1px solid #f1f5f9; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); }
+        .dark .bottom-nav { border-top: 1px solid #1e293b; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { display: none; }
+        input, select, textarea { font-size: 16px !important; border-radius: 12px !important; }
+        .card-grad { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); }
+        .dark .card-grad { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 pb-24 transition-colors duration-300 text-slate-900 dark:text-slate-100">
+
+    <header class="glass-header sticky top-0 z-50 px-4 py-3">
+        <div class="flex justify-between items-center">
+            <div class="flex flex-col">
+                <div class="flex space-x-3 text-[14px] font-bold font-mono tracking-tighter">
+                    <span id="time-kr" class="text-slate-400 italic">KOR --:--</span>
+                    <span id="time-sh" class="text-brand-500 font-black italic underline underline-offset-4 decoration-2">SHA --:--</span>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="window.open('https://search.naver.com/search.naver?query=상해+날씨', '_blank')" id="weather-display" class="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-3 py-1.5 rounded-full text-xs font-black flex items-center shadow-sm border border-blue-100 dark:border-blue-800/50">
+                    <i class="fas fa-spinner fa-spin mr-1"></i>--°C
+                </button>
+                <button onclick="location.href='alipays://platformapi/startapp?appId=20000056'" class="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-md active:scale-90 transition-transform">
+                    <i class="fab fa-alipay text-[16px]"></i>
+                </button>
+                <button onclick="toggleTheme()" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 shadow-sm border border-slate-200 dark:border-slate-700">
+                    <i id="theme-icon" class="fas fa-moon text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="p-4">
+        <div id="schedule" class="tab-content active space-y-5">
+            <div id="sub-tabs" class="flex bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-2xl mb-4 shadow-inner border border-slate-100 dark:border-slate-800">
+                <button onclick="toggleItineraryType('family')" id="btn-family" class="flex-1 py-3 rounded-xl text-[13px] font-black transition-all bg-white dark:bg-slate-700 shadow-sm text-brand-500">📍 실전 일정표</button>
+                <button onclick="toggleItineraryType('guide')" id="btn-guide" class="flex-1 py-3 rounded-xl text-[13px] font-black transition-all text-slate-500 dark:text-slate-400">💎 가이드 브리핑</button>
+            </div>
+
+            <div id="family-itinerary" class="space-y-4">
+                <div class="flex justify-between items-center px-1">
+                    <h2 class="text-lg font-black uppercase tracking-tighter italic">Family Route</h2>
+                    <button onclick="openItineraryForm()" class="bg-slate-900 dark:bg-brand-500 text-white px-4 py-2 rounded-lg text-[11px] font-black shadow-lg flex items-center active:scale-95 transition-transform"><i class="fas fa-plus mr-1"></i>일정 추가</button>
+                </div>
+                <div id="itinerary-list" class="space-y-6 pt-2">
+                    <div class="text-center text-slate-400 text-sm py-10 font-bold"><i class="fas fa-spinner fa-spin mr-2"></i>일정 동기화 중...</div>
+                </div>
+            </div>
+
+            <div id="guide-itinerary" class="hidden space-y-4">
+                <div class="bg-gradient-to-br from-indigo-950 to-slate-900 text-white p-6 rounded-[2.5rem] shadow-xl relative overflow-hidden mb-6 border border-slate-700">
+                    <h2 class="text-2xl font-black mb-1 text-yellow-400 italic font-black">Pro Guide Pick</h2>
+                    <p class="text-[12px] font-bold opacity-80 leading-snug uppercase tracking-widest mt-1">할아버지와 초등학생 맞춤 동선 설계</p>
+                    <i class="fas fa-gem absolute -right-4 -bottom-4 text-7xl opacity-10"></i>
+                </div>
+                <div id="guide-itinerary-list" class="space-y-6 pt-2"></div>
+            </div>
+        </div>
+
+        <div id="ledger" class="tab-content space-y-5">
+            <div class="bg-slate-900 text-white p-7 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+                <h2 class="text-4xl font-black mb-1 italic tracking-tighter">1¥ = 215.94₩</h2>
+                <div class="space-y-4 relative z-10 mt-8">
+                    <div class="relative">
+                        <span class="absolute left-5 top-5 text-white/50 font-black text-sm">CNY</span>
+                        <input type="number" id="cny-input" placeholder="위안(¥) 입력" class="w-full p-5 pl-16 rounded-[1.5rem] bg-white/10 border border-white/10 text-white font-black outline-none text-2xl">
+                    </div>
+                    <div class="relative">
+                        <span class="absolute left-5 top-5 text-white/50 font-black text-sm">KRW</span>
+                        <input type="text" id="krw-output" placeholder="원화(₩) 환산" class="w-full p-5 pl-16 rounded-[1.5rem] bg-brand-500 border-none text-white font-black outline-none text-2xl placeholder:text-white/50" readonly>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-md">
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="exp-desc" placeholder="지출 내역" class="flex-1 min-w-0 p-4 rounded-xl border dark:bg-slate-800 dark:text-white dark:border-slate-700 font-bold text-sm outline-none">
+                    <input type="number" id="exp-amt" placeholder="¥" class="w-20 p-4 rounded-xl border dark:bg-slate-800 dark:text-white dark:border-slate-700 font-bold text-sm outline-none text-center">
+                    <button onclick="addExpense()" class="px-5 bg-slate-900 dark:bg-brand-500 text-white rounded-xl font-black text-sm shadow-md active:scale-95 transition-transform">저장</button>
+                </div>
+                <div id="expense-list" class="space-y-3 max-h-64 overflow-y-auto pr-1"></div>
+                <div class="mt-6 pt-5 border-t-2 border-dashed border-slate-100 dark:border-slate-800 flex justify-between items-center px-1">
+                    <span class="font-black text-slate-400 text-xs tracking-widest uppercase">Total Expense</span>
+                    <span id="total-expense" class="text-3xl font-black text-brand-500 italic underline underline-offset-4 decoration-2">0 ¥</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="phrases" class="tab-content space-y-6">
+            <div class="bg-slate-900 text-white p-6 rounded-[2rem] shadow-lg mb-4 relative overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="text-brand-500 font-black mb-1 text-xl flex items-center"><i class="fas fa-volume-up mr-2"></i>실전 스마트 전광판</h3>
+                    <p class="text-sm opacity-70 font-bold mt-2 leading-relaxed">카드를 누르면 화면 가득 중국어가 뜹니다.<br>스피커 버튼을 누르면 원어민 발음이 나옵니다.</p>
+                </div>
+                <i class="fas fa-comment-dots absolute -right-2 -bottom-4 text-7xl opacity-10"></i>
+            </div>
+            <div id="phrase-list" class="space-y-6 pb-8"></div>
+        </div>
+
+        <div id="packing" class="tab-content space-y-6">
+            <div class="bg-white dark:bg-slate-900 p-7 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h3 class="font-black text-base mb-5 flex items-center uppercase tracking-tighter italic text-brand-500"><i class="fas fa-check-circle mr-2 text-xl"></i>출국 전 체크리스트</h3>
+                <div id="packing-list" class="space-y-2"></div>
+            </div>
+            
+            <div class="bg-white dark:bg-slate-900 p-7 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h3 class="font-black text-base mb-5 flex items-center uppercase tracking-tighter italic text-purple-500"><i class="fas fa-shopping-bag mr-2 text-xl"></i>상해 필수 쇼핑 리스트</h3>
+                <div class="space-y-3">
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-between border border-slate-100 dark:border-slate-700">
+                        <div><p class="font-black text-sm dark:text-white">대백토 우유사탕 🐰</p><p class="text-[11px] text-slate-500 mt-1 font-bold">예원 상성 內 / 초등학생 조카 친구들 선물용</p></div>
+                    </div>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-between border border-slate-100 dark:border-slate-700">
+                        <div><p class="font-black text-sm dark:text-white">칭즈 (Qingzhi) 핸드크림 🧴</p><p class="text-[11px] text-slate-500 mt-1 font-bold">예원 상성 內 / 향이 좋은 상해 전통 화장품 (누나 선물)</p></div>
+                    </div>
+                    <div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-between border border-slate-100 dark:border-slate-700">
+                        <div><p class="font-black text-sm dark:text-white">릴리안 베이커리 에그타르트 🥧</p><p class="text-[11px] text-slate-500 mt-1 font-bold">난징동루 / 당 떨어질 때 아버님 간식으로 강추</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 glass-header flex bottom-nav z-50 shadow-2xl">
+        <button onclick="showTab('schedule')" class="tab-btn flex-1 flex flex-col items-center justify-center text-brand-500">
+            <i class="fas fa-route text-[22px] mb-1"></i><span class="text-[9px] font-black uppercase tracking-tighter">Plan</span>
+        </button>
+        <button onclick="showTab('ledger')" class="tab-btn flex-1 flex flex-col items-center justify-center text-slate-400">
+            <i class="fas fa-wallet text-[22px] mb-1"></i><span class="text-[9px] font-black uppercase tracking-tighter">Money</span>
+        </button>
+        <button onclick="showTab('phrases')" class="tab-btn flex-1 flex flex-col items-center justify-center text-slate-400">
+            <i class="fas fa-comment-dots text-[22px] mb-1"></i><span class="text-[9px] font-black uppercase tracking-tighter">Talk</span>
+        </button>
+        <button onclick="showTab('packing')" class="tab-btn flex-1 flex flex-col items-center justify-center text-slate-400">
+            <i class="fas fa-suitcase text-[22px] mb-1"></i><span class="text-[9px] font-black uppercase tracking-tighter">Box</span>
+        </button>
+    </nav>
+
+    <div id="itinerary-modal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-5 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] w-full max-w-md space-y-5 shadow-2xl">
+            <h3 class="font-black text-2xl border-b pb-3 dark:border-slate-800 tracking-tighter italic uppercase text-brand-500 text-center">Edit Plan</h3>
+            <input type="hidden" id="edit-key">
+            <select id="form-date" class="w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base outline-none">
+                <option value="05-05(화)">5월 5일 (화)</option>
+                <option value="05-06(수)">5월 6일 (수)</option>
+                <option value="05-07(목)">5월 7일 (목)</option>
+                <option value="05-08(금)">5월 8일 (금)</option>
+                <option value="05-09(토)">5월 9일 (토)</option>
+            </select>
+            <input type="text" id="form-time" placeholder="시간 (예: 14:30~15:00)" class="w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base outline-none">
+            <input type="text" id="form-place" placeholder="장소명" class="w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base outline-none">
+            <textarea id="form-memo" placeholder="상세 내용 입력" class="w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black h-32 text-base outline-none"></textarea>
+            <div class="flex space-x-3 pt-2">
+                <button onclick="saveItinerary()" class="flex-1 bg-slate-900 dark:bg-brand-500 text-white py-4 rounded-2xl font-black text-lg shadow-lg active:scale-95 transition-transform">SAVE</button>
+                <button onclick="closeItineraryModal()" class="flex-1 bg-slate-200 dark:bg-slate-700 py-4 rounded-2xl font-black text-lg active:scale-95 transition-transform">CLOSE</button>
+            </div>
+            <button id="delete-btn" onclick="deleteItinerary()" class="w-full text-red-500 font-bold text-xs underline hidden uppercase tracking-widest mt-4 text-center">Delete Itinerary</button>
+        </div>
+    </div>
+
+    <div id="tip-modal" class="fixed inset-0 bg-black/80 z-[200] hidden p-6 flex items-center justify-center backdrop-blur-md">
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-[3rem] w-full max-w-md flex flex-col max-h-[80vh] shadow-2xl border-t-[10px] border-amber-400">
+            <h3 class="font-black text-3xl mb-6 flex items-center text-brand-500 tracking-tighter italic uppercase"><i class="fas fa-lightbulb mr-3"></i>Guide Point</h3>
+            <div id="tip-content" class="overflow-y-auto text-[17px] text-slate-700 dark:text-slate-200 leading-relaxed font-bold break-keep"></div>
+            <button onclick="closeTipModal()" class="w-full bg-slate-900 dark:bg-brand-500 text-white font-black py-5 rounded-2xl mt-8 text-lg btn-shadow active:scale-95 transition-transform">확인했습니다</button>
+        </div>
+    </div>
+
+    <div id="flashcard" class="fixed inset-0 bg-yellow-400 z-[300] hidden flex flex-col items-center justify-center p-8 text-center cursor-pointer" onclick="this.classList.add('hidden')">
+        <h2 id="flash-zh" class="text-6xl sm:text-7xl font-black text-slate-900 mb-8 leading-tight"></h2>
+        <p id="flash-ko" class="text-3xl sm:text-4xl font-bold text-yellow-900 mb-2"></p>
+        <p id="flash-py" class="text-2xl font-bold text-yellow-700 mb-10"></p>
+        <p class="mt-12 text-sm text-yellow-800 opacity-50 font-black tracking-widest uppercase animate-pulse">Touch to close</p>
+    </div>
+
+    <script>
+        const basePath = 'shanghai_2026_v30_final'; 
+        let db = null;
+        let itineraryData = [];
+
+        try {
+            const firebaseConfig = { databaseURL: "https://nhatrang-trip-default-rtdb.asia-southeast1.firebasedatabase.app" };
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+        } catch (error) {
+            console.error("Firebase Init Error:", error);
+        }
+
+        // TTS
+        function speak(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = 0.8; window.speechSynthesis.speak(u); } catch(e){} }
+        
+        async function fetchWeather() {
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.2222&longitude=121.4581&current_weather=true');
+                const data = await res.json();
+                document.getElementById('weather-display').innerHTML = `<i class="fas fa-sun mr-1"></i>${Math.round(data.current_weather.temperature)}°C`;
+            } catch(e) { document.getElementById('weather-display').innerHTML = '⛅ 상해 날씨'; }
+        }
+
+        // 🌟 자동 다크모드 및 시계 🌟
+        let autoDarkChecked = false;
+        function startClock() { 
+            try {
+                setInterval(() => { 
+                    const now = new Date(); 
+                    document.getElementById('time-kr').innerText = 'KOR ' + now.toLocaleTimeString('ko-KR', {timeZone:'Asia/Seoul', hour:'2-digit', minute:'2-digit', hour12:false}); 
+                    const shString = now.toLocaleString("en-US", {timeZone: "Asia/Shanghai"});
+                    const shTime = new Date(shString);
+                    document.getElementById('time-sh').innerText = 'SHA ' + shTime.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit', hour12:false}); 
+                    
+                    const hour = shTime.getHours();
+                    if (!autoDarkChecked) {
+                        if (hour >= 19 || hour < 6) { document.documentElement.classList.add('dark'); updateThemeUI(); }
+                        autoDarkChecked = true;
+                    }
+                }, 1000); 
+            } catch(e){}
+        }
+        function updateThemeUI() { const icon = document.getElementById('theme-icon'); icon.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun text-yellow-400 text-xs' : 'fas fa-moon text-slate-500 text-xs'; }
+        function toggleTheme() { document.documentElement.classList.toggle('dark'); updateThemeUI(); }
+
+        // 🌟 고덕지도 & 디디추싱 목적지 사전 (프랑스 조계지, 티엔즈팡, 자연박물관 등 완벽 매핑) 🌟
+        const smartMapDict = {
+            "공항": {name: "浦东国际机场", addr: "上海市浦东新区迎宾大道6000号"},
+            "푸동공항": {name: "浦东国际机场", addr: "上海市浦东新区迎宾大道6000号"},
+            "루자쭈이": {name: "陆家嘴站", addr: "上海市浦东新区陆家嘴"},
+            "ifcresidence": {name: "国金汇 IFC Residence", addr: "上海市浦东新区陆家嘴世纪大道8号"},
+            "호텔": {name: "国金汇 IFC Residence", addr: "上海市浦东新区陆家嘴世纪大道8号"},
+            "숙소": {name: "国金汇 IFC Residence", addr: "上海市浦东新区陆家嘴世纪大道8号"},
+            "ifc몰": {name: "上海国金中心商场", addr: "上海市浦东新区世纪大道8号"},
+            "점보시푸드": {name: "珍宝海鲜(国金中心店)", addr: "上海市浦东新区世纪大道8号国金中心L3"},
+            "예원": {name: "豫园", addr: "上海市黄浦区福佑路168号"},
+            "위위안": {name: "豫园站", addr: "上海市黄浦区豫园站"},
+            "마시청": {name: "上海马戏城", addr: "上海市静安区共和新路2266号"},
+            "궁연": {name: "宫宴(上海)", addr: "上海市静安区江宁路445号"},
+            "징안쓰": {name: "静安寺站", addr: "上海市静安区静安寺站"},
+            "임시정부": {name: "大韩民国临时政府旧址", addr: "上海市黄浦区马当路306弄4号"},
+            "신천지": {name: "新天地", addr: "上海市黄浦区太仓路181弄"},
+            "점도덕": {name: "点都德(新天地店)", addr: "上海市黄浦区兴业路123弄"},
+            "디즈니": {name: "上海迪士尼度假区", addr: "上海市浦东新区川沙新镇黄赵路310号"},
+            "릴리안": {name: "莉莲蛋挞", addr: "上海市黄浦区南京东路228号新世界大丸百货B2"},
+            "양꼬치": {name: "很久以前羊肉串", addr: "上海市黄浦区南京东路800号"},
+            "현저우이치엔": {name: "很久以前羊肉串", addr: "上海市黄浦区南京东路800号"},
+            "동방명주": {name: "东方明珠", addr: "上海市浦东新区世纪大道1号"},
+            "우캉멘션": {name: "武康大楼", addr: "上海市徐汇区淮海中路1850号"},
+            "우캉루": {name: "武康路", addr: "上海市徐汇区武康路"},
+            "프랑스조계지": {name: "武康大楼", addr: "上海市徐汇区淮海中路1850号"},
+            "티엔즈팡": {name: "田子坊", addr: "上海市黄浦区泰康路210弄"},
+            "자연박물관": {name: "上海自然博物馆", addr: "上海市静安区北京西路510号"}
+        };
+
+        // 🌟 5월 상해 가족 일정 원본 데이터 (100% 누락 없이 주입) 🌟
+        const initialShanghai = [
+            {date: "05-05(화)", time: "04:50~07:00", place: "공항 이동", memo: "집 앞 공항 리무진\n2주 전 리무진 예약, 예약 완료", tipkey: "airport"},
+            {date: "05-05(화)", time: "09:00~10:05", place: "인천 공항 → 푸동 공항", memo: "OZ361 A350\n좌석: 34A, 34B, 35B, 35C", tipkey: "flight"},
+            {date: "05-05(화)", time: "10:05~11:00", place: "공항 수속", memo: "", tipkey: ""},
+            {date: "05-05(화)", time: "11:00~12:00", place: "숙소 이동 (IFC Residence)", memo: "Lujiazui역 약 50분 소요\n택시(약 220위안, 40000원) 또는 호텔 샌딩 서비스(45000원정도)", tipkey: "taxi"},
+            {date: "05-05(화)", time: "12:00~14:00", place: "점심 및 간식 (IFC몰)", memo: "- 지하 2층 아마수작(모찌+쌀 들어간 밀크티): 레고 매장 근처\n- IFC 몰 내 마트: 컷팅 과일, 회 있음\n- 점보시푸드(IFC몰 3층, 싱가폴 게요리): 따종디엔핑 앱에서 쿠폰 구매, 블랙페퍼 맛있음", tipkey: "ifc"},
+            {date: "05-05(화)", time: "14:00~15:00", place: "호텔 체크인", memo: "IFC Residence 체크인 및 짐 풀기", tipkey: "hotel"},
+            {date: "05-05(화)", time: "15:00~15:30", place: "예원 이동", memo: "10호선 또는 14호선 위위안역 1번 출구에서 도보 7분\n호텔에서 예원까지 1정거장임(그러나 걷기는 무리)\n*예매 해야 함", tipkey: ""},
+            {date: "05-05(화)", time: "15:30~16:30", place: "예원 정원 관람", memo: "입장권 미리 구매하기. 성인 40위안, 어린이 및 60세 이상 20위안. 1시간 정도 소요.\n명나라 시대 중국 전통 정원(관료 판윤단이 부모님을 위해 만듦)\n*16:30까지만 운영함", tipkey: "yuyuan"},
+            {date: "05-05(화)", time: "16:30~18:00", place: "예원 상성", memo: "전통 양식의 상점거리, 구곡교 관람 필수\n- 식사: 남상만두(연유 들어간 크림 사탕 먹기, 샤오롱바오는 별로) 또는 대호춘\n- 쇼핑: 삼생유신(소품샵), 대백토(토끼 사탕), 칭즈핸드크림", tipkey: "yuyuan_shop"},
+            {date: "05-05(화)", time: "18:00~19:00", place: "예원 → 마시청 서커스", memo: "1호선 서커스 월드(circus world)역 3번 출구\n*마시청 서커스 예약 완료", tipkey: ""},
+            {date: "05-05(화)", time: "19:30~21:00", place: "마시청 서커스 관람", memo: "100분 관람, 클룩에서 예매 완료", tipkey: "circus"},
+            {date: "05-05(화)", time: "21:00", place: "호텔 복귀", memo: "", tipkey: ""},
+
+            {date: "05-06(수)", time: "10:00", place: "기상 및 조식", memo: "아침 간단히: 전날 마트에서 사 놓거나 햇반으로 간단히 먹기\n*오늘 코스: 임시정부, 신천지, 궁연", tipkey: ""},
+            {date: "05-06(수)", time: "10:00~10:30", place: "호텔 → 궁연 이동", memo: "2호선 징안쓰(Jing'an Temple)역 3번 또는 6번 출구 (2호선 5정거장)", tipkey: ""},
+            {date: "05-06(수)", time: "10:30~14:00", place: "점심 (궁연)", memo: "왕홍 체험, 식사 및 공연 관람\n식사 시간 12:10~13:40 (1~2시간 일찍 도착 가능)", tipkey: "gongyan"},
+            {date: "05-06(수)", time: "14:00~14:30", place: "궁연 → 상해 임시 정부", memo: "10호선 신천지(Xintiandi)역 6번 출구\n*16:30 입장 마감", tipkey: ""},
+            {date: "05-06(수)", time: "14:30~15:30", place: "상해 임시 정부 관람", memo: "", tipkey: "history"},
+            {date: "05-06(수)", time: "15:30~18:00", place: "신천지 구경", memo: "", tipkey: "xintiandi"},
+            {date: "05-06(수)", time: "18:00~20:00", place: "석식 (점도덕)", memo: "신천지점 또는 정대광장점", tipkey: "diandude"},
+            {date: "05-06(수)", time: "20:00", place: "호텔 복귀", memo: "", tipkey: ""},
+
+            {date: "05-07(목)", time: "07:20", place: "기상", memo: "", tipkey: ""},
+            {date: "05-07(목)", time: "07:20~08:30", place: "조식 및 정비", memo: "", tipkey: ""},
+            {date: "05-07(목)", time: "08:30~10:00", place: "호텔 → 디즈니랜드", memo: "11호선 디즈니 리조트역\n시니어, 성인2, 아동 32만원 예매(클룩으로 예매 완료)", tipkey: ""},
+            {date: "05-07(목)", time: "10:00~20:00", place: "상해 디즈니랜드 🏰", memo: "운영: 08:30~21:00\n미키스 애비뉴, 가든 오브 이매지네이션, 판다지랜드, 투모로우랜드, 트레저 코브, 코이 스토리랜드, 어드벤처 아일, 주토피아, 퍼레이드 관람\n*디즈니 전용앱 깔기", tipkey: "disney"},
+            {date: "05-07(목)", time: "20:00~21:00", place: "디즈니랜드 → 호텔 복귀", memo: "", tipkey: ""},
+
+            {date: "05-08(금)", time: "09:00", place: "기상", memo: "", tipkey: ""},
+            {date: "05-08(금)", time: "09:00~10:00", place: "조식", memo: "", tipkey: ""},
+            {date: "05-08(금)", time: "10:00~13:00", place: "난징동루 관광", memo: "우캉멘션, 동방명주 관광", tipkey: "lilian"},
+            {date: "05-08(금)", time: "13:00~13:30", place: "점심 (현저우이치엔)", memo: "양꼬치 식사", tipkey: "yang"},
+            {date: "05-08(금)", time: "13:30~17:00", place: "오후 자유 일정", memo: "", tipkey: ""},
+
+            {date: "05-09(토)", time: "09:00", place: "기상", memo: "", tipkey: ""},
+            {date: "05-09(토)", time: "09:00~11:00", place: "호텔 조식", memo: "7:00~11:00, 3층, 178위안", tipkey: ""},
+            {date: "05-09(토)", time: "12:00", place: "체크아웃", memo: "", tipkey: ""},
+            {date: "05-09(토)", time: "13:00~14:00", place: "호텔 → 푸동 공항", memo: "", tipkey: ""},
+            {date: "05-09(토)", time: "16:20~19:20", place: "푸동 공항 → 인천 공항", memo: "OZ366 A330\n좌석: 34A, 34C, 35A, 35C", tipkey: ""},
+            {date: "05-09(토)", time: "20:00", place: "수하물 찾고 집으로", memo: "6705A 공항버스\n*예매 안됨, 현장 탑승 20:00, 20:28\n*2터미널 지하 1층 19번 승차홈\n*공항 철도 이용", tipkey: "home"}
+        ];
+
+        // 🌟 가이드 특별 코스 (항저우 제외, 프랑스 조계지/티엔즈팡/자연박물관 포함 완벽 설계) 🌟
+        const guideItinerary = [
+            {date: "05-05(화) [Day 1]", time: "12:00", place: "IFC 몰 & 점보시푸드", memo: "가이드 팁: IFC몰은 매우 시원하고 쾌적합니다. 점보시푸드 웨이팅이 길면 일행 중 한 분이 번호표를 뽑고, 지하 2층에서 식후 먹을 '아마수작' 밀크티와 마트 컷팅 과일을 미리 사두면 동선 낭비를 막을 수 있습니다. 시그니처인 블랙페퍼 크랩과 볶음밥 조합은 아버님과 조카 모두 좋아할 메뉴입니다.", tipkey: "ifc", map: "上海国金中心商场"},
+            {date: "05-05(화) [Day 1]", time: "15:30", place: "예원 정원 & 구곡교", memo: "관람 팁: 정원은 16:30에 문을 닫으니 도착 즉시 정원부터 가세요. 아버님께 '명나라 관료가 부모님을 위해 지은 정원'이라 설명해 드리면 무척 좋아하십니다. 악귀는 직진밖에 못한다는 전설이 있는 '구곡교'를 건너며 조카와 즐거운 추억을 남겨보세요.", tipkey: "yuyuan", map: "豫园"},
+            {date: "05-06(수) [Day 2]", time: "10:30", place: "궁연 (宫宴) 특별 식사", memo: "체험 팁: 당나라 시대로 타임머신을 타는 몰입형 식당입니다. 조카와 누나에게 중국 전통의상(한푸)을 입혀주고 예쁜 사진을 꼭 찍어주세요. 식사 내내 화려한 무용수들의 공연이 펼쳐져 어르신들이 가장 대접받는 느낌을 받는 최고의 코스입니다.", tipkey: "gongyan", map: "宫宴(上海)"},
+            {date: "05-06(수) [Day 2]", time: "16:00", place: "신천지 & 프랑스 조계지", memo: "휴식 팁: 임시정부 관람 후 다리가 아플 때쯤 신천지 노천 카페에서 차를 한잔하며 유럽풍 거리를 감상하세요. 시간이 남는다면 택시를 타고 '우캉루(프랑스 조계지)'로 넘어가 우캉멘션 앞에서 가족 단체 사진을 남기는 것을 강력 추천합니다.", tipkey: "xintiandi", map: "武康大楼"},
+            {date: "05-07(목) [Day 3]", time: "08:30", place: "상해 디즈니랜드 오픈런", memo: "공략 팁: 조카가 가장 기대하는 곳! 입장하자마자 앱에 일행의 여권을 모두 등록하고 '주토피아' 구역 대기시간부터 확인하세요. 야간 불꽃놀이(일루미네이트)는 1시간 전에 명당(신데렐라 성 앞 미키 가든)에 돗자리를 펴고 미리 자리를 잡아야 아버님이 편하게 관람하십니다.", tipkey: "disney", map: "上海迪士尼度假区"},
+            {date: "05-08(금) [Day 4]", time: "10:00", place: "자연박물관 & 티엔즈팡", memo: "오후 대체 팁: 오후 자유 일정 시 아이가 좋아하는 '상해 자연박물관'에 가서 거대한 공룡 로봇을 보여주거나, 미로 같은 전통 골목 시장인 '티엔즈팡'에서 조카 친구들에게 나누어 줄 기념품(토끼사탕, 누가크래커 등)을 쇼핑하는 코스를 제안합니다.", tipkey: "tianzifang", map: "田子坊"}
+        ];
+
+        // 🌟 꿀팁 데이터 🌟
+        const placeTipsData = {
+            "flight": "수속 시 액체류(100ml 이상) 반입 불가. 보조배터리는 위탁 수하물 금지이므로 반드시 기내에 들고 타세요.",
+            "taxi": "어른 3명, 아이 1명에 캐리어까지 있으므로 <b>반드시 6인승 디디(Business Van)</b>를 부르셔야 쾌적하게 이동합니다.",
+            "hotel": "IFC Residence는 동방명주 뷰가 훌륭합니다. 체크인 시 고층이나 뷰가 좋은 방으로 요청해 보세요.",
+            "ifc": "점보시푸드는 '따종디엔핑' 앱에서 할인 쿠폰을 구매해 결제하면 비용을 크게 아낄 수 있습니다.",
+            "yuyuan": "정원은 생각보다 넓으니 입구에서 나눠주는 팸플릿을 챙기세요. 부모님을 위한 정원이라는 스토리를 강조해주세요.",
+            "yuyuan_shop": "초등학생 조카 친구들 선물로는 '대백토(우유사탕)'가 가장 가성비 좋고 무난합니다.",
+            "circus": "클룩 예매 바우처를 미리 캡처해 두세요. 퇴장 시 인파가 엄청나게 몰리니 아이 손을 꼭 잡아주세요.",
+            "gongyan": "예약 시간보다 1시간 일찍 도착해서 의상 대여와 사진 촬영을 먼저 하는 것이 왕홍들의 필수 코스입니다.",
+            "history": "실내 사진 촬영은 절대 금지됩니다. 조카에게 우리나라 독립운동가들의 노고를 현장에서 설명해주세요.",
+            "xintiandi": "상해의 작은 유럽입니다. 노천 카페에서 맥주나 커피를 마시며 여유를 부리기 가장 좋은 곳입니다.",
+            "diandude": "점도덕은 딤섬 맛집입니다. 하가우(새우 딤섬), 창펀, 돼지갈비 딤섬은 한국인 입맛에 찰떡입니다.",
+            "disney": "미리 구입한 간식(미개봉)이나 물은 반입 가능합니다. 내부 물가가 비싸니 간식을 든든히 챙겨가세요.",
+            "lilian": "난징동루 쇼핑 후 당이 떨어질 때 릴리안 베이커리의 '에그타르트'와 '치즈타르트'를 하나씩 물려주면 가족 모두 행복해집니다.",
+            "yang": "고기가 자동으로 구워져 연기나 냄새 걱정 없이 쾌적하게 식사할 수 있는 아주 깔끔한 양꼬치 전문점입니다.",
+            "tianzifang": "티엔즈팡은 골목골목 예쁜 상점이 많습니다. 흥정이 가능하니 부르는 값에서 조금 깎아보세요.",
+            "home": "공항 버스 6705A는 2터미널 지하 1층 19번 홈에서 탑승합니다. 현장 결제이므로 시간 맞춰 넉넉히 이동하세요."
+        };
+
+        const phraseData = [
+            {cat: "식당 (Order)", items: [
+                {ko: "고수 빼주세요 (필수)", zh: "不要香菜", py: "부야오 샹차이"},
+                {ko: "안 맵게 해주세요", zh: "不要辣", py: "부야오 라"},
+                {ko: "어린이용 식기 주세요", zh: "请给我儿童餐具", py: "칭 게이워 얼통찬쥐"},
+                {ko: "따뜻한 물 주세요", zh: "请给我热水", py: "칭 게이워 러쉐이"},
+                {ko: "계산할게요", zh: "买单", py: "마이딴"}
+            ]},
+            {cat: "교통 (Move)", items: [
+                {ko: "여기로 가주세요", zh: "请去这里", py: "칭 취 저리"},
+                {ko: "트렁크 열어주세요", zh: "请开一下后备箱", py: "칭 카이 이샤 호우뻬이샹"}
+            ]},
+            {cat: "긴급/쇼핑 (Help)", items: [
+                {ko: "화장실 어디에요?", zh: "洗手间在哪儿？", py: "시쇼우지엔 짜이 날?"},
+                {ko: "너무 비싸요 깎아주세요", zh: "太贵了, 便宜点吧", py: "타이 궤이러, 피엔이 디엔빠"}
+            ]}
+        ];
+
+        // 🌟 스마트 맵 및 디디추싱 강제 호출 (알림 팝업 없음) 🌟
+        function getSmartInfo(input) {
+            const query = input.toLowerCase().replace(/\s+/g, '');
+            for (let key in smartMapDict) { if (query.includes(key)) return smartMapDict[key]; }
+            return {name: input, addr: ""};
+        }
+
+        function openAmap(place) {
+            try {
+                const info = getSmartInfo(place); const keyword = encodeURIComponent(info.name); const ua = navigator.userAgent.toLowerCase();
+                if (ua.indexOf("iphone") > -1) window.location.href = `iosamap://poi?sourceApplication=sh_trip&name=${keyword}`;
+                else if (ua.indexOf("android") > -1) window.location.href = `androidamap://poi?sourceApplication=sh_trip&keywords=${keyword}`;
+                else window.open(`https://uri.amap.com/search?keyword=${keyword}`, '_blank');
+            } catch(e) { alert("지도 실행 오류"); }
+        }
+
+        function openDidi(place) {
+            try {
+                const info = getSmartInfo(place); 
+                const name = encodeURIComponent(info.name); 
+                const addr = encodeURIComponent(info.addr);
+                
+                // 디디추싱 최신 딥링크 스킴 적용 (목적지 자동 입력)
+                const appUrl = `diditaxi://route/?end_name=${name}&end_address=${addr}`;
+                const alipayDidi = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${name}%26end_address%3D${addr}`;
+                
+                // 백그라운드 주소 복사 (팝업 없이)
+                navigator.clipboard.writeText(info.addr || info.name).catch(()=>{});
+
+                // 바로 앱 실행
+                window.location.href = appUrl;
+                
+                // 1초 후에도 안 열리면 알리페이 내 디디 미니프로그램으로 리다이렉트
+                setTimeout(() => { window.location.href = alipayDidi; }, 1000);
+            } catch(e) {
+                alert("디디추싱 앱 호출 중 오류가 발생했습니다.");
+            }
+        }
+
+        // --- 🌟 일정 데이터 로드 (에러 방지 & 즉시 렌더링) 🌟 ---
+        function renderList(list) {
+            try {
+                const groups = {};
+                list.forEach(item => { if(!groups[item.date]) groups[item.date] = []; groups[item.date].push(item); });
+                
+                document.getElementById('itinerary-list').innerHTML = Object.keys(groups).map(date => `
+                    <div><h3 class="day-header text-[12px] font-black text-slate-400 mb-4 tracking-widest uppercase border-l-2 border-brand-500 pl-2">${date}</h3>
+                    <div class="space-y-4">${groups[date].map(item => `
+                        <div class="card-grad p-6 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
+                            <div class="flex justify-between items-center mb-3"><span class="text-[11px] font-black bg-brand-500 text-white px-3 py-1.5 rounded-lg tracking-tighter shadow-md">${item.time}</span><button onclick="openItineraryForm('${item.key}')" class="text-slate-300 hover:text-brand-500 transition-colors"><i class="fas fa-ellipsis-h text-lg"></i></button></div>
+                            <h4 class="font-black text-xl mb-3 leading-tight tracking-tight">${item.place}</h4>
+                            ${item.memo ? `<p class="text-[13px] font-bold text-slate-600 dark:text-slate-400 mb-5 leading-relaxed whitespace-pre-wrap">${item.memo}</p>` : ''}
+                            <div class="flex gap-2 pt-1">
+                                <button onclick="openAmap('${item.place}')" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-xs shadow-sm border border-slate-200 dark:border-slate-700"><i class="fas fa-map-marker-alt mr-1 text-brand-500"></i>지도</button>
+                                <button onclick="openDidi('${item.place}')" class="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-xs shadow-lg"><i class="fas fa-taxi mr-1 text-yellow-400"></i>디디호출</button>
+                                ${item.tipkey ? `<button onclick="openTipModal('${item.tipkey}')" class="w-14 py-3.5 bg-amber-50 text-amber-600 rounded-2xl font-black text-xs border border-amber-200"><i class="fas fa-star"></i></button>` : ''}
+                            </div>
+                        </div>`).join('')}</div></div>`).join('');
+            } catch(e) { console.error("Rendering Error", e); }
+        }
+
+        function loadItinerary() {
+            // 1. 데이터가 로드되기 전에 먼저 로컬 데이터를 화면에 그려줌 (빈 화면 방지)
+            renderList(initialShanghai);
+            
+            if (db) {
+                db.ref(`${basePath}/itinerary`).on('value', s => {
+                    const data = s.val(); 
+                    if(data) { 
+                        itineraryData = Object.entries(data).map(([k, v]) => ({...v, key: k}));
+                        itineraryData.sort((a, b) => a.date.replace(/[^0-9]/g, "").localeCompare(b.date.replace(/[^0-9]/g, "")) || a.time.localeCompare(b.time));
+                        renderList(itineraryData);
+                    } else {
+                        // DB가 비어있으면 초기 데이터를 DB에 복사
+                        initialShanghai.forEach(i => db.ref(`${basePath}/itinerary`).push(i));
+                    }
+                }, (error) => {
+                    // 에러 발생 시에도 로컬 데이터 유지
+                    console.error("Firebase read failed");
+                });
+            }
+        }
+
+        function renderGuideItinerary() {
+            try {
+                const groups = {};
+                guideItinerary.forEach(item => { if(!groups[item.date]) groups[item.date] = []; groups[item.date].push(item); });
+                document.getElementById('guide-itinerary-list').innerHTML = Object.keys(groups).map(date => `
+                    <div><h3 class="text-[12px] font-black text-purple-600 mb-4 tracking-widest uppercase">${date}</h3>
+                    <div class="space-y-5">${groups[date].map(item => `
+                        <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-md">
+                            <span class="text-[11px] font-black text-purple-700 bg-purple-100 dark:bg-purple-900/40 px-3 py-1.5 rounded-lg mb-3 inline-block shadow-sm">${item.time}</span>
+                            <h4 class="font-black text-[19px] mb-3 leading-snug tracking-tighter">${item.place}</h4>
+                            <div class="bg-indigo-50/50 dark:bg-indigo-900/10 p-5 rounded-2xl mb-4 text-[13.5px] font-bold text-slate-700 dark:text-slate-300 leading-relaxed border border-indigo-100 dark:border-slate-800 italic decoration-indigo-200 whitespace-pre-wrap">${item.memo}</div>
+                            <button onclick="openAmap('${item.map}')" class="w-full py-4 bg-slate-900 text-white rounded-xl font-black text-xs shadow-lg"><i class="fas fa-location-arrow mr-2"></i>지도에서 위치 확인하기</button>
+                        </div>`).join('')}</div></div>`).join('');
+            } catch(e) { console.error(e); }
+        }
+
+        // --- 공용 UI 함수 ---
+        function showTab(id) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.replace('text-brand-500', 'text-slate-400')); event.currentTarget.classList.replace('text-slate-400', 'text-brand-500'); window.scrollTo(0,0); }
+        function toggleItineraryType(type) { 
+            const isFm = type === 'family';
+            document.getElementById('btn-family').className = `flex-1 py-3 rounded-xl text-[13px] font-black transition-all ${isFm ? 'bg-white dark:bg-slate-700 shadow-sm text-brand-500' : 'text-slate-500'}`;
+            document.getElementById('btn-guide').className = `flex-1 py-3 rounded-xl text-[13px] font-black transition-all ${!isFm ? 'bg-white dark:bg-slate-700 shadow-sm text-purple-600' : 'text-slate-500'}`;
+            document.getElementById('family-itinerary').classList.toggle('hidden', !isFm);
+            document.getElementById('guide-itinerary').classList.toggle('hidden', isFm);
+            if(!isFm) renderGuideItinerary();
+        }
+        function openTipModal(tipkey) { document.getElementById('tip-content').innerHTML = placeTipsData[tipkey] || "안전하고 즐거운 여행 되세요!"; document.getElementById('tip-modal').classList.remove('hidden'); }
+        function closeTipModal() { document.getElementById('tip-modal').classList.add('hidden'); }
+        function showFlashcard(zh, ko, py) { document.getElementById('flash-zh').innerText = zh; document.getElementById('flash-ko').innerText = ko; document.getElementById('flash-py').innerText = `[ ${py} ]`; document.getElementById('flashcard').classList.remove('hidden'); }
+
+        function addExpense() { const desc = document.getElementById('exp-desc').value; const amt = document.getElementById('exp-amt').value; if(desc && amt && db) { db.ref(`${basePath}/expenses`).push({desc, amt: Number(amt)}); document.getElementById('exp-desc').value = ''; document.getElementById('exp-amt').value = ''; } }
+        function loadExpenses() { if(db) { db.ref(`${basePath}/expenses`).on('value', s => { const data = s.val() || {}; let total = 0; document.getElementById('expense-list').innerHTML = Object.entries(data).map(([k, v]) => { total += v.amt; return `<div class="flex justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 text-xs mb-2 shadow-sm"><span class="font-bold">${v.desc}</span><span class="font-black text-brand-500 text-sm">${v.amt.toLocaleString()} ¥ <button onclick="db.ref('${basePath}/expenses/${k}').remove()" class="ml-2 text-slate-300">✕</button></span></div>`; }).join(''); document.getElementById('total-expense').innerText = total.toLocaleString() + ' ¥'; }); } }
+        document.getElementById('cny-input').oninput = e => { try { document.getElementById('krw-output').value = e.target.value ? (e.target.value * 215.94).toLocaleString() + ' ₩' : ''; } catch(e){} };
+
+        function renderPhrases() { 
+            document.getElementById('phrase-list').innerHTML = phraseData.map(group => `
+                <div class="space-y-4">
+                    <h4 class="text-[12px] font-black text-slate-400 uppercase tracking-widest pl-1 italic border-b pb-2 dark:border-slate-800">${group.cat}</h4>
+                    ${group.items.map(p => `
+                        <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 flex justify-between items-center active:scale-[0.98] transition-transform" onclick="showFlashcard('${p.zh}', '${p.ko}', '${p.py}')">
+                            <div class="pr-3">
+                                <p class="text-base font-black dark:text-white leading-tight">${p.ko}</p>
+                                <p class="text-[11px] text-brand-500 font-bold mt-2 uppercase">${p.py}</p>
+                            </div>
+                            <button onclick="event.stopPropagation(); speak('${p.zh}')" class="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-400 flex items-center justify-center text-xl active:text-brand-500 shadow-inner border border-slate-100 dark:border-slate-700"><i class="fas fa-volume-up"></i></button>
+                        </div>`).join('')}
+                </div>`).join(''); 
+        }
+
+        function openItineraryForm(key = null) {
+            document.getElementById('itinerary-modal').classList.remove('hidden');
+            if(key) {
+                const item = itineraryData.find(i => i.key === key); if(item) { document.getElementById('edit-key').value = key; document.getElementById('form-date').value = item.date; document.getElementById('form-time').value = item.time; document.getElementById('form-place').value = item.place; document.getElementById('form-memo').value = item.memo || ""; document.getElementById('delete-btn').classList.remove('hidden'); }
+            } else { document.getElementById('edit-key').value = ''; document.getElementById('itinerary-modal').querySelectorAll('input, textarea').forEach(i => i.value = ''); document.getElementById('delete-btn').classList.add('hidden'); }
+        }
+        function closeItineraryModal() { document.getElementById('itinerary-modal').classList.add('hidden'); }
+        function saveItinerary() {
+            const key = document.getElementById('edit-key').value;
+            const data = { date: document.getElementById('form-date').value, time: document.getElementById('form-time').value || "00:00", place: document.getElementById('form-place').value || "장소명", memo: document.getElementById('form-memo').value || "", tipkey: "" };
+            if(key) db.ref(`${basePath}/itinerary/${key}`).set(data); else db.ref(`${basePath}/itinerary`).push(data);
+            closeItineraryModal();
+        }
+        function deleteItinerary() { const key = document.getElementById('edit-key').value; if(key && confirm("삭제할까요?")) { db.ref(`${basePath}/itinerary/${key}`).remove(); closeItineraryModal(); } }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            startClock(); fetchWeather(); renderPhrases(); loadItinerary(); loadExpenses();
+            // Service Worker Registration for PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW 연동 실패:', err));
+            }
+        });
+    </script>
+</body>
+</html>
+DOMContentLoaded', () => {
+            startClock(); fetchWeather(); renderPhrases(); loadItinerary(); loadExpenses();
+        });
+    </script>
+</body>
+</html>
