@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>상해 패밀리 투어 가이드 🇨🇳</title>
-    <!-- PWA Setup -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#de2910">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="상해투어">
     <link rel="apple-touch-icon" href="icon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brand: { 50: '#f8fafc', 500: '#de2910', 600: '#b91c1c', 900: '#0f172a' } } } } }</script>
@@ -26,7 +24,6 @@
         .dark .bottom-nav { border-top: 1px solid #1e293b; box-shadow: 0 -10px 30px rgba(0,0,0,0.5); }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         ::-webkit-scrollbar { display: none; }
-        input, select, textarea { font-size: 16px !important; border-radius: 12px !important; }
         .card-grad { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); }
         .dark .card-grad { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
     </style>
@@ -56,12 +53,12 @@
     </header>
 
     <main class="p-4">
+        <!-- Plan Tab -->
         <div id="schedule" class="tab-content active space-y-5">
             <div id="sub-tabs" class="flex bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-2xl mb-4 shadow-inner border border-slate-100 dark:border-slate-800">
                 <button onclick="toggleItineraryType('family')" id="btn-family" class="flex-1 py-3 rounded-xl text-[13px] font-black transition-all bg-white dark:bg-slate-700 shadow-sm text-brand-500">📍 실전 일정표</button>
                 <button onclick="toggleItineraryType('guide')" id="btn-guide" class="flex-1 py-3 rounded-xl text-[13px] font-black transition-all text-slate-500 dark:text-slate-400">💎 가이드 브리핑</button>
             </div>
-
             <div id="family-itinerary" class="space-y-4">
                 <div class="flex justify-between items-center px-1">
                     <h2 class="text-lg font-black uppercase tracking-tighter italic">Family Route</h2>
@@ -71,12 +68,12 @@
                     <div class="text-center text-slate-400 text-sm py-10 font-bold"><i class="fas fa-spinner fa-spin mr-2"></i>일정 동기화 중...</div>
                 </div>
             </div>
-
             <div id="guide-itinerary" class="hidden space-y-4">
                 <div id="guide-itinerary-list" class="space-y-6 pt-2"></div>
             </div>
         </div>
 
+        <!-- Ledger Tab -->
         <div id="ledger" class="tab-content space-y-5">
             <div class="bg-slate-900 text-white p-7 rounded-[2.5rem] shadow-xl relative overflow-hidden">
                 <h2 class="text-4xl font-black mb-1 italic tracking-tighter">1¥ = 215.94₩</h2>
@@ -105,6 +102,7 @@
             </div>
         </div>
 
+        <!-- Phrases Tab -->
         <div id="phrases" class="tab-content space-y-6">
             <div class="bg-slate-900 text-white p-6 rounded-[2rem] shadow-lg mb-4 relative overflow-hidden">
                 <div class="relative z-10">
@@ -116,6 +114,7 @@
             <div id="phrase-list" class="space-y-6 pb-8"></div>
         </div>
 
+        <!-- Packing Tab -->
         <div id="packing" class="tab-content space-y-6">
             <div class="bg-white dark:bg-slate-900 p-7 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
                 <div class="flex justify-between items-center mb-5">
@@ -124,7 +123,6 @@
                 </div>
                 <div id="packing-list" class="space-y-2"></div>
             </div>
-            
             <div class="bg-white dark:bg-slate-900 p-7 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-sm">
                 <div class="flex justify-between items-center mb-5">
                     <h3 class="font-black text-base flex items-center uppercase tracking-tighter italic text-purple-500"><i class="fas fa-shopping-bag mr-2 text-xl"></i>쇼핑 리스트</h3>
@@ -135,6 +133,7 @@
         </div>
     </main>
 
+    <!-- Bottom Nav -->
     <nav class="fixed bottom-0 left-0 right-0 glass-header flex bottom-nav z-50 shadow-2xl">
         <button onclick="showTab('schedule')" class="tab-btn flex-1 flex flex-col items-center justify-center text-brand-500">
             <i class="fas fa-route text-[22px] mb-1"></i><span class="text-[9px] font-black uppercase tracking-tighter">Plan</span>
@@ -204,16 +203,126 @@
     </div>
 
     <script>
+        // 🌟 Configuration & Data 🌟
         const basePath = 'shanghai_2026_v30_final'; 
         const exchangeRate = 215.94;
         let db = null;
         let itineraryData = [];
 
+        const smartMapDict = {
+            "공항": {name: "浦东国际机场", addr: "上海市"},
+            "푸동공항": {name: "浦东国际机场", addr: "上海市"},
+            "루자쭈이": {name: "陆家嘴", addr: "上海市"},
+            "ifcresidence": {name: "国金汇", addr: "上海市"},
+            "호텔": {name: "国金汇", addr: "上海市"},
+            "숙소": {name: "国金汇", addr: "上海시"},
+            "ifc몰": {name: "上海国金中心商场", addr: "上海市"},
+            "점보시푸드": {name: "珍宝海鲜", addr: "上海市"},
+            "예원": {name: "豫园", addr: "上海市"},
+            "마시청": {name: "上海马戏城", addr: "上海市"},
+            "궁연": {name: "宫宴", addr: "上海市"},
+            "징안쓰": {name: "静安寺", addr: "上海市"},
+            "임시정부": {name: "大韩民国临时政府旧址", addr: "上海市"},
+            "신천지": {name: "新天地", addr: "上海市"},
+            "디즈니": {name: "上海迪士尼度假区", addr: "上海市"},
+            "릴리안": {name: "莉莲蛋挞", addr: "上海市"},
+            "양꼬치": {name: "很久以前羊肉串", addr: "上海市"},
+            "동방명주": {name: "东方明珠", addr: "上海市"},
+            "우캉멘션": {name: "武康大楼", addr: "上海市"},
+            "티엔즈팡": {name: "田子坊", addr: "上海市"},
+            "자연박물관": {name: "上海自然博物馆", addr: "上海市"},
+            "그린마사지": {name: "Green Massage", addr: "上海市"},
+            "드래곤플라이": {name: "Dragonfly", addr: "上海市"},
+            "동방화건강": {name: "Oriental Aroma", addr: "上海市"},
+            "빈장다다오": {name: "滨江大道", addr: "上海市"},
+            "와이탄": {name: "外滩", addr: "上海市"}
+        };
+
+        const initialShanghai = [
+            {date: "05-05(화)", time: "04:50~07:00", place: "공항 이동", memo: "집 앞 공항 리무진", tipkey: ""},
+            {date: "05-05(화)", time: "09:00~10:05", place: "인천 공항 → 푸동 공항", memo: "OZ361 A350", tipkey: "flight"},
+            {date: "05-05(화)", time: "11:00~12:00", place: "숙소 이동", memo: "6인승 비즈니스 디디 추천", tipkey: "taxi"},
+            {date: "05-05(화)", time: "12:00~14:00", place: "점심 (IFC몰)", memo: "점보시푸드", tipkey: "ifc"},
+            {date: "05-05(화)", time: "14:00", place: "호텔 체크인", memo: "IFC Residence", tipkey: "hotel"},
+            {date: "05-05(화)", time: "15:30~16:30", place: "예원 정원", memo: "명나라 정원", tipkey: "yuyuan"},
+            {date: "05-05(화)", time: "19:30~21:00", place: "마시청 서커스", memo: "서커스 관람", tipkey: "circus"},
+            {date: "05-06(수)", time: "10:30~14:00", place: "점심 (궁연)", memo: "당나라 공연 식사", tipkey: "gongyan"},
+            {date: "05-06(수)", time: "14:30~15:30", place: "상해 임시 정부", memo: "역사지 관람", tipkey: "history"},
+            {date: "05-06(수)", time: "15:30~18:00", place: "신천지 구경", memo: "유럽풍 거리", tipkey: "xintiandi"},
+            {date: "05-07(목)", time: "10:00~20:00", place: "상해 디즈니랜드 🏰", memo: "전일 관광", tipkey: "disney"},
+            {date: "05-08(금)", time: "10:00~13:00", place: "난징동루 관광", memo: "우캉멘션, 동방명주", tipkey: "lilian"},
+            {date: "05-08(금)", time: "13:00~13:30", place: "점심 (양꼬치)", memo: "현저우이치엔", tipkey: "yang"},
+            {date: "05-09(토)", time: "16:20~19:20", place: "푸동 공항 → 인천 공항", memo: "OZ366", tipkey: ""},
+            {date: "05-09(토)", time: "20:00", place: "수하물 찾고 귀가", memo: "공항버스 이용", tipkey: "home"}
+        ];
+
+        const guideItinerary = [
+            {
+                date: "Day 1 푸동 & 화려한 첫날", 
+                items: [
+                    { time: "12:30", place: "IFC 몰", memo: "아버지와 아이의 첫 식사는 '점보시푸드'를 추천합니다.", map: "점보시푸드" },
+                    { time: "15:30", place: "예원 & 상성", memo: "아버지와 일행분들께 '효도 정원'이라 설명해 드리면 좋습니다.", map: "예원" },
+                    { time: "18:30", place: "빈장다다오 야경", memo: "푸동 강변 산책로에서 건너편 와이탄 야경을 감상하세요.", map: "빈장다다오" },
+                    { time: "22:00", place: "Dragonfly (푸동)", memo: "첫날 피로는 숙소 근처 드래곤플라이에서 푸세요.", map: "드래곤플라이" }
+                ]
+            },
+            {
+                date: "Day 2 올드 상해 & 몰입 체험", 
+                items: [
+                    { time: "11:00", place: "궁연 (Gongyan)", memo: "아이에게 전통의상 체험을 추천합니다.", map: "궁연" },
+                    { time: "18:00", place: "우캉루", memo: "가장 사진이 예쁘게 나오는 거리입니다.", map: "우캉멘션" },
+                    { time: "20:00", place: "Green Massage", memo: "청결하고 전문적인 발 마사지를 추천합니다.", map: "그린마사지" }
+                ]
+            },
+            {
+                date: "Day 4 마지막 밤", 
+                items: [
+                    { time: "18:30", place: "와이탄 야경", memo: "화려한 마천루 야경을 배경으로 사진을 남기세요.", map: "와이탄" },
+                    { time: "20:30", place: "Oriental Aroma", memo: "가성비 끝판왕! 여행의 피로를 완전히 날려버리세요.", map: "동방화건강" }
+                ]
+            }
+        ];
+
+        const placeTipsData = {
+            "flight": "액체류 반입 주의 및 보조배터리 기내 소지 필수.",
+            "taxi": "반드시 6인승 비즈니스 디디를 호출하세요.",
+            "hotel": "동방명주 뷰 객실 요청 추천.",
+            "ifc": "점보시푸드는 쿠폰 구매 시 비용 절감 가능.",
+            "yuyuan": "아버지를 위한 정원이라는 스토리를 강조해주세요.",
+            "circus": "퇴장 시 인파가 많으니 아이 손을 꼭 잡아주세요.",
+            "gongyan": "예약 시간 1시간 전 도착하여 의상 대여를 추천합니다.",
+            "history": "아이에게 역사의 중요성을 들려주세요.",
+            "xintiandi": "노천 카페에서 여유를 부리기 가장 좋은 곳입니다.",
+            "disney": "앱 대기시간 수시 확인 필수.",
+            "yang": "고기가 자동으로 구워져 옷에 냄새가 배지 않습니다."
+        };
+
+        const phraseData = [
+            {cat: "식당 (Order)", items: [
+                {ko: "고수 빼주세요", zh: "不要香菜", py: "부야오 샹차이"},
+                {ko: "계산할게요", zh: "买单", py: "마이딴"}
+            ]},
+            {cat: "교통 (Move)", items: [
+                {ko: "여기로 가주세요", zh: "请去这里", py: "칭 취 저리"}
+            ]}
+        ];
+
+        const initialChecklist = [
+            { title: "여권 & 비자", type: "packing" },
+            { title: "알리페이 & 카카오페이", type: "packing" },
+            { title: "보조배터리", type: "packing" }
+        ];
+
+        const initialShopping = [
+            { title: "대백토 우유사탕 🐰", type: "shopping" },
+            { title: "릴리안 에그타르트", type: "shopping" }
+        ];
+
+        // 🌟 Core Logic 🌟
         try {
-            const firebaseConfig = { databaseURL: "https://nhatrang-trip-default-rtdb.asia-southeast1.firebasedatabase.app" };
-            firebase.initializeApp(firebaseConfig);
+            firebase.initializeApp({ databaseURL: "https://nhatrang-trip-default-rtdb.asia-southeast1.firebasedatabase.app" });
             db = firebase.database();
-        } catch (error) { console.error("Firebase Init Error:", error); }
+        } catch (e) {}
 
         function speak(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = 0.8; window.speechSynthesis.speak(u); } catch(e){} }
         
@@ -222,175 +331,19 @@
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.2222&longitude=121.4581&current_weather=true');
                 const data = await res.json();
                 document.getElementById('weather-display').innerHTML = `<i class="fas fa-sun mr-1"></i>${Math.round(data.current_weather.temperature)}°C`;
-            } catch(e) { document.getElementById('weather-display').innerHTML = '⛅ 상해 날씨'; }
+            } catch(e) {}
         }
 
-        let autoDarkChecked = false;
         function startClock() { 
-            try {
-                setInterval(() => { 
-                    const now = new Date(); 
-                    document.getElementById('time-kr').innerText = 'KOR ' + now.toLocaleTimeString('ko-KR', {timeZone:'Asia/Seoul', hour:'2-digit', minute:'2-digit', hour12:false}); 
-                    const shString = now.toLocaleString("en-US", {timeZone: "Asia/Shanghai"});
-                    const shTime = new Date(shString);
-                    document.getElementById('time-sh').innerText = 'SHA ' + shTime.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit', hour12:false}); 
-                    if (!autoDarkChecked) {
-                        const hour = shTime.getHours();
-                        if (hour >= 19 || hour < 6) { document.documentElement.classList.add('dark'); updateThemeUI(); }
-                        autoDarkChecked = true;
-                    }
-                }, 1000); 
-            } catch(e){}
+            setInterval(() => { 
+                const now = new Date(); 
+                document.getElementById('time-kr').innerText = 'KOR ' + now.toLocaleTimeString('ko-KR', {timeZone:'Asia/Seoul', hour:'2-digit', minute:'2-digit', hour12:false}); 
+                const shTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Shanghai"}));
+                document.getElementById('time-sh').innerText = 'SHA ' + shTime.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit', hour12:false}); 
+            }, 1000); 
         }
-        function updateThemeUI() { const icon = document.getElementById('theme-icon'); if(icon) icon.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun text-yellow-400 text-xs' : 'fas fa-moon text-slate-500 text-xs'; }
-        function toggleTheme() { document.documentElement.classList.toggle('dark'); updateThemeUI(); }
 
-        const smartMapDict = {
-            "공항": {name: "浦东国际机场", addr: "上海市浦东新区迎宾大道6000号"},
-            "푸동공항": {name: "浦东国际机场", addr: "上海市浦东新区迎宾大道6000号"},
-            "루자쭈이": {name: "陆家嘴站", addr: "上海市浦东新区"},
-            "ifcresidence": {name: "国金汇 IFC Residence", addr: "上海市浦东新区世纪大道8号"},
-            "호텔": {name: "国金汇 IFC Residence", addr: "上海市浦东新区世纪大道8号"},
-            "숙소": {name: "国金汇 IFC Residence", addr: "上海市浦东新区世纪大道8号"},
-            "ifc몰": {name: "上海国金中心商场", addr: "上海市浦东新区世纪大道8号"},
-            "점보시푸드": {name: "珍宝海鲜(国金中心店)", addr: "上海市浦东新区世纪大道8号"},
-            "예원": {name: "豫园", addr: "上海市黄浦区福佑路168号"},
-            "위위안": {name: "豫园站", addr: "上海市黄浦区"},
-            "마시청": {name: "上海马戏城", addr: "上海市静安区共和新路2266号"},
-            "궁연": {name: "宫宴", addr: "上海市静安区江宁路445号"},
-            "징안쓰": {name: "静安寺站", addr: "上海市静安区"},
-            "임시정부": {name: "大韩民国临时政府旧址", addr: "上海市黄浦区马当路306弄4号"},
-            "신천지": {name: "新天地", addr: "上海市黄浦区"},
-            "점도덕": {name: "点都德(新天地店)", addr: "上海市黄浦区兴业路123弄"},
-            "디즈니": {name: "上海迪士尼度假区", addr: "上海市浦东新区"},
-            "릴리안": {name: "莉莲蛋挞", addr: "上海市黄浦区"},
-            "양꼬치": {name: "很久以前羊肉串", addr: "上海市黄浦区"},
-            "동방명주": {name: "东方明珠", addr: "上海市浦东新区"},
-            "우캉멘션": {name: "武康大楼", addr: "上海市徐汇区"},
-            "우캉루": {name: "武康路", addr: "上海市徐汇区"},
-            "프랑스조계지": {name: "武康大楼", addr: "上海市徐汇区淮海中路1850号"},
-            "티엔즈팡": {name: "田子坊", addr: "上海市黄浦区"},
-            "자연박물관": {name: "上海自然博物馆", addr: "上海市静安区"},
-            "그린마사지": {name: "Green Massage 青籁养身", addr: "上海市黄浦区"},
-            "드래곤플라이": {name: "Dragonfly 蜻蜓", addr: "上海市浦东新区"},
-            "동방화건강": {name: "Oriental Aroma 东方和健康", addr: "上海市黄浦区"},
-            "빈장다다오": {name: "滨江大道", addr: "上海市浦东新区"},
-            "와이탄": {name: "外滩", addr: "上海市黄浦区"}
-        };
-
-        const initialShanghai = [
-            {date: "05-05(화)", time: "04:50~07:00", place: "공항 이동", memo: "집 앞 공항 리무진\n2주 전 리무진 예약 완료", tipkey: ""},
-            {date: "05-05(화)", time: "09:00~10:05", place: "인천 공항 → 푸동 공항", memo: "OZ361 A350\n좌석: 34A, 34B, 35B, 35C", tipkey: "flight"},
-            {date: "05-05(화)", time: "10:05~11:00", place: "공항 수속", memo: "", tipkey: ""},
-            {date: "05-05(화)", time: "11:00~12:00", place: "숙소 이동 (IFC Residence)", memo: "Lujiazui역 약 50분 소요\n6인승 비즈니스 디디 호출 추천", tipkey: "taxi"},
-            {date: "05-05(화)", time: "12:00~14:00", place: "점심 및 간식 (IFC몰)", memo: "점보시푸드(IFC몰 3층)\n지하 2층 마트 컷팅 과일 추천", tipkey: "ifc"},
-            {date: "05-05(화)", time: "14:00~15:00", place: "호텔 체크인", memo: "IFC Residence 체크인", tipkey: "hotel"},
-            {date: "05-05(화)", time: "15:00~15:30", place: "예원 이동", memo: "위위안역 1번 출구 도보 7분", tipkey: ""},
-            {date: "05-05(화)", time: "15:30~16:30", place: "예원 정원 관람", memo: "명나라 시대 전통 정원\n16:30 운영 마감 주의", tipkey: "yuyuan"},
-            {date: "05-05(화)", time: "16:30~18:00", place: "예원 상성", memo: "전통 상점거리 및 구곡교\n대백토 사탕, 칭즈 핸드크림 쇼핑", tipkey: "yuyuan_shop"},
-            {date: "05-05(화)", time: "18:00~19:00", place: "예원 → 마시청 서커스", memo: "1호선 서커스 월드역 3번 출구", tipkey: ""},
-            {date: "05-05(화)", time: "19:30~21:00", place: "마시청 서커스 관람", memo: "100분 관람, 예매 완료", tipkey: "circus"},
-            {date: "05-05(화)", time: "21:00", place: "호텔 복귀", memo: "", tipkey: ""},
-            {date: "05-06(수)", time: "10:00~10:30", place: "호텔 → 궁연 이동", memo: "2호선 징안쓰역 3번/6번 출구", tipkey: ""},
-            {date: "05-06(수)", time: "10:30~14:00", place: "점심 (궁연)", memo: "전통의상 체험 및 식사 공연 관람", tipkey: "gongyan"},
-            {date: "05-06(수)", time: "14:00~14:30", place: "궁연 → 상해 임시 정부", memo: "10호선 신천지역 6번 출구", tipkey: ""},
-            {date: "05-06(수)", time: "14:30~15:30", place: "상해 임시 정부 관람", memo: "우리나라 독립운동의 역사지", tipkey: "history"},
-            {date: "05-06(수)", time: "15:30~18:00", place: "신천지 구경", memo: "유럽풍 거리 노천 카페 휴식", tipkey: "xintiandi"},
-            {date: "05-06(수)", time: "18:00~20:00", place: "석식 (점도덕)", memo: "딤섬 맛집 (신천지점)", tipkey: "diandude"},
-            {date: "05-06(수)", time: "20:00", place: "호텔 복귀", memo: "", tipkey: ""},
-            {date: "05-07(목)", time: "08:30~10:00", place: "호텔 → 디즈니랜드", memo: "11호선 디즈니 리조트역", tipkey: ""},
-            {date: "05-07(목)", time: "10:00~20:00", place: "상해 디즈니랜드 🏰", memo: "주토피아 구역 및 퍼레이드\n전용앱 설치 필수", tipkey: "disney"},
-            {date: "05-07(목)", time: "20:00~21:00", place: "디즈니랜드 → 호텔 복귀", memo: "", tipkey: ""},
-            {date: "05-08(금)", time: "10:00~13:00", place: "난징동루 관광", memo: "우캉멘션, 동방명주 조망", tipkey: "lilian"},
-            {date: "05-08(금)", time: "13:00~13:30", place: "점심 (현저우이치엔)", memo: "자동 양꼬치 식사", tipkey: "yang"},
-            {date: "05-08(금)", time: "13:30~17:00", place: "오후 자유 일정", memo: "", tipkey: ""},
-            {date: "05-09(토)", time: "12:00", place: "체크아웃", memo: "", tipkey: ""},
-            {date: "05-09(토)", time: "13:00~14:00", place: "호텔 → 푸동 공항", memo: "", tipkey: ""},
-            {date: "05-09(토)", time: "16:20~19:20", place: "푸동 공항 → 인천 공항", memo: "OZ366 A330", tipkey: ""},
-            {date: "05-09(토)", time: "20:00", place: "수하물 찾고 집으로", memo: "공항버스 6705A 이용", tipkey: "home"}
-        ];
-
-        const guideItinerary = [
-            {
-                date: "05-05(화) [Day 1] 푸동 입성 & 화려한 첫날", 
-                items: [
-                    { time: "12:30", place: "IFC 몰 (Lujiazui)", memo: "도착 첫 식사는 IFC몰 내 '점보시푸드'를 추천합니다. 쾌적한 시설에서 여독을 풀기 좋습니다.", map: "점보시푸드" },
-                    { time: "15:30", place: "예원 & 상성", memo: "명나라 정원의 정수입니다. 아버지와 일행분들께 '효도 정원'이라 설명해 드리면 좋습니다.", map: "예원" },
-                    { time: "18:30", place: "빈장다다오 야경 산책", memo: "푸동 강변에서 건너편 와이탄 야경을 감상하세요. 관광객이 너무 붐비지 않아 산책으로 최고입니다.", map: "빈장다다오" },
-                    { time: "20:00", place: "마시청 서커스", memo: "상해 여행의 하이라이트! 아이와 아버지 모두 즐길 수 있는 최고의 공연입니다.", map: "마시청" },
-                    { time: "22:00", place: "Dragonfly (푸동점)", memo: "첫날 피로는 숙소 근처 드래곤플라이에서 푸세요. 수준 높은 서비스를 제공합니다.", map: "드래곤플라이" }
-                ]
-            },
-            {
-                date: "05-06(수) [Day 2] 올드 상해 & 몰입형 체험", 
-                items: [
-                    { time: "11:00", place: "궁연 (Gongyan)", memo: "전통 공연과 식사가 결합된 몰입형 식당입니다. 아이에게 전통의상 체험을 추천합니다.", map: "궁연" },
-                    { time: "15:00", place: "임시정부 & 신천지", memo: "역사 관람 후 신천지 노천 카페에서 차 한 잔의 여유를 즐기세요.", map: "신천지" },
-                    { time: "18:00", place: "우캉루 (프랑스 조계지)", memo: "가장 사진이 예쁘게 나오는 거리입니다. 가족 단체 사진 명소입니다.", map: "우캉멘션" },
-                    { time: "20:00", place: "Green Massage (K11점)", memo: "상해 프리미엄 마사지의 기준! 청결하고 전문적인 발 마사지를 추천합니다.", map: "그린마사지" }
-                ]
-            },
-            {
-                date: "05-07(목) [Day 3] 꿈의 나라 디즈니랜드", 
-                items: [
-                    { time: "08:30", place: "상해 디즈니랜드", memo: "아이를 위한 날! 주토피아 구역을 우선 공략하시고 실내 공연으로 휴식을 병행하세요.", map: "디즈니" }
-                ]
-            },
-            {
-                date: "05-08(금) [Day 4] 도심 탐험 & 마지막 밤", 
-                items: [
-                    { time: "10:30", place: "상해 자연박물관", memo: "아이가 가장 좋아할 코스입니다. 실물 크기의 전시물들로 지루할 틈이 없습니다.", map: "자연박물관" },
-                    { time: "13:30", place: "난징동루 & 양꼬치", memo: "현저우이치엔에서 양꼬치를 드세요. 자동으로 구워져 연기 걱정 없이 쾌적합니다.", map: "양꼬치" },
-                    { time: "16:00", place: "티엔즈팡", memo: "전통 골목 사이에서 아기자기한 기념품을 쇼핑하기 좋습니다.", map: "티엔즈팡" },
-                    { time: "18:30", place: "와이탄 산책로 야경", memo: "상해 야경의 정점! 화려한 마천루 야경을 배경으로 마지막 밤을 기록하세요.", map: "와이탄" },
-                    { time: "20:30", place: "Oriental Aroma (동방화건강)", memo: "마지막 밤은 가성비 끝판왕 동방화건강에서! 여행의 피로를 완전히 날려버리세요.", map: "동방화건강" }
-                ]
-            }
-        ];
-
-        const placeTipsData = {
-            "flight": "액체류 반입 주의 및 보조배터리 기내 소지 필수.",
-            "taxi": "짐이 많으므로 반드시 6인승 비즈니스 디디를 호출하세요.",
-            "hotel": "동방명주 뷰 객실 요청 추천.",
-            "ifc": "점보시푸드는 쿠폰 구매 시 비용 절감 가능.",
-            "yuyuan": "아버지를 위한 정원이라는 스토리를 강조해주세요.",
-            "yuyuan_shop": "선물용으로는 대백토 우유사탕이 가성비 좋습니다.",
-            "circus": "퇴장 시 인파가 많으니 아이 손을 꼭 잡아주세요.",
-            "gongyan": "예약 시간 1시간 전 도착하여 의상 대여를 추천합니다.",
-            "history": "실내 사진 촬영 금지, 아이에게 역사의 중요성을 들려주세요.",
-            "xintiandi": "노천 카페에서 여유를 부리기 가장 좋은 곳입니다.",
-            "diandude": "하가우, 창펀 등 인기 딤섬을 꼭 드셔보세요.",
-            "disney": "미개봉 간식 반입 가능, 앱 대기시간 수시 확인 필수.",
-            "lilian": "당이 떨어질 때 에그타르트 하나면 모두가 행복해집니다.",
-            "yang": "고기가 자동으로 구워져 옷에 냄새가 배지 않습니다.",
-            "tianzifang": "골목이 복잡하니 일행과 떨어지지 않게 주의하세요.",
-            "home": "공항버스 승차 위치를 미리 확인하세요."
-        };
-
-        const phraseData = [
-            {cat: "식당 (Order)", items: [
-                {ko: "고수 빼주세요", zh: "不要香菜", py: "부야오 샹차이"},
-                {ko: "어린이용 식기 주세요", zh: "请给我儿童餐具", py: "칭 게이워 얼통찬쥐"},
-                {ko: "계산할게요", zh: "买单", py: "마이딴"}
-            ]},
-            {cat: "교통 (Move)", items: [
-                {ko: "여기로 가주세요", zh: "请去这里", py: "칭 취 저리"},
-                {ko: "트렁크 열어주세요", zh: "请开一下后备箱", py: "칭 카이 이샤 호우뻬이샹"}
-            ]}
-        ];
-
-        const initialChecklist = [
-            { title: "여권 & 비자", memo: "만료일 확인 필수", type: "packing" },
-            { title: "알리페이 & 카카오페이", memo: "카드 등록 테스트", type: "packing" },
-            { title: "중국 유심/로밍", memo: "VPN 포함 확인", type: "packing" },
-            { title: "보조배터리", memo: "기내 소지 필수", type: "packing" }
-        ];
-
-        const initialShopping = [
-            { title: "대백토 우유사탕 🐰", memo: "상해 전통 사탕", type: "shopping" },
-            { title: "칭즈 핸드크림", memo: "향기 좋은 선물 아이템", type: "shopping" },
-            { title: "릴리안 에그타르트", memo: "필수 디저트", type: "shopping" }
-        ];
+        function toggleTheme() { document.documentElement.classList.toggle('dark'); const i = document.getElementById('theme-icon'); i.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun text-yellow-400 text-xs' : 'fas fa-moon text-slate-500 text-xs'; }
 
         function getSmartInfo(input) {
             const query = input.toLowerCase().replace(/\s+/g, '');
@@ -399,52 +352,35 @@
         }
 
         function openAmap(place) {
-            try {
-                const info = getSmartInfo(place); const keyword = encodeURIComponent(info.name); const ua = navigator.userAgent.toLowerCase();
-                if (ua.indexOf("iphone") > -1) window.location.href = `iosamap://poi?sourceApplication=sh_trip&name=${keyword}`;
-                else if (ua.indexOf("android") > -1) window.location.href = `androidamap://poi?sourceApplication=sh_trip&keywords=${keyword}`;
-                else window.open(`https://uri.amap.com/search?keyword=${keyword}`, '_blank');
-            } catch(e) { alert("지도 실행 오류"); }
+            const info = getSmartInfo(place); const keyword = encodeURIComponent(info.name); const ua = navigator.userAgent.toLowerCase();
+            if (ua.indexOf("iphone") > -1) window.location.href = `iosamap://poi?sourceApplication=sh_trip&name=${keyword}`;
+            else if (ua.indexOf("android") > -1) window.location.href = `androidamap://poi?sourceApplication=sh_trip&keywords=${keyword}`;
+            else window.open(`https://uri.amap.com/search?keyword=${keyword}`, '_blank');
         }
 
         function openDidi(place) {
-            try {
-                const info = getSmartInfo(place); 
-                navigator.clipboard.writeText(info.name).catch(()=>{});
-                const encName = encodeURIComponent(info.name);
-                const encAddr = encodeURIComponent(info.addr);
-                const appUrl = `OneTravel://route/?end_name=${encName}&end_address=${encAddr}`;
-                const fallbackUrl = `diditaxi://route/?end_name=${encName}&end_address=${encAddr}`;
-                const alipayDidi = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${encName}%26end_address%3D${encAddr}`;
-                const start = Date.now();
-                window.location.href = appUrl;
-                setTimeout(() => {
-                    if (Date.now() - start < 1500) {
-                        window.location.href = fallbackUrl;
-                        setTimeout(() => { if (Date.now() - start < 3000) window.location.href = alipayDidi; }, 1500);
-                    }
-                }, 1000);
-            } catch(e) { alert("디디추싱 앱 호출 중 오류"); }
+            const info = getSmartInfo(place); navigator.clipboard.writeText(info.name).catch(()=>{});
+            const encN = encodeURIComponent(info.name), encA = encodeURIComponent(info.addr);
+            const appU = `OneTravel://route/?end_name=${encN}&end_address=${encA}`;
+            const fallbackU = `diditaxi://route/?end_name=${encN}&end_address=${encA}`;
+            const alipayU = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${encN}%26end_address%3D${encA}`;
+            const start = Date.now(); window.location.href = appU;
+            setTimeout(() => { if (Date.now() - start < 1500) { window.location.href = fallbackU; setTimeout(() => { if (Date.now() - start < 3000) window.location.href = alipayU; }, 1500); } }, 1000);
         }
 
         function scrollToCurrentTask() {
             try {
                 const now = new Date();
-                const shString = now.toLocaleString("en-US", {timeZone: "Asia/Shanghai"});
-                const shTime = new Date(shString);
+                const shTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Shanghai"}));
                 const todayStr = `${(shTime.getMonth() + 1).toString().padStart(2, '0')}-${shTime.getDate().toString().padStart(2, '0')}`;
-                const currentTime = shTime.getHours() * 60 + shTime.getMinutes();
-                let targetId = null; let minDiff = Infinity;
+                const curM = shTime.getHours() * 60 + shTime.getMinutes();
+                let targetId = null; let minD = Infinity;
                 itineraryData.forEach(item => {
                     if (item.date.includes(todayStr)) {
-                        const timeArr = item.time.split('~');
-                        if(timeArr.length > 0) {
-                            const [h, m] = timeArr[0].split(':').map(Number);
-                            if(!isNaN(h)) {
-                                const startTime = h * 60 + m;
-                                const diff = startTime - currentTime;
-                                if (diff >= -60 && diff < minDiff) { minDiff = diff; targetId = `card-${item.key}`; }
-                            }
+                        const t = item.time.split('~')[0].split(':').map(Number);
+                        if(!isNaN(t[0])) {
+                            const diff = (t[0]*60+t[1]) - curM;
+                            if (diff >= -60 && diff < minD) { minD = diff; targetId = `card-${item.key}`; }
                         }
                     }
                 });
@@ -456,45 +392,42 @@
         }
 
         function renderList(list) {
-            try {
-                const groups = {};
-                list.forEach(item => { if(!groups[item.date]) groups[item.date] = []; groups[item.date].push(item); });
-                document.getElementById('itinerary-list').innerHTML = Object.keys(groups).map(date => `
-                    <div class="mb-8">
-                        <h3 class="day-header text-[18px] font-black text-slate-800 dark:text-slate-200 mb-4 border-l-4 border-brand-500 pl-3">${date}</h3>
-                        <div class="space-y-4">${groups[date].map(item => `
-                            <div id="card-${item.key}" class="card-grad p-6 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm">
-                                <div class="flex justify-between items-center mb-3"><span class="text-[11px] font-black bg-brand-500 text-white px-3 py-1.5 rounded-lg">${item.time}</span><button onclick="openItineraryForm('${item.key}')" class="text-slate-300"><i class="fas fa-ellipsis-h text-lg"></i></button></div>
-                                <h4 class="font-black text-xl mb-3">${item.place}</h4>
-                                ${item.memo ? `<p class="text-[13px] font-bold text-slate-600 dark:text-slate-400 mb-5 whitespace-pre-wrap">${item.memo}</p>` : ''}
-                                ${item.place === '공항 이동' ? '' : `
-                                <div class="flex gap-2">
-                                    <button onclick="openAmap('${item.place}')" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-xs">지도</button>
-                                    <button onclick="openDidi('${item.place}')" class="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-xs">디디</button>
-                                    ${item.tipkey ? `<button onclick="openTipModal('${item.tipkey}')" class="w-14 py-3.5 bg-amber-50 text-amber-600 rounded-2xl"><i class="fas fa-star"></i></button>` : ''}
-                                </div>`}
-                            </div>`).join('')}
-                        </div>
-                    </div>`).join('');
-            } catch(e) {}
+            const groups = {};
+            list.forEach(item => { if(!groups[item.date]) groups[item.date] = []; groups[item.date].push(item); });
+            document.getElementById('itinerary-list').innerHTML = Object.keys(groups).map(date => `
+                <div class="mb-8">
+                    <h3 class="day-header text-[18px] font-black text-slate-800 dark:text-slate-200 mb-4 border-l-4 border-brand-500 pl-3">${date}</h3>
+                    <div class="space-y-4">${groups[date].map(item => `
+                        <div id="card-${item.key}" class="card-grad p-6 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <div class="flex justify-between items-center mb-3"><span class="text-[11px] font-black bg-brand-500 text-white px-3 py-1.5 rounded-lg">${item.time}</span><button onclick="openItineraryForm('${item.key}')" class="text-slate-300"><i class="fas fa-ellipsis-h text-lg"></i></button></div>
+                            <h4 class="font-black text-xl mb-3">${item.place}</h4>
+                            ${item.memo ? `<p class="text-[13px] font-bold text-slate-600 dark:text-slate-400 mb-5 whitespace-pre-wrap">${item.memo}</p>` : ''}
+                            ${item.place === '공항 이동' ? '' : `
+                            <div class="flex gap-2">
+                                <button onclick="openAmap('${item.place}')" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-xs">지도</button>
+                                <button onclick="openDidi('${item.place}')" class="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-xs">디디</button>
+                                ${item.tipkey ? `<button onclick="openTipModal('${item.tipkey}')" class="w-14 py-3.5 bg-amber-50 text-amber-600 rounded-2xl"><i class="fas fa-star"></i></button>` : ''}
+                            </div>`}
+                        </div>`).join('')}
+                </div>`).join('');
         }
 
         function renderGuideItinerary() {
-            try {
-                document.getElementById('guide-itinerary-list').innerHTML = guideItinerary.map(day => `
-                    <div class="mb-10">
-                        <div class="flex items-center mb-5"><div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black mr-3 shadow-lg">D</div><h3 class="text-[16px] font-black text-slate-800 dark:text-slate-100">${day.date}</h3></div>
-                        <div class="space-y-6 ml-5 border-l-2 border-indigo-100 dark:border-slate-800 pl-6 relative">
-                            ${day.items.map(item => `
-                                <div class="relative"><div class="absolute -left-[31px] top-1 w-3 h-3 bg-indigo-600 rounded-full border-2 border-white dark:border-slate-900"></div>
+            document.getElementById('guide-itinerary-list').innerHTML = guideItinerary.map(day => `
+                <div class="mb-10">
+                    <div class="flex items-center mb-5"><div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black mr-3 shadow-lg">D</div><h3 class="text-[16px] font-black text-slate-800 dark:text-slate-100">${day.date}</h3></div>
+                    <div class="space-y-6 ml-5 border-l-2 border-indigo-100 dark:border-slate-800 pl-6 relative">
+                        ${day.items.map(item => `
+                            <div class="relative">
+                                <div class="absolute -left-[31px] top-1 w-3 h-3 bg-indigo-600 rounded-full border-2 border-white dark:border-slate-900"></div>
                                 <div class="bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm">
                                     <span class="text-[10px] font-black text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-md mb-2 inline-block">${item.time}</span>
                                     <h4 class="font-black text-lg mb-2">${item.place}</h4><p class="text-[13px] font-medium text-slate-600 dark:text-slate-400 leading-relaxed mb-4">${item.memo}</p>
                                     <button onclick="openAmap('${item.map}')" class="w-full py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-black text-xs border border-slate-200">위치 확인</button>
-                                </div></div>`).join('')}
-                        </div>
-                    </div>`).join('');
-            } catch(e) {}
+                                </div>
+                            </div>`).join('')}
+                    </div>
+                </div>`).join('');
         }
 
         function showTab(id) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.replace('text-brand-500', 'text-slate-400')); event.currentTarget.classList.replace('text-slate-400', 'text-brand-500'); window.scrollTo(0,0); if(id === 'schedule') scrollToCurrentTask(); }
@@ -503,11 +436,11 @@
         function closeTipModal() { document.getElementById('tip-modal').classList.add('hidden'); }
         function showFlashcard(zh, ko, py) { document.getElementById('flash-zh').innerText = zh; document.getElementById('flash-ko').innerText = ko; document.getElementById('flash-py').innerText = `[ ${py} ]`; document.getElementById('flashcard').classList.remove('hidden'); }
 
-        function addExpense() { const desc = document.getElementById('exp-desc').value, amt = document.getElementById('exp-amt').value; if(desc && amt && db) { db.ref(`${basePath}/expenses`).push({desc, amt: Number(amt), krwAmt: Math.round(Number(amt) * exchangeRate)}); document.getElementById('exp-desc').value = ''; document.getElementById('exp-amt').value = ''; } }
-        function loadExpenses() { if(db) db.ref(`${basePath}/expenses`).on('value', s => { const data = s.val() || {}; let tCny = 0, tKrw = 0; document.getElementById('expense-list').innerHTML = Object.entries(data).map(([k, v]) => { tCny += v.amt; const krw = v.krwAmt || Math.round(v.amt * exchangeRate); tKrw += krw; return `<div class="flex justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 text-xs mb-2 shadow-sm"><div class="flex flex-col"><span class="font-bold">${v.desc}</span><span class="text-[10px] text-slate-400">${krw.toLocaleString()} ₩</span></div><span class="font-black text-brand-500 text-sm">${v.amt.toLocaleString()} ¥ <button onclick="db.ref('${basePath}/expenses/${k}').remove()" class="ml-2 text-slate-300">✕</button></span></div>`; }).join(''); document.getElementById('total-expense').innerHTML = `${tCny.toLocaleString()} ¥ <span class="text-xs font-bold text-slate-400 ml-1">(${tKrw.toLocaleString()} ₩)</span>`; }); }
+        function addExpense() { const d = document.getElementById('exp-desc').value, a = document.getElementById('exp-amt').value; if(d && a && db) { db.ref(`${basePath}/expenses`).push({desc: d, amt: Number(a), krwAmt: Math.round(Number(a) * exchangeRate)}); document.getElementById('exp-desc').value = ''; document.getElementById('exp-amt').value = ''; } }
+        function loadExpenses() { if(db) db.ref(`${basePath}/expenses`).on('value', s => { const data = s.val() || {}; let tC = 0, tK = 0; document.getElementById('expense-list').innerHTML = Object.entries(data).map(([k, v]) => { tC += v.amt; const kAmt = v.krwAmt || Math.round(v.amt * exchangeRate); tK += kAmt; return `<div class="flex justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 text-xs mb-2 shadow-sm"><div class="flex flex-col"><span class="font-bold">${v.desc}</span><span class="text-[10px] text-slate-400">${kAmt.toLocaleString()} ₩</span></div><span class="font-black text-brand-500 text-sm">${v.amt.toLocaleString()} ¥ <button onclick="db.ref('${basePath}/expenses/${k}').remove()" class="ml-2">✕</button></span></div>`; }).join(''); document.getElementById('total-expense').innerHTML = `${tC.toLocaleString()} ¥ <span class="text-xs font-bold ml-1">(${tK.toLocaleString()} ₩)</span>`; }); }
 
         function loadChecklist() {
-            if (!db) return;
+            if(!db) return;
             db.ref(`${basePath}/checklist`).on('value', s => {
                 const data = s.val() || {}; const items = Object.entries(data).map(([k, v]) => ({...v, key: k}));
                 if(items.length === 0) { [...initialChecklist, ...initialShopping].forEach(i => db.ref(`${basePath}/checklist`).push(i)); return; }
@@ -518,7 +451,7 @@
         function openChecklistModal(type, key = null) {
             document.getElementById('checklist-type').value = type; document.getElementById('checklist-key').value = key || '';
             document.getElementById('checklist-modal').classList.remove('hidden');
-            if(key) { db.ref(`${basePath}/checklist/${key}`).once('value', s => { const d = s.val(); document.getElementById('checklist-title').value = d.title; document.getElementById('checklist-memo').value = d.memo || ''; document.getElementById('checklist-delete-btn').classList.remove('hidden'); }); }
+            if(key) db.ref(`${basePath}/checklist/${key}`).once('value', s => { const d = s.val(); document.getElementById('checklist-title').value = d.title; document.getElementById('checklist-memo').value = d.memo || ''; document.getElementById('checklist-delete-btn').classList.remove('hidden'); });
             else { document.getElementById('checklist-title').value = ''; document.getElementById('checklist-memo').value = ''; document.getElementById('checklist-delete-btn').classList.add('hidden'); }
         }
         function closeChecklistModal() { document.getElementById('checklist-modal').classList.add('hidden'); }
