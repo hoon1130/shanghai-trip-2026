@@ -491,11 +491,13 @@
                                 <div class="flex justify-between items-center mb-3"><span class="text-[11px] font-black bg-brand-500 text-white px-3 py-1.5 rounded-lg tracking-tighter shadow-md">${item.time}</span><button onclick="openItineraryForm('${item.key}')" class="text-slate-300 hover:text-brand-500 transition-colors"><i class="fas fa-ellipsis-h text-lg"></i></button></div>
                                 <h4 class="font-black text-xl mb-3 leading-tight tracking-tight">${item.place}</h4>
                                 ${item.memo ? `<p class="text-[13px] font-bold text-slate-600 dark:text-slate-400 mb-5 leading-relaxed whitespace-pre-wrap">${item.memo}</p>` : ''}
+                                ${item.place === '공항 이동' ? '' : `
                                 <div class="flex gap-2 pt-1">
                                     <button onclick="openAmap('${item.place}')" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-xs shadow-sm border border-slate-200 dark:border-slate-700"><i class="fas fa-map-marker-alt mr-1 text-brand-500"></i>지도</button>
                                     <button onclick="openDidi('${item.place}')" class="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-xs shadow-lg"><i class="fas fa-taxi mr-1 text-yellow-400"></i>디디호출</button>
                                     ${item.tipkey ? `<button onclick="openTipModal('${item.tipkey}')" class="w-14 py-3.5 bg-amber-50 text-amber-600 rounded-2xl font-black text-xs border border-amber-200"><i class="fas fa-star"></i></button>` : ''}
                                 </div>
+                                `}
                             </div>`).join('')}
                         </div>
                     </div>`).join('');
