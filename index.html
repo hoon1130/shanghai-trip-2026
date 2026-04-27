@@ -245,7 +245,7 @@
 
         // 🌟 고덕지도 & 디디추싱 목적지 사전 🌟
         const smartMapDict = {
-            "공항": {name: "浦东国际机场", addr: "上海市浦东新区迎宾大道6000号"},
+            "공항": {name: "浦东国际机场", addr: "上海市浦동新区迎宾大道6000号"},
             "푸동공항": {name: "浦东国际机场", addr: "上海市浦东新区迎宾大道6000号"},
             "루자쭈이": {name: "陆家嘴站", addr: "上海市浦东新区陆家嘴"},
             "ifcresidence": {name: "国金汇 IFC Residence", addr: "上海市浦东新区陆家嘴世纪大道8号"},
@@ -257,8 +257,8 @@
             "위위안": {name: "豫园站", addr: "上海市黄浦区豫园站"},
             "마시청": {name: "上海马戏城", addr: "上海市静安区共和新路2266号"},
             "궁연": {name: "宫宴(上海)", addr: "上海市静安区江宁路445号"},
-            "징안쓰": {name: "静안寺站", addr: "上海市静安区静安寺站"},
-            "임시정부": {name: "大韩民国临时政府旧址", addr: "上海市黄浦区马当路306弄4号"},
+            "징안쓰": {name: "静안寺站", addr: "上海市静안区静安寺站"},
+            "임시정부": {name: "大韩民国临时政府旧址", addr: "上海市黄浦区马당路306弄4号"},
             "신천지": {name: "新天地", addr: "上海市黄浦区太仓路181弄"},
             "점도덕": {name: "点都德(新天地店)", addr: "上海市黄浦区兴业路123弄"},
             "디즈니": {name: "上海迪士尼度假区", addr: "上海市浦东新区川沙新镇黄赵路310号"},
@@ -270,7 +270,7 @@
             "우캉루": {name: "武康路", addr: "上海市徐汇区武康路"},
             "프랑스조계지": {name: "武康大楼", addr: "上海市徐汇区淮海中路1850号"},
             "티엔즈팡": {name: "田子坊", addr: "上海市黄浦区泰康路210弄"},
-            "자연박물관": {name: "上海自然博物馆", addr: "上海市静安区北京西路510号"}
+            "자연박물관": {name: "上海自然博物馆", addr: "上海市静안区北京西路510号"}
         };
 
         const initialShanghai = [
@@ -532,14 +532,22 @@
             } 
         }
 
-        document.getElementById('cny-input').oninput = e => { 
-            const val = e.target.value;
-            document.getElementById('krw-input').value = val ? Math.round(val * exchangeRate) : '';
-        };
-        document.getElementById('krw-input').oninput = e => { 
-            const val = e.target.value;
-            document.getElementById('cny-input').value = val ? (val / exchangeRate).toFixed(2) : '';
-        };
+        // 🌟 환율 계산 이벤트 리스너 🌟
+        document.addEventListener('DOMContentLoaded', () => {
+            const cnyInput = document.getElementById('cny-input');
+            const krwInput = document.getElementById('krw-input');
+            
+            if(cnyInput && krwInput) {
+                cnyInput.addEventListener('input', (e) => {
+                    const val = e.target.value;
+                    krwInput.value = val ? Math.round(val * exchangeRate) : '';
+                });
+                krwInput.addEventListener('input', (e) => {
+                    const val = e.target.value;
+                    cnyInput.value = val ? (val / exchangeRate).toFixed(2) : '';
+                });
+            }
+        });
 
         function renderPhrases() { 
             document.getElementById('phrase-list').innerHTML = phraseData.map(group => `
