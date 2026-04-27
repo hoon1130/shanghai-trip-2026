@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>상해 패밀리 투어 가이드 🇨🇳</title>
+    <!-- PWA Setup -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#de2910">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="상해투어">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brand: { 50: '#f8fafc', 500: '#de2910', 600: '#b91c1c', 900: '#0f172a' } } } } }</script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -85,7 +92,7 @@
                     </div>
                     <div class="relative">
                         <span class="absolute left-5 top-5 text-white/50 font-black text-sm">KRW</span>
-                        <input type="text" id="krw-output" placeholder="원화(₩) 환산" class="w-full p-5 pl-16 rounded-[1.5rem] bg-brand-500 border-none text-white font-black outline-none text-2xl placeholder:text-white/50" readonly>
+                        <input type="number" id="krw-input" placeholder="원화(₩) 입력" class="w-full p-5 pl-16 rounded-[1.5rem] bg-brand-500 border-none text-white font-black outline-none text-2xl placeholder:text-white/50">
                     </div>
                 </div>
             </div>
@@ -191,6 +198,7 @@
 
     <script>
         const basePath = 'shanghai_2026_v30_final'; 
+        const exchangeRate = 215.94;
         let db = null;
         let itineraryData = [];
 
@@ -235,7 +243,7 @@
         function updateThemeUI() { const icon = document.getElementById('theme-icon'); icon.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun text-yellow-400 text-xs' : 'fas fa-moon text-slate-500 text-xs'; }
         function toggleTheme() { document.documentElement.classList.toggle('dark'); updateThemeUI(); }
 
-        // 🌟 고덕지도 & 디디추싱 목적지 사전 (프랑스 조계지, 티엔즈팡, 자연박물관 등 완벽 매핑) 🌟
+        // 🌟 고덕지도 & 디디추싱 목적지 사전 🌟
         const smartMapDict = {
             "공항": {name: "浦东国际机场", addr: "上海市浦东新区迎宾大道6000号"},
             "푸동공항": {name: "浦东国际机场", addr: "上海市浦东新区迎宾大道6000号"},
@@ -243,19 +251,19 @@
             "ifcresidence": {name: "国金汇 IFC Residence", addr: "上海市浦东新区陆家嘴世纪大道8号"},
             "호텔": {name: "国金汇 IFC Residence", addr: "上海市浦东新区陆家嘴世纪大道8号"},
             "숙소": {name: "国金汇 IFC Residence", addr: "上海市浦东新区陆家嘴世纪大道8号"},
-            "ifc몰": {name: "上海国金中心商场", addr: "上海市浦东新区世纪大道8号"},
+            "ifc몰": {name: "上海国金中心商场", addr: "上海市浦동新区世纪大道8号"},
             "점보시푸드": {name: "珍宝海鲜(国金中心店)", addr: "上海市浦东新区世纪大道8号国金中心L3"},
             "예원": {name: "豫园", addr: "上海市黄浦区福佑路168号"},
             "위위안": {name: "豫园站", addr: "上海市黄浦区豫园站"},
             "마시청": {name: "上海马戏城", addr: "上海市静安区共和新路2266号"},
             "궁연": {name: "宫宴(上海)", addr: "上海市静安区江宁路445号"},
-            "징안쓰": {name: "静安寺站", addr: "上海市静安区静安寺站"},
+            "징안쓰": {name: "静안寺站", addr: "上海市静安区静安寺站"},
             "임시정부": {name: "大韩民国临时政府旧址", addr: "上海市黄浦区马当路306弄4号"},
             "신천지": {name: "新天地", addr: "上海市黄浦区太仓路181弄"},
             "점도덕": {name: "点都德(新天地店)", addr: "上海市黄浦区兴业路123弄"},
             "디즈니": {name: "上海迪士尼度假区", addr: "上海市浦东新区川沙新镇黄赵路310号"},
             "릴리안": {name: "莉莲蛋挞", addr: "上海市黄浦区南京东路228号新世界大丸百货B2"},
-            "양꼬치": {name: "很久以前羊肉串", addr: "上海市黄浦区南京东路800号"},
+            "양꼬치": {name: "很久以前羊肉串", addr: "上海시黄浦区南京东路800号"},
             "현저우이치엔": {name: "很久以前羊肉串", addr: "上海市黄浦区南京东路800号"},
             "동방명주": {name: "东方明珠", addr: "上海市浦东新区世纪大道1号"},
             "우캉멘션": {name: "武康大楼", addr: "上海市徐汇区淮海中路1850号"},
@@ -265,7 +273,6 @@
             "자연박물관": {name: "上海自然博物馆", addr: "上海市静安区北京西路510号"}
         };
 
-        // 🌟 5월 상해 가족 일정 원본 데이터 (100% 누락 없이 주입) 🌟
         const initialShanghai = [
             {date: "05-05(화)", time: "04:50~07:00", place: "공항 이동", memo: "집 앞 공항 리무진\n2주 전 리무진 예약, 예약 완료", tipkey: "airport"},
             {date: "05-05(화)", time: "09:00~10:05", place: "인천 공항 → 푸동 공항", memo: "OZ361 A350\n좌석: 34A, 34B, 35B, 35C", tipkey: "flight"},
@@ -279,7 +286,6 @@
             {date: "05-05(화)", time: "18:00~19:00", place: "예원 → 마시청 서커스", memo: "1호선 서커스 월드(circus world)역 3번 출구\n*마시청 서커스 예약 완료", tipkey: ""},
             {date: "05-05(화)", time: "19:30~21:00", place: "마시청 서커스 관람", memo: "100분 관람, 클룩에서 예매 완료", tipkey: "circus"},
             {date: "05-05(화)", time: "21:00", place: "호텔 복귀", memo: "", tipkey: ""},
-
             {date: "05-06(수)", time: "10:00", place: "기상 및 조식", memo: "아침 간단히: 전날 마트에서 사 놓거나 햇반으로 간단히 먹기\n*오늘 코스: 임시정부, 신천지, 궁연", tipkey: ""},
             {date: "05-06(수)", time: "10:00~10:30", place: "호텔 → 궁연 이동", memo: "2호선 징안쓰(Jing'an Temple)역 3번 또는 6번 출구 (2호선 5정거장)", tipkey: ""},
             {date: "05-06(수)", time: "10:30~14:00", place: "점심 (궁연)", memo: "왕홍 체험, 식사 및 공연 관람\n식사 시간 12:10~13:40 (1~2시간 일찍 도착 가능)", tipkey: "gongyan"},
@@ -288,19 +294,16 @@
             {date: "05-06(수)", time: "15:30~18:00", place: "신천지 구경", memo: "", tipkey: "xintiandi"},
             {date: "05-06(수)", time: "18:00~20:00", place: "석식 (점도덕)", memo: "신천지점 또는 정대광장점", tipkey: "diandude"},
             {date: "05-06(수)", time: "20:00", place: "호텔 복귀", memo: "", tipkey: ""},
-
             {date: "05-07(목)", time: "07:20", place: "기상", memo: "", tipkey: ""},
             {date: "05-07(목)", time: "07:20~08:30", place: "조식 및 정비", memo: "", tipkey: ""},
             {date: "05-07(목)", time: "08:30~10:00", place: "호텔 → 디즈니랜드", memo: "11호선 디즈니 리조트역\n시니어, 성인2, 아동 32만원 예매(클룩으로 예매 완료)", tipkey: ""},
             {date: "05-07(목)", time: "10:00~20:00", place: "상해 디즈니랜드 🏰", memo: "운영: 08:30~21:00\n미키스 애비뉴, 가든 오브 이매지네이션, 판다지랜드, 투모로우랜드, 트레저 코브, 코이 스토리랜드, 어드벤처 아일, 주토피아, 퍼레이드 관람\n*디즈니 전용앱 깔기", tipkey: "disney"},
             {date: "05-07(목)", time: "20:00~21:00", place: "디즈니랜드 → 호텔 복귀", memo: "", tipkey: ""},
-
             {date: "05-08(금)", time: "09:00", place: "기상", memo: "", tipkey: ""},
             {date: "05-08(금)", time: "09:00~10:00", place: "조식", memo: "", tipkey: ""},
             {date: "05-08(금)", time: "10:00~13:00", place: "난징동루 관광", memo: "우캉멘션, 동방명주 관광", tipkey: "lilian"},
             {date: "05-08(금)", time: "13:00~13:30", place: "점심 (현저우이치엔)", memo: "양꼬치 식사", tipkey: "yang"},
             {date: "05-08(금)", time: "13:30~17:00", place: "오후 자유 일정", memo: "", tipkey: ""},
-
             {date: "05-09(토)", time: "09:00", place: "기상", memo: "", tipkey: ""},
             {date: "05-09(토)", time: "09:00~11:00", place: "호텔 조식", memo: "7:00~11:00, 3층, 178위안", tipkey: ""},
             {date: "05-09(토)", time: "12:00", place: "체크아웃", memo: "", tipkey: ""},
@@ -309,7 +312,6 @@
             {date: "05-09(토)", time: "20:00", place: "수하물 찾고 집으로", memo: "6705A 공항버스\n*예매 안됨, 현장 탑승 20:00, 20:28\n*2터미널 지하 1층 19번 승차홈\n*공항 철도 이용", tipkey: "home"}
         ];
 
-        // 🌟 가이드 특별 코스 (항저우 제외, 프랑스 조계지/티엔즈팡/자연박물관 포함 완벽 설계) 🌟
         const guideItinerary = [
             {date: "05-05(화) [Day 1]", time: "12:00", place: "IFC 몰 & 점보시푸드", memo: "가이드 팁: IFC몰은 매우 시원하고 쾌적합니다. 점보시푸드 웨이팅이 길면 일행 중 한 분이 번호표를 뽑고, 지하 2층에서 식후 먹을 '아마수작' 밀크티와 마트 컷팅 과일을 미리 사두면 동선 낭비를 막을 수 있습니다. 시그니처인 블랙페퍼 크랩과 볶음밥 조합은 아버님과 조카 모두 좋아할 메뉴입니다.", tipkey: "ifc", map: "上海国金中心商场"},
             {date: "05-05(화) [Day 1]", time: "15:30", place: "예원 정원 & 구곡교", memo: "관람 팁: 정원은 16:30에 문을 닫으니 도착 즉시 정원부터 가세요. 아버님께 '명나라 관료가 부모님을 위해 지은 정원'이라 설명해 드리면 무척 좋아하십니다. 악귀는 직진밖에 못한다는 전설이 있는 '구곡교'를 건너며 조카와 즐거운 추억을 남겨보세요.", tipkey: "yuyuan", map: "豫园"},
@@ -319,7 +321,6 @@
             {date: "05-08(금) [Day 4]", time: "10:00", place: "자연박물관 & 티엔즈팡", memo: "오후 대체 팁: 오후 자유 일정 시 아이가 좋아하는 '상해 자연박물관'에 가서 거대한 공룡 로봇을 보여주거나, 미로 같은 전통 골목 시장인 '티엔즈팡'에서 조카 친구들에게 나누어 줄 기념품(토끼사탕, 누가크래커 등)을 쇼핑하는 코스를 제안합니다.", tipkey: "tianzifang", map: "田子坊"}
         ];
 
-        // 🌟 꿀팁 데이터 🌟
         const placeTipsData = {
             "flight": "수속 시 액체류(100ml 이상) 반입 불가. 보조배터리는 위탁 수하물 금지이므로 반드시 기내에 들고 타세요.",
             "taxi": "어른 3명, 아이 1명에 캐리어까지 있으므로 <b>반드시 6인승 디디(Business Van)</b>를 부르셔야 쾌적하게 이동합니다.",
@@ -357,7 +358,6 @@
             ]}
         ];
 
-        // 🌟 스마트 맵 및 디디추싱 강제 호출 (알림 팝업 없음) 🌟
         function getSmartInfo(input) {
             const query = input.toLowerCase().replace(/\s+/g, '');
             for (let key in smartMapDict) { if (query.includes(key)) return smartMapDict[key]; }
@@ -378,30 +378,18 @@
                 const info = getSmartInfo(place); 
                 const name = encodeURIComponent(info.name); 
                 const addr = encodeURIComponent(info.addr);
-                
-                // 디디추싱 최신 딥링크 스킴 적용 (목적지 자동 입력)
                 const appUrl = `diditaxi://route/?end_name=${name}&end_address=${addr}`;
                 const alipayDidi = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${name}%26end_address%3D${addr}`;
-                
-                // 백그라운드 주소 복사 (팝업 없이)
                 navigator.clipboard.writeText(info.addr || info.name).catch(()=>{});
-
-                // 바로 앱 실행
                 window.location.href = appUrl;
-                
-                // 1초 후에도 안 열리면 알리페이 내 디디 미니프로그램으로 리다이렉트
                 setTimeout(() => { window.location.href = alipayDidi; }, 1000);
-            } catch(e) {
-                alert("디디추싱 앱 호출 중 오류가 발생했습니다.");
-            }
+            } catch(e) { alert("디디추싱 앱 호출 중 오류가 발생했습니다."); }
         }
 
-        // --- 🌟 일정 데이터 로드 (에러 방지 & 즉시 렌더링) 🌟 ---
         function renderList(list) {
             try {
                 const groups = {};
                 list.forEach(item => { if(!groups[item.date]) groups[item.date] = []; groups[item.date].push(item); });
-                
                 document.getElementById('itinerary-list').innerHTML = Object.keys(groups).map(date => `
                     <div><h3 class="day-header text-[12px] font-black text-slate-400 mb-4 tracking-widest uppercase border-l-2 border-brand-500 pl-2">${date}</h3>
                     <div class="space-y-4">${groups[date].map(item => `
@@ -419,9 +407,7 @@
         }
 
         function loadItinerary() {
-            // 1. 데이터가 로드되기 전에 먼저 로컬 데이터를 화면에 그려줌 (빈 화면 방지)
             renderList(initialShanghai);
-            
             if (db) {
                 db.ref(`${basePath}/itinerary`).on('value', s => {
                     const data = s.val(); 
@@ -430,13 +416,9 @@
                         itineraryData.sort((a, b) => a.date.replace(/[^0-9]/g, "").localeCompare(b.date.replace(/[^0-9]/g, "")) || a.time.localeCompare(b.time));
                         renderList(itineraryData);
                     } else {
-                        // DB가 비어있으면 초기 데이터를 DB에 복사
                         initialShanghai.forEach(i => db.ref(`${basePath}/itinerary`).push(i));
                     }
-                }, (error) => {
-                    // 에러 발생 시에도 로컬 데이터 유지
-                    console.error("Firebase read failed");
-                });
+                }, (error) => { console.error("Firebase read failed"); });
             }
         }
 
@@ -456,7 +438,6 @@
             } catch(e) { console.error(e); }
         }
 
-        // --- 공용 UI 함수 ---
         function showTab(id) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.replace('text-brand-500', 'text-slate-400')); event.currentTarget.classList.replace('text-slate-400', 'text-brand-500'); window.scrollTo(0,0); }
         function toggleItineraryType(type) { 
             const isFm = type === 'family';
@@ -470,9 +451,40 @@
         function closeTipModal() { document.getElementById('tip-modal').classList.add('hidden'); }
         function showFlashcard(zh, ko, py) { document.getElementById('flash-zh').innerText = zh; document.getElementById('flash-ko').innerText = ko; document.getElementById('flash-py').innerText = `[ ${py} ]`; document.getElementById('flashcard').classList.remove('hidden'); }
 
-        function addExpense() { const desc = document.getElementById('exp-desc').value; const amt = document.getElementById('exp-amt').value; if(desc && amt && db) { db.ref(`${basePath}/expenses`).push({desc, amt: Number(amt)}); document.getElementById('exp-desc').value = ''; document.getElementById('exp-amt').value = ''; } }
-        function loadExpenses() { if(db) { db.ref(`${basePath}/expenses`).on('value', s => { const data = s.val() || {}; let total = 0; document.getElementById('expense-list').innerHTML = Object.entries(data).map(([k, v]) => { total += v.amt; return `<div class="flex justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 text-xs mb-2 shadow-sm"><span class="font-bold">${v.desc}</span><span class="font-black text-brand-500 text-sm">${v.amt.toLocaleString()} ¥ <button onclick="db.ref('${basePath}/expenses/${k}').remove()" class="ml-2 text-slate-300">✕</button></span></div>`; }).join(''); document.getElementById('total-expense').innerText = total.toLocaleString() + ' ¥'; }); } }
-        document.getElementById('cny-input').oninput = e => { try { document.getElementById('krw-output').value = e.target.value ? (e.target.value * 215.94).toLocaleString() + ' ₩' : ''; } catch(e){} };
+        function addExpense() { 
+            const desc = document.getElementById('exp-desc').value; 
+            const amt = document.getElementById('exp-amt').value; 
+            if(desc && amt && db) { 
+                const krwAmt = Math.round(Number(amt) * exchangeRate);
+                db.ref(`${basePath}/expenses`).push({desc, amt: Number(amt), krwAmt: krwAmt}); 
+                document.getElementById('exp-desc').value = ''; 
+                document.getElementById('exp-amt').value = ''; 
+            } 
+        }
+        function loadExpenses() { 
+            if(db) { 
+                db.ref(`${basePath}/expenses`).on('value', s => { 
+                    const data = s.val() || {}; 
+                    let totalCny = 0; 
+                    let totalKrw = 0;
+                    document.getElementById('expense-list').innerHTML = Object.entries(data).map(([k, v]) => { 
+                        totalCny += v.amt; 
+                        totalKrw += (v.krwAmt || Math.round(v.amt * exchangeRate));
+                        return `<div class="flex justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 text-xs mb-2 shadow-sm"><div class="flex flex-col"><span class="font-bold">${v.desc}</span><span class="text-[10px] text-slate-400">${(v.krwAmt || Math.round(v.amt * exchangeRate)).toLocaleString()} ₩</span></div><span class="font-black text-brand-500 text-sm">${v.amt.toLocaleString()} ¥ <button onclick="db.ref('${basePath}/expenses/${k}').remove()" class="ml-2 text-slate-300">✕</button></span></div>`; 
+                    }).join(''); 
+                    document.getElementById('total-expense').innerHTML = `${totalCny.toLocaleString()} ¥ <span class="text-xs font-bold text-slate-400 ml-1">(${totalKrw.toLocaleString()} ₩)</span>`; 
+                }); 
+            } 
+        }
+
+        document.getElementById('cny-input').oninput = e => { 
+            const val = e.target.value;
+            document.getElementById('krw-input').value = val ? Math.round(val * exchangeRate) : '';
+        };
+        document.getElementById('krw-input').oninput = e => { 
+            const val = e.target.value;
+            document.getElementById('cny-input').value = val ? (val / exchangeRate).toFixed(2) : '';
+        };
 
         function renderPhrases() { 
             document.getElementById('phrase-list').innerHTML = phraseData.map(group => `
@@ -506,16 +518,9 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             startClock(); fetchWeather(); renderPhrases(); loadItinerary(); loadExpenses();
-            // Service Worker Registration for PWA
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').catch(err => console.log('SW 연동 실패:', err));
             }
-        });
-    </script>
-</body>
-</html>
-DOMContentLoaded', () => {
-            startClock(); fetchWeather(); renderPhrases(); loadItinerary(); loadExpenses();
         });
     </script>
 </body>
