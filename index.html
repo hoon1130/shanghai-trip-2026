@@ -380,10 +380,61 @@
                 const addr = encodeURIComponent(info.addr);
                 const appUrl = `diditaxi://route/?end_name=${name}&end_address=${addr}`;
                 const alipayDidi = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${name}%26end_address%3D${addr}`;
+                
                 navigator.clipboard.writeText(info.addr || info.name).catch(()=>{});
+                
+                // 앱 실행 시도 시간 기록
+                const start = Date.now();
                 window.location.href = appUrl;
-                setTimeout(() => { window.location.href = alipayDidi; }, 1000);
+                
+                // 1.5초 후에도 페이지에 머물러 있다면 (앱 실행 실패 시) 알리페이 실행
+                setTimeout(() => {
+                    if (Date.now() - start < 2000) {
+                        window.location.href = alipayDidi;
+                    }
+                }, 1500);
             } catch(e) { alert("디디추싱 앱 호출 중 오류가 발생했습니다."); }
+        }
+
+        function scrollToCurrentTask() {
+            try {
+                const now = new Date();
+                const shString = now.toLocaleString("en-US", {timeZone: "Asia/Shanghai"});
+                const shTime = new Date(shString);
+                
+                const currentMonth = (shTime.getMonth() + 1).toString().padStart(2, '0');
+                const currentDate = shTime.getDate().toString().padStart(2, '0');
+                const todayStr = `${currentMonth}-${currentDate}`;
+                const currentTime = shTime.getHours() * 60 + shTime.getMinutes();
+
+                let targetId = null;
+                let minDiff = Infinity;
+
+                itineraryData.forEach(item => {
+                    if (item.date.includes(todayStr)) {
+                        const timePart = item.time.split('~')[0];
+                        const [h, m] = timePart.split(':').map(Number);
+                        const startTime = h * 60 + m;
+
+                        // 현재 진행 중이거나 곧 시작할 일정 찾기
+                        const diff = startTime - currentTime;
+                        if (diff >= -60 && diff < minDiff) { 
+                            minDiff = diff;
+                            targetId = `card-${item.key}`;
+                        }
+                    }
+                });
+
+                if (targetId) {
+                    const el = document.getElementById(targetId);
+                    if (el) {
+                        setTimeout(() => {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            el.parentElement.classList.add('ring-2', 'ring-brand-500', 'rounded-[2.5rem]', 'p-1');
+                        }, 500);
+                    }
+                }
+            } catch(e) { console.log("Scroll Error:", e); }
         }
 
         function renderList(list) {
@@ -391,18 +442,21 @@
                 const groups = {};
                 list.forEach(item => { if(!groups[item.date]) groups[item.date] = []; groups[item.date].push(item); });
                 document.getElementById('itinerary-list').innerHTML = Object.keys(groups).map(date => `
-                    <div><h3 class="day-header text-[12px] font-black text-slate-400 mb-4 tracking-widest uppercase border-l-2 border-brand-500 pl-2">${date}</h3>
-                    <div class="space-y-4">${groups[date].map(item => `
-                        <div class="card-grad p-6 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
-                            <div class="flex justify-between items-center mb-3"><span class="text-[11px] font-black bg-brand-500 text-white px-3 py-1.5 rounded-lg tracking-tighter shadow-md">${item.time}</span><button onclick="openItineraryForm('${item.key}')" class="text-slate-300 hover:text-brand-500 transition-colors"><i class="fas fa-ellipsis-h text-lg"></i></button></div>
-                            <h4 class="font-black text-xl mb-3 leading-tight tracking-tight">${item.place}</h4>
-                            ${item.memo ? `<p class="text-[13px] font-bold text-slate-600 dark:text-slate-400 mb-5 leading-relaxed whitespace-pre-wrap">${item.memo}</p>` : ''}
-                            <div class="flex gap-2 pt-1">
-                                <button onclick="openAmap('${item.place}')" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-xs shadow-sm border border-slate-200 dark:border-slate-700"><i class="fas fa-map-marker-alt mr-1 text-brand-500"></i>지도</button>
-                                <button onclick="openDidi('${item.place}')" class="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-xs shadow-lg"><i class="fas fa-taxi mr-1 text-yellow-400"></i>디디호출</button>
-                                ${item.tipkey ? `<button onclick="openTipModal('${item.tipkey}')" class="w-14 py-3.5 bg-amber-50 text-amber-600 rounded-2xl font-black text-xs border border-amber-200"><i class="fas fa-star"></i></button>` : ''}
-                            </div>
-                        </div>`).join('')}</div></div>`).join('');
+                    <div class="mb-8">
+                        <h3 class="day-header text-[18px] font-black text-slate-800 dark:text-slate-200 mb-4 tracking-widest uppercase border-l-4 border-brand-500 pl-3">${date}</h3>
+                        <div class="space-y-4">${groups[date].map(item => `
+                            <div id="card-${item.key}" class="card-grad p-6 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
+                                <div class="flex justify-between items-center mb-3"><span class="text-[11px] font-black bg-brand-500 text-white px-3 py-1.5 rounded-lg tracking-tighter shadow-md">${item.time}</span><button onclick="openItineraryForm('${item.key}')" class="text-slate-300 hover:text-brand-500 transition-colors"><i class="fas fa-ellipsis-h text-lg"></i></button></div>
+                                <h4 class="font-black text-xl mb-3 leading-tight tracking-tight">${item.place}</h4>
+                                ${item.memo ? `<p class="text-[13px] font-bold text-slate-600 dark:text-slate-400 mb-5 leading-relaxed whitespace-pre-wrap">${item.memo}</p>` : ''}
+                                <div class="flex gap-2 pt-1">
+                                    <button onclick="openAmap('${item.place}')" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-xs shadow-sm border border-slate-200 dark:border-slate-700"><i class="fas fa-map-marker-alt mr-1 text-brand-500"></i>지도</button>
+                                    <button onclick="openDidi('${item.place}')" class="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-xs shadow-lg"><i class="fas fa-taxi mr-1 text-yellow-400"></i>디디호출</button>
+                                    ${item.tipkey ? `<button onclick="openTipModal('${item.tipkey}')" class="w-14 py-3.5 bg-amber-50 text-amber-600 rounded-2xl font-black text-xs border border-amber-200"><i class="fas fa-star"></i></button>` : ''}
+                                </div>
+                            </div>`).join('')}
+                        </div>
+                    </div>`).join('');
             } catch(e) { console.error("Rendering Error", e); }
         }
 
@@ -415,6 +469,7 @@
                         itineraryData = Object.entries(data).map(([k, v]) => ({...v, key: k}));
                         itineraryData.sort((a, b) => a.date.replace(/[^0-9]/g, "").localeCompare(b.date.replace(/[^0-9]/g, "")) || a.time.localeCompare(b.time));
                         renderList(itineraryData);
+                        scrollToCurrentTask(); // 데이터 로드 후 자동 스크롤
                     } else {
                         initialShanghai.forEach(i => db.ref(`${basePath}/itinerary`).push(i));
                     }
