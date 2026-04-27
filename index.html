@@ -461,6 +461,21 @@
         function saveItinerary() { const k = document.getElementById('edit-key').value, d = { date: document.getElementById('form-date').value, time: document.getElementById('form-time').value || "00:00", place: document.getElementById('form-place').value || "장소명", memo: document.getElementById('form-memo').value || "" }; if(k) db.ref(`${basePath}/itinerary/${k}`).update(d); else db.ref(`${basePath}/itinerary`).push(d); closeItineraryModal(); }
         function deleteItinerary() { const k = document.getElementById('edit-key').value; if(k && confirm("삭제할까요?")) { db.ref(`${basePath}/itinerary/${k}`).remove(); closeItineraryModal(); } }
 
+        function renderPhrases() { 
+            document.getElementById('phrase-list').innerHTML = phraseData.map(group => `
+                <div class="space-y-4">
+                    <h4 class="text-[12px] font-black text-slate-400 uppercase tracking-widest pl-1 italic border-b pb-2 dark:border-slate-800">${group.cat}</h4>
+                    ${group.items.map(p => `
+                        <div class="bg-white dark:bg-slate-900 p-6 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 flex justify-between items-center active:scale-[0.98] transition-transform" onclick="showFlashcard('${p.zh}', '${p.ko}', '${p.py}')">
+                            <div class="pr-3">
+                                <p class="text-base font-black dark:text-white leading-tight">${p.ko}</p>
+                                <p class="text-[11px] text-brand-500 font-bold mt-2 uppercase">${p.py}</p>
+                            </div>
+                            <button onclick="event.stopPropagation(); speak('${p.zh}')" class="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-400 flex items-center justify-center text-xl active:text-brand-500 shadow-inner border border-slate-100 dark:border-slate-700"><i class="fas fa-volume-up"></i></button>
+                        </div>`).join('')}
+                </div>`).join(''); 
+        }
+
         function loadItinerary() {
             renderList(initialShanghai);
             if (db) {
