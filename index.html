@@ -436,6 +436,11 @@
             else window.open(`https://uri.amap.com/search?keyword=${keyword}`, '_blank');
         }
 
+        function openBaiduMap(place) {
+            const info = getSmartInfo(place); const keyword = encodeURIComponent(info.name);
+            window.open(`https://map.baidu.com/search/${keyword}`, '_blank');
+        }
+
         function openDidi(place) {
             const info = getSmartInfo(place); navigator.clipboard.writeText(info.name).catch(()=>{});
             const encN = encodeURIComponent(info.name), encA = encodeURIComponent(info.addr);
@@ -494,9 +499,10 @@
                                 ${item.memo ? `<p class="text-[13px] font-bold text-slate-600 dark:text-slate-400 mb-5 leading-relaxed whitespace-pre-wrap">${item.memo}</p>` : ''}
                                 ${placeStr.includes('공항 이동') ? '' : `
                                 <div class="flex gap-2 pt-1">
-                                    <button onclick="openAmap('${placeStr}')" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-xs shadow-sm border border-slate-200 dark:border-slate-700"><i class="fas fa-map-marker-alt mr-1 text-brand-500"></i>지도</button>
-                                    <button onclick="openDidi('${placeStr}')" class="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-xs shadow-lg"><i class="fas fa-taxi mr-1 text-yellow-400"></i>디디호출</button>
-                                    ${item.tipkey ? `<button onclick="openTipModal('${item.tipkey}')" class="w-14 py-3.5 bg-amber-50 text-amber-600 rounded-2xl font-black text-xs border border-amber-200"><i class="fas fa-star"></i></button>` : ''}
+                                    <button onclick="openAmap('${placeStr}')" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-[10px] shadow-sm border border-slate-200 dark:border-slate-700">지도1</button>
+                                    <button onclick="openBaiduMap('${placeStr}')" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-[10px] shadow-sm border border-slate-200 dark:border-slate-700">지도2</button>
+                                    <button onclick="openDidi('${placeStr}')" class="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-[10px] shadow-lg">디디호출</button>
+                                    ${item.tipkey ? `<button onclick="openTipModal('${item.tipkey}')" class="w-12 py-3.5 bg-amber-50 text-amber-600 rounded-2xl font-black text-xs border border-amber-200"><i class="fas fa-star"></i></button>` : ''}
                                 </div>`}
                             </div>`;
                         }).join('')}
@@ -522,7 +528,10 @@
                                             ${item.tipkey ? `<button onclick="openTipModal('${item.tipkey}')" class="text-amber-500 active:scale-90 transition-transform"><i class="fas fa-star text-lg"></i></button>` : ''}
                                         </div>
                                         <p class="text-[13px] font-medium text-slate-600 dark:text-slate-400 leading-relaxed mb-4">${item.memo}</p>
-                                        <button onclick="openAmap('${item.map}')" class="w-full py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-black text-xs transition-active active:scale-95 border border-slate-200 dark:border-slate-700"><i class="fas fa-map-marked-alt mr-2 text-indigo-500"></i>가이드 추천 위치 확인</button>
+                                        <div class="flex gap-2">
+                                            <button onclick="openAmap('${item.map}')" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-black text-[10px] border border-slate-200 dark:border-slate-700">지도1</button>
+                                            <button onclick="openBaiduMap('${item.map}')" class="flex-1 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-black text-[10px] border border-slate-200 dark:border-slate-700">지도2</button>
+                                        </div>
                                     </div>
                                 </div>`).join('')}
                         </div>
