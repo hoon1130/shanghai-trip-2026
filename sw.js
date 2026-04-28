@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shanghai-trip-v15';
+const CACHE_NAME = 'shanghai-trip-v16';
 const urlsToCache = ['./', './index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', event => {
