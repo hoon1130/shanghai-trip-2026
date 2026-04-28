@@ -27,6 +27,8 @@
         input, select, textarea { font-size: 16px !important; border-radius: 12px !important; }
         .card-grad { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); }
         .dark .card-grad { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        .category-chip { transition: all 0.2s; white-space: nowrap; }
+        .category-chip.active { background-color: #de2910; color: white; border-color: #de2910; }
     </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 pb-24 transition-colors duration-300 text-slate-900 dark:text-slate-100">
@@ -78,6 +80,31 @@
                     <i class="fas fa-gem absolute -right-4 -bottom-4 text-7xl opacity-10"></i>
                 </div>
                 <div id="guide-itinerary-list" class="space-y-6 pt-2"></div>
+            </div>
+        </div>
+
+        <!-- Spot Tab (New) -->
+        <div id="spot" class="tab-content space-y-5">
+            <div class="flex justify-between items-center px-1">
+                <h2 class="text-lg font-black uppercase tracking-tighter italic">Shanghai Spots</h2>
+                <button onclick="openSpotModal()" class="bg-slate-900 dark:bg-brand-500 text-white px-4 py-2 rounded-lg text-[11px] font-black shadow-lg flex items-center active:scale-95 transition-transform"><i class="fas fa-plus mr-1"></i>장소 추가</button>
+            </div>
+
+            <div class="relative">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="spot-search" oninput="renderSpots()" placeholder="장소 검색 (명칭, 주소...)" class="w-full p-4 pl-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold text-sm outline-none shadow-sm">
+            </div>
+
+            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide no-scrollbar">
+                <button onclick="filterSpots('전체')" class="category-chip active px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 text-xs font-black shadow-sm" data-cat="전체">전체</button>
+                <button onclick="filterSpots('핵심')" class="category-chip px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 text-xs font-black shadow-sm bg-white dark:bg-slate-900" data-cat="핵심">핵심</button>
+                <button onclick="filterSpots('명소')" class="category-chip px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 text-xs font-black shadow-sm bg-white dark:bg-slate-900" data-cat="명소">명소</button>
+                <button onclick="filterSpots('맛집')" class="category-chip px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 text-xs font-black shadow-sm bg-white dark:bg-slate-900" data-cat="맛집">맛집</button>
+                <button onclick="filterSpots('쇼핑/기타')" class="category-chip px-5 py-2 rounded-full border border-slate-200 dark:border-slate-800 text-xs font-black shadow-sm bg-white dark:bg-slate-900" data-cat="쇼핑/기타">쇼핑/기타</button>
+            </div>
+
+            <div id="spot-list" class="space-y-4">
+                <div class="text-center text-slate-400 text-sm py-10 font-bold"><i class="fas fa-spinner fa-spin mr-2"></i>장소 목록 동기화 중...</div>
             </div>
         </div>
 
@@ -146,6 +173,9 @@
         <button onclick="showTab('schedule')" class="tab-btn flex-1 flex flex-col items-center justify-center text-brand-500">
             <i class="fas fa-route text-[22px] mb-1"></i><span class="text-[9px] font-black uppercase tracking-tighter">Plan</span>
         </button>
+        <button onclick="showTab('spot')" class="tab-btn flex-1 flex flex-col items-center justify-center text-slate-400">
+            <i class="fas fa-map-marked-alt text-[22px] mb-1"></i><span class="text-[9px] font-black uppercase tracking-tighter">Spot</span>
+        </button>
         <button onclick="showTab('ledger')" class="tab-btn flex-1 flex flex-col items-center justify-center text-slate-400">
             <i class="fas fa-wallet text-[22px] mb-1"></i><span class="text-[9px] font-black uppercase tracking-tighter">Money</span>
         </button>
@@ -177,6 +207,28 @@
                 <button onclick="closeItineraryModal()" class="flex-1 bg-slate-200 dark:bg-slate-700 py-4 rounded-2xl font-black text-lg active:scale-95 transition-transform">CLOSE</button>
             </div>
             <button id="delete-btn" onclick="deleteItinerary()" class="w-full text-red-500 font-bold text-xs underline hidden uppercase tracking-widest mt-4 text-center">Delete Itinerary</button>
+        </div>
+    </div>
+
+    <!-- Spot Modal (New) -->
+    <div id="spot-modal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-5 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-[2.5rem] w-full max-w-md space-y-5 shadow-2xl">
+            <h3 id="spot-modal-title" class="font-black text-2xl border-b pb-3 dark:border-slate-800 tracking-tighter italic uppercase text-brand-500 text-center">장소 정보</h3>
+            <input type="hidden" id="spot-key">
+            <select id="spot-cat" class="w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base outline-none">
+                <option value="핵심">핵심</option>
+                <option value="명소">명소</option>
+                <option value="맛집">맛집</option>
+                <option value="쇼핑/기타">쇼핑/기타</option>
+            </select>
+            <input type="text" id="spot-name-ko" placeholder="한글 명칭 (예: 예원)" class="w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base outline-none">
+            <input type="text" id="spot-name-zh" placeholder="중문 명칭 (예: 豫园)" class="w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base outline-none">
+            <input type="text" id="spot-addr" placeholder="상세 주소 (중문)" class="w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base outline-none">
+            <div class="flex space-x-3 pt-2">
+                <button onclick="saveSpot()" class="flex-1 bg-slate-900 dark:bg-brand-500 text-white py-4 rounded-2xl font-black text-lg shadow-lg active:scale-95 transition-transform">저장</button>
+                <button onclick="closeSpotModal()" class="flex-1 bg-slate-200 dark:bg-slate-700 py-4 rounded-2xl font-black text-lg active:scale-95 transition-transform">닫기</button>
+            </div>
+            <button id="spot-delete-btn" onclick="deleteSpot()" class="w-full text-red-500 font-bold text-xs underline hidden uppercase tracking-widest mt-4 text-center">장소 삭제</button>
         </div>
     </div>
 
@@ -216,8 +268,10 @@
         const exchangeRate = 215.94;
         let db = null;
         let itineraryData = [];
+        let spotData = [];
+        let currentSpotCat = '전체';
 
-        // 주소 및 명칭 사전 (디디추싱 검색 최적화를 위해 정확한 POI 명칭과 주소 사용)
+        // 주소 및 명칭 사전 (업데이트: 100% 순수 중문, ifc몰/숙소 매칭 강화)
         const smartMapDict = {
             "공항": {name: "浦东国际机场", addr: "上海市浦东新区迎宾大道6000号"},
             "푸동공항": {name: "浦东国际机场", addr: "上海市浦东新区迎宾大道6000号"},
@@ -225,18 +279,18 @@
             "ifc몰": {name: "上海国金中心商场", addr: "上海市浦东新区世纪大道8号"},
             "ifc": {name: "上海国金汇", addr: "上海市浦东新区世纪大道8号"},
             "호텔": {name: "上海国金汇", addr: "上海市浦东新区世纪大道8号"},
-            "숙소": {name: "上海国金汇", addr: "上海市浦도新区世纪大道8号"},
+            "숙소": {name: "上海国金汇", addr: "上海市浦东新区世纪大道8号"},
             "점보시푸드": {name: "珍宝海鲜(国金中心店)", addr: "上海市浦东新区世纪大道8号国金中心L3"},
             "예원": {name: "豫园", addr: "上海市黄浦区福佑路168号"},
             "마시청": {name: "上海马戏城", addr: "上海市静安区共和新路2266号"},
             "궁연": {name: "宫宴(上海)", addr: "上海市静安区江宁路445号"},
-            "징안쓰": {name: "静安寺", addr: "上海시静安区南京西路1686号"},
-            "임시정부": {name: "大韩民国临时政府旧址", addr: "上海市黄浦区马当路306弄4号"},
+            "징안쓰": {name: "静안寺", addr: "上海市南京西路1686号"},
+            "임시정부": {name: "大韩民国临时政府旧址", addr: "上海市黄浦区马당路306弄4号"},
             "상해임시정부": {name: "大韩民国临时政府旧址", addr: "上海市黄浦区马当路306弄4号"},
             "신천지": {name: "上海新天地", addr: "上海市黄浦区太仓路181弄"},
-            "점도덕": {name: "点都德(新天地店)", addr: "上海市黄浦区黄陂南路838弄中海环宇荟"},
+            "점도덕": {name: "点都德(新天地店)", addr: "上海시黄浦区黄陂南路838弄中海环宇荟"},
             "디즈니": {name: "上海迪士尼度假区", addr: "上海市浦东新区川沙新镇"},
-            "릴리안": {name: "莉莲蛋挞(新世界大丸百货店)", addr: "上海市黄浦区南京东路228号新세계大丸百货"},
+            "릴리안": {name: "莉莲蛋挞(新世界大丸百货店)", addr: "上海市黄浦区南京东路228号新世界大丸百货"},
             "양꼬치": {name: "很久以前羊肉串(南京东路店)", addr: "上海市黄浦区南京东路800号"},
             "동방명주": {name: "东方明珠广播电视塔", addr: "上海市浦东新区世纪大道1号"},
             "우캉멘션": {name: "武康大楼", addr: "上海市徐汇区淮海中路1850号"},
@@ -249,6 +303,55 @@
             "빈장다다오": {name: "滨江大道", addr: "上海市浦东新区滨江大道"},
             "와이탄": {name: "外滩", addr: "上海市黄浦区中山东一路"}
         };
+
+        const initialSpots = [
+            // 핵심
+            {cat: "핵심", nameKo: "푸동 국제공항", nameZh: "浦东国际机场", addr: "上海市浦东新区迎宾大道6000号"},
+            {cat: "핵심", nameKo: "홍차오 국제공항", nameZh: "虹桥国际机场", addr: "上海市长宁区虹桥路2550号"},
+            {cat: "핵심", nameKo: "숙소 (IFC Residence)", nameZh: "上海国金汇", addr: "上海市浦东新区世纪大道8号"},
+            {cat: "핵심", nameKo: "롱양루역 (자기부상)", nameZh: "龙阳路站", addr: "上海市浦东新区龙阳路2100号"},
+            // 명소
+            {cat: "명소", nameKo: "와이탄", nameZh: "外滩", addr: "上海市黄浦区中山东一路"},
+            {cat: "명소", nameKo: "동방명주", nameZh: "东方明珠广播电视塔", addr: "上海市浦东新区世纪大道1号"},
+            {cat: "명소", nameKo: "상하이 타워", nameZh: "上海中心大厦", addr: "上海市浦东新区银城中路501号"},
+            {cat: "명소", nameKo: "예원", nameZh: "豫园", addr: "上海市黄浦区福佑路168号"},
+            {cat: "명소", nameKo: "대한민국 임시정부", nameZh: "大韩民国临时政府旧址", addr: "上海市黄浦区马当路306弄4号"},
+            {cat: "명소", nameKo: "신천지", nameZh: "上海新天地", addr: "上海市黄浦区太仓路181弄"},
+            {cat: "명소", nameKo: "티엔즈팡", nameZh: "田子坊", addr: "上海市黄浦区泰康路210弄"},
+            {cat: "명소", nameKo: "주가각", nameZh: "朱家角古镇", addr: "上海市青浦区朱家角镇"},
+            {cat: "명소", nameKo: "무캉루 (우캉루)", nameZh: "武康路", addr: "上海市徐汇区武康路"},
+            {cat: "명소", nameKo: "정안사", nameZh: "静安寺", addr: "上海市静安区南京西路1686号"},
+            {cat: "명소", nameKo: "상하이 박물관", nameZh: "上海博物馆", addr: "上海市黄浦区人民大道201号"},
+            {cat: "명소", nameKo: "상하이 자연박물관", nameZh: "上海自然博物馆", addr: "上海市静安区北京西路510号"},
+            {cat: "명소", nameKo: "마시청 서커스", nameZh: "上海马戏城", addr: "上海市静安区共和新路2266号"},
+            {cat: "명소", nameKo: "디즈니랜드", nameZh: "上海迪士尼度假区", addr: "上海市浦东新区川沙新镇"},
+            {cat: "명소", nameKo: "황포강 유람선", nameZh: "十六铺码头", addr: "上海市黄浦区中山东二路"},
+            // 맛집
+            {cat: "맛집", nameKo: "점도덕 (신천지)", nameZh: "点都德(新天地店)", addr: "上海市黄浦区黄陂南路838弄中海环宇荟"},
+            {cat: "맛집", nameKo: "릴리안 에그타르트", nameZh: "莉莲蛋挞", addr: "上海市黄浦区南京东路228号新世界大丸百货"},
+            {cat: "맛집", nameKo: "현저우이치엔 (양꼬치)", nameZh: "很久以前羊肉串", addr: "上海市黄浦区南京东路800号"},
+            {cat: "맛집", nameKo: "하이디라오", nameZh: "海底捞火锅", addr: "上海市黄浦区南京东路830号"},
+            {cat: "맛집", nameKo: "벨라지오", nameZh: "鹿港小镇", addr: "上海市浦东新区世纪大道8号国金中心"},
+            {cat: "맛집", nameKo: "그랜드마더 (라오라오)", nameZh: "上海姥姥家常饭馆", addr: "上海市黄浦区福州路70号"},
+            {cat: "맛집", nameKo: "자하문 (한식)", nameZh: "紫霞门韩国 요리", addr: "上海市闵行区虹泉路1101弄"},
+            {cat: "맛집", nameKo: "디엔디엔더", nameZh: "一点点", addr: "上海市浦东新区世纪大道8号"},
+            {cat: "맛집", nameKo: "양스덤플링", nameZh: "小杨生煎", addr: "上海市黄浦区南京西路258号"},
+            {cat: "맛집", nameKo: "가가탕포", nameZh: "佳家汤包", addr: "上海市黄浦区黄河路90号"},
+            {cat: "맛집", nameKo: "허마선생 (마트)", nameZh: "盒马鲜生", addr: "上海市浦동新区世纪大道8号"},
+            {cat: "맛집", nameKo: "점보시푸드", nameZh: "珍宝海鲜", addr: "上海市浦东新区世纪大道8号国金中心L3"},
+            // 쇼핑/기타
+            {cat: "쇼핑/기타", nameKo: "IFC몰", nameZh: "上海国金中心商场", addr: "上海市浦东新区世纪大道8号"},
+            {cat: "쇼핑/기타", nameKo: "정안사 케리센터", nameZh: "静安嘉里中心", addr: "上海市静安区南京西路1515号"},
+            {cat: "쇼핑/기타", nameKo: "난징동루", nameZh: "南京东路", addr: "上海市黄浦区南京东路"},
+            {cat: "쇼핑/기타", nameKo: "난징서루", nameZh: "南京西路", addr: "上海市静安区南京西路"},
+            {cat: "쇼핑/기타", nameKo: "우캉멘션", nameZh: "武康大楼", addr: "上海市徐汇区淮海中路1850号"},
+            {cat: "쇼핑/기타", nameKo: "그린마사지", nameZh: "Green Massage青籁养身", addr: "上海市黄浦区淮海中路300号K11"},
+            {cat: "쇼핑/기타", nameKo: "드래곤플라이", nameZh: "Dragonfly蜻蜓", addr: "上海市浦东新区陆家嘴环路1318号"},
+            {cat: "쇼핑/기타", nameKo: "스타벅스 리저브 로스터리", nameZh: "星巴克臻选上海烘焙工坊", addr: "上海市静安区南京西路789号"},
+            {cat: "쇼핑/기타", nameKo: "엠앤엠즈 월드", nameZh: "M&M's World", addr: "上海市黄浦区南京东路829号"},
+            {cat: "쇼핑/기타", nameKo: "레고 스토어", nameZh: "乐高授权专卖店", addr: "上海市黄浦区南京东路800号"},
+            {cat: "쇼핑/기타", nameKo: "샤오미 스토어", nameZh: "小米之家", addr: "上海市静安区天目西路218号"}
+        ];
 
         const initialShanghai = [
             {date: "05-05(화)", time: "04:50~07:00", place: "공항 이동", memo: "집 앞 공항 리무진\n예약 완료", tipkey: ""},
@@ -270,44 +373,6 @@
             {date: "05-08(금)", time: "16:00~18:00", place: "오후 자유 일정 (티엔즈팡)", memo: "티엔즈팡 골목 투어", tipkey: "tianzifang"},
             {date: "05-09(토)", time: "16:20~19:20", place: "숙소 -> 푸동 공항", memo: "OZ366 A330", tipkey: ""},
             {date: "05-09(토)", time: "20:00", place: "수하물 찾고 귀가", memo: "공항버스 6705A 탑승", tipkey: "home"}
-        ];
-
-        const guideItinerary = [
-            {
-                date: "Day 1 푸동 & 화려한 첫날", 
-                items: [
-                    { time: "12:30", place: "IFC 몰 (점보시푸드)", memo: "아버지와 아이의 첫 식사는 '점보시푸드'를 추천합니다. 쾌적한 시설에서 여독을 풀기 좋습니다.", map: "점보시푸드", tipkey: "ifc" },
-                    { time: "15:30", place: "예원 & 상성", memo: "아버지와 일행분들께 '효도 정원'이라 설명해 드리면 좋습니다. 아이와 구곡교에서 예쁜 사진을 남기세요.", map: "예원", tipkey: "yuyuan" },
-                    { time: "18:30", place: "빈장다다오 야경", memo: "푸동 강변 산책로에서 건너편 와이탄 야경을 감상하세요. 관광객이 붐비지 않아 일행 모두 만족할 코스입니다.", map: "빈장다다오", tipkey: "binjiang" },
-                    { time: "20:00", place: "마시청 서커스", memo: "아이와 아버지 모두 즐길 수 있는 상해 최고의 공연입니다.", map: "마시청", tipkey: "circus_tip" },
-                    { time: "22:00", place: "Dragonfly (푸동)", memo: "첫날 피로는 숙소 근처 드래곤플라이에서 푸세요. 한국보다 저렴하고 수준 높은 오일 관리를 추천합니다.", map: "드래곤플라이", tipkey: "dragonfly" }
-                ]
-            },
-            {
-                date: "Day 2 올드 상해 & 몰입 체험", 
-                items: [
-                    { time: "11:00", place: "궁연 (Gongyan)", memo: "전통 공연과 식사가 결합된 이색 식당입니다. 아이에게 당나라 전통의상 체험을 강력 추천합니다.", map: "궁연", tipkey: "gongyan" },
-                    { time: "15:00", place: "임시정부 & 신천지", memo: "역사 관람 후 신천지 노천 카페에서 차 한 잔의 여유를 가지며 쉬어가는 것이 포인트입니다.", map: "신천지", tipkey: "history" },
-                    { time: "18:00", place: "우캉루 (조계지)", memo: "상해에서 가장 예쁜 거리입니다. 우캉멘션 앞에서 가족 단체 사진을 남기세요.", map: "우캉멘션", tipkey: "wukang" },
-                    { time: "20:00", place: "Green Massage", memo: "상해 프리미엄 마사지의 기준! 청결하고 조용한 분위기여서 아버지와 함께 발 마사지를 받기 좋습니다.", map: "그린마사지", tipkey: "green" }
-                ]
-            },
-            {
-                date: "Day 3 꿈의 나라 디즈니랜드", 
-                items: [
-                    { time: "08:30", place: "상해 디즈니랜드", memo: "아이를 위한 날! 주토피아를 우선 공략하시고, 아버지를 위해 중간중간 실내 공연으로 휴식을 병행하는 것이 핵심입니다.", map: "디즈니", tipkey: "disney" }
-                ]
-            },
-            {
-                date: "Day 4 마지막 밤의 야경", 
-                items: [
-                    { time: "10:30", place: "상해 자연박물관", memo: "아이가 가장 좋아할 거대한 공룡 전시물이 가득한 곳입니다.", map: "자연박물관", tipkey: "nature" },
-                    { time: "13:30", place: "현저우이치엔 (양꼬치)", memo: "자동으로 구워져 연기 걱정 없이 아버지도 쾌적하게 양꼬치를 즐기실 수 있습니다.", map: "양꼬치", tipkey: "yang" },
-                    { time: "16:00", place: "티엔즈팡", memo: "전통 골목 사이에서 아기자기한 기념품을 쇼핑하며 타이궤이러(너무 비싸요!)를 외쳐보세요.", map: "티엔즈팡", tipkey: "tianzifang" },
-                    { time: "18:30", place: "와이탄 야경", memo: "상해 여행의 정점! 화려한 루자쭈이 야경을 배경으로 최고의 단체 사진을 찍으세요.", map: "와이탄", tipkey: "waitan" },
-                    { time: "20:30", place: "Oriental Aroma (동방화건강)", memo: "가성비 끝판왕 동방화건강에서 전신 마사지를 받으며 여행의 피로를 완전히 날려버리세요.", map: "동방화건강", tipkey: "aroma" }
-                ]
-            }
         ];
 
         const placeTipsData = {
@@ -415,14 +480,11 @@
         function getSmartInfo(input) {
             if(!input) return {name: "", addr: ""};
             
-            // "A -> B" 또는 "A → B" 패턴에서 목적지(B)만 추출
+            // "A -> B" 패턴 파싱 강화 (정규식 사용)
             let destination = input;
-            if (input.includes("->")) {
-                const parts = input.split("->");
-                destination = parts[parts.length - 1].trim();
-            } else if (input.includes("→")) {
-                const parts = input.split("→");
-                destination = parts[parts.length - 1].trim();
+            const arrowMatch = input.match(/(?:->|→)\s*([^(\n]+)/);
+            if (arrowMatch) {
+                destination = arrowMatch[1].trim();
             }
 
             const query = destination.toLowerCase().replace(/\s+/g, '');
@@ -441,8 +503,8 @@
         function openBaiduMap(place) {
             const info = getSmartInfo(place); navigator.clipboard.writeText(info.name).catch(()=>{});
             const keyword = encodeURIComponent(info.name);
-            // 별도 브라우저 새창을 강제하기 위해 _system 또는 앵커 태그 활용
             const url = `https://map.baidu.com/mobile/webapp/search/search/qt=s&wd=${keyword}`;
+            // 앵커 태그를 동적으로 생성하여 시스템 브라우저 새창으로 열리도록 강제
             const link = document.createElement('a');
             link.href = url;
             link.target = '_blank';
@@ -522,6 +584,94 @@
             }
         }
 
+        // 🌟 Spot Logic (New) 🌟
+        function filterSpots(cat) {
+            currentSpotCat = cat;
+            document.querySelectorAll('.category-chip').forEach(btn => {
+                if(btn.dataset.cat === cat) btn.classList.add('active', 'bg-brand-500', 'text-white');
+                else btn.classList.remove('active', 'bg-brand-500', 'text-white');
+            });
+            renderSpots();
+        }
+
+        function renderSpots() {
+            const search = document.getElementById('spot-search').value.toLowerCase();
+            const filtered = spotData.filter(s => {
+                const matchCat = currentSpotCat === '전체' || s.cat === currentSpotCat;
+                const matchSearch = s.nameKo.toLowerCase().includes(search) || s.nameZh.toLowerCase().includes(search) || s.addr.toLowerCase().includes(search);
+                return matchCat && matchSearch;
+            });
+
+            const listEl = document.getElementById('spot-list');
+            if(listEl) {
+                listEl.innerHTML = filtered.map(s => `
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm active:scale-[0.98] transition-transform" onclick="openAmap('${s.nameZh}')">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <span class="text-[10px] font-black text-brand-500 bg-brand-50 dark:bg-brand-900/30 px-2 py-1 rounded-md mb-2 inline-block">${s.cat}</span>
+                                <h4 class="font-black text-lg leading-tight">${s.nameKo}</h4>
+                                <p class="text-xs font-bold text-slate-400 mt-1">${s.nameZh}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="event.stopPropagation(); openSpotModal('${s.key}')" class="text-slate-300 hover:text-brand-500 p-2"><i class="fas fa-edit text-sm"></i></button>
+                            </div>
+                        </div>
+                        <p class="text-[12px] font-medium text-slate-500 leading-relaxed mb-3">${s.addr}</p>
+                        <div class="flex gap-2">
+                            <button onclick="event.stopPropagation(); openAmap('${s.nameZh}')" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-black text-[10px] border border-slate-200 dark:border-slate-700">고덕지도</button>
+                            <button onclick="event.stopPropagation(); openBaiduMap('${s.nameZh}')" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-black text-[10px] border border-slate-200 dark:border-slate-700">바이두</button>
+                        </div>
+                    </div>
+                `).join('');
+                if(filtered.length === 0) listEl.innerHTML = '<div class="text-center text-slate-400 py-10 font-bold">검색 결과가 없습니다.</div>';
+            }
+        }
+
+        function openSpotModal(key = null) {
+            document.getElementById('spot-key').value = key || '';
+            document.getElementById('spot-modal').classList.remove('hidden');
+            if(key) {
+                const s = spotData.find(item => item.key === key);
+                if(s) {
+                    document.getElementById('spot-cat').value = s.cat;
+                    document.getElementById('spot-name-ko').value = s.nameKo;
+                    document.getElementById('spot-name-zh').value = s.nameZh;
+                    document.getElementById('spot-addr').value = s.addr;
+                    document.getElementById('spot-delete-btn').classList.remove('hidden');
+                }
+            } else {
+                document.getElementById('spot-modal').querySelectorAll('input').forEach(i => i.value = '');
+                document.getElementById('spot-delete-btn').classList.add('hidden');
+            }
+        }
+        function closeSpotModal() { document.getElementById('spot-modal').classList.add('hidden'); }
+        function saveSpot() {
+            const k = document.getElementById('spot-key').value, d = {
+                cat: document.getElementById('spot-cat').value,
+                nameKo: document.getElementById('spot-name-ko').value,
+                nameZh: document.getElementById('spot-name-zh').value,
+                addr: document.getElementById('spot-addr').value
+            };
+            if(!d.nameKo || !d.nameZh) return alert('명칭을 입력해주세요.');
+            if(k) db.ref(`${basePath}/spots/${k}`).update(d); else db.ref(`${basePath}/spots`).push(d);
+            closeSpotModal();
+        }
+        function deleteSpot() { const k = document.getElementById('spot-key').value; if(k && confirm("장소를 삭제하시겠습니까?")) { db.ref(`${basePath}/spots/${k}`).remove(); closeSpotModal(); } }
+
+        function loadSpots() {
+            if(db) {
+                db.ref(`${basePath}/spots`).on('value', s => {
+                    const data = s.val();
+                    if(data) {
+                        spotData = Object.entries(data).map(([k, v]) => ({...v, key: k}));
+                        renderSpots();
+                    } else {
+                        initialSpots.forEach(item => db.ref(`${basePath}/spots`).push(item));
+                    }
+                });
+            }
+        }
+
         function renderGuideItinerary() {
             const guideEl = document.getElementById('guide-itinerary-list');
             if(guideEl) {
@@ -568,7 +718,7 @@
             }
         }
 
-        function showTab(id) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.replace('text-brand-500', 'text-slate-400')); event.currentTarget.classList.replace('text-slate-400', 'text-brand-500'); window.scrollTo(0,0); if(id === 'schedule') scrollToCurrentTask(); }
+        function showTab(id) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.replace('text-brand-500', 'text-slate-400')); event.currentTarget.classList.replace('text-slate-400', 'text-brand-500'); window.scrollTo(0,0); if(id === 'schedule') scrollToCurrentTask(); if(id === 'spot') renderSpots(); }
         function toggleItineraryType(type) { const isFm = type === 'family'; document.getElementById('btn-family').className = `flex-1 py-3 rounded-xl text-[13px] font-black transition-all ${isFm ? 'bg-white dark:bg-slate-700 shadow-sm text-brand-500' : 'text-slate-500'}`; document.getElementById('btn-guide').className = `flex-1 py-3 rounded-xl text-[13px] font-black transition-all ${!isFm ? 'bg-white dark:bg-slate-700 shadow-sm text-purple-600' : 'text-slate-500'}`; document.getElementById('family-itinerary').classList.toggle('hidden', !isFm); document.getElementById('guide-itinerary').classList.toggle('hidden', isFm); if(!isFm) renderGuideItinerary(); }
         function openTipModal(tipkey) { document.getElementById('tip-content').innerHTML = (placeTipsData[tipkey] || "안전한 여행 되세요!").replace(/\n/g, '<br>'); document.getElementById('tip-modal').classList.remove('hidden'); }
         function closeTipModal() { document.getElementById('tip-modal').classList.add('hidden'); }
@@ -583,8 +733,8 @@
                 const data = s.val() || {}; const items = Object.entries(data).map(([k, v]) => ({...v, key: k}));
                 if(items.length === 0) { [...initialChecklist, ...initialShopping].forEach(i => db.ref(`${basePath}/checklist`).push(i)); return; }
                 const packEl = document.getElementById('packing-list'), shopEl = document.getElementById('shopping-list');
-                if(packEl) packEl.innerHTML = items.filter(i => i.type === 'packing').map(i => `<div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 mb-2"><div onclick="openChecklistModal('packing', '${i.key}')" class="flex-1"><p class="font-bold text-sm">${i.title}</p>${i.memo ? `<p class="text-[10px] text-slate-400">${i.memo}</p>` : ''}</div><input type="checkbox" ${i.checked ? 'checked' : ''} onchange="db.ref('${basePath}/checklist/${i.key}').update({checked: this.checked})" class="w-5 h-5 accent-brand-500"></div>`).join('');
-                if(shopEl) shopEl.innerHTML = items.filter(i => i.type === 'shopping').map(i => `<div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 mb-2"><div onclick="openChecklistModal('shopping', '${i.key}')" class="flex-1"><p class="font-black text-sm">${i.title}</p>${i.memo ? `<p class="text-[11px] text-slate-500 mt-1">${i.memo}</p>` : ''}</div><input type="checkbox" ${i.checked ? 'checked' : ''} onchange="db.ref('${basePath}/checklist/${i.key}').update({checked: this.checked})" class="w-5 h-5 accent-purple-500"></div>`).join('');
+                if(packEl) packEl.innerHTML = items.filter(i => i.type === 'packing').map(i => `<div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 mb-2"><div onclick="openChecklistModal('packing', '${i.key}')" class="flex-1"><p class="font-bold text-sm">${i.title}</p>${i.memo ? `<p class="text-[10px] text-slate-400">${i.memo}</p>` : ''}</div><input type="checkbox" ${i.checked ? 'checked' : ''} onchange="db.ref(`${basePath}/checklist/${i.key}`).update({checked: this.checked})" class="w-5 h-5 accent-brand-500"></div>`).join('');
+                if(shopEl) shopEl.innerHTML = items.filter(i => i.type === 'shopping').map(i => `<div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 mb-2"><div onclick="openChecklistModal('shopping', '${i.key}')" class="flex-1"><p class="font-black text-sm">${i.title}</p>${i.memo ? `<p class="text-[11px] text-slate-500 mt-1">${i.memo}</p>` : ''}</div><input type="checkbox" ${i.checked ? 'checked' : ''} onchange="db.ref(`${basePath}/checklist/${i.key}`).update({checked: this.checked})" class="w-5 h-5 accent-purple-500"></div>`).join('');
             });
         }
 
@@ -633,7 +783,7 @@
                 cny.addEventListener('input', (e) => krw.value = e.target.value ? Math.round(e.target.value * exchangeRate) : '');
                 krw.addEventListener('input', (e) => cny.value = e.target.value ? (e.target.value / exchangeRate).toFixed(2) : '');
             }
-            startClock(); fetchWeather(); renderPhrases(); loadItinerary(); loadExpenses(); loadChecklist();
+            startClock(); fetchWeather(); renderPhrases(); loadItinerary(); loadExpenses(); loadChecklist(); loadSpots();
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('sw.js').then(reg => {
                     reg.onupdatefound = () => {
@@ -646,7 +796,6 @@
                     };
                 }).catch(()=>{});
 
-                // Listen for the controlling service worker changing
                 let refreshing;
                 navigator.serviceWorker.addEventListener('controllerchange', () => {
                     if (refreshing) return;
