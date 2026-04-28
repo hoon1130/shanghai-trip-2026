@@ -596,11 +596,19 @@
                         const installingWorker = reg.installing;
                         installingWorker.onstatechange = () => {
                             if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                window.location.reload();
+                                console.log('New content available; please refresh.');
                             }
                         };
                     };
                 }).catch(()=>{});
+
+                // Listen for the controlling service worker changing
+                let refreshing;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (refreshing) return;
+                    window.location.reload();
+                    refreshing = true;
+                });
             }
         });
     </script>
