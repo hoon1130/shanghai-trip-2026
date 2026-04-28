@@ -430,15 +430,18 @@
         }
 
         function openAmap(place) {
-            const info = getSmartInfo(place); const keyword = encodeURIComponent(info.name); const ua = navigator.userAgent.toLowerCase();
+            const info = getSmartInfo(place); navigator.clipboard.writeText(info.name).catch(()=>{});
+            const keyword = encodeURIComponent(info.name); const ua = navigator.userAgent.toLowerCase();
             if (ua.indexOf("iphone") > -1) window.location.href = `iosamap://poi?sourceApplication=sh_trip&name=${keyword}`;
             else if (ua.indexOf("android") > -1) window.location.href = `androidamap://poi?sourceApplication=sh_trip&keywords=${keyword}`;
             else window.open(`https://uri.amap.com/search?keyword=${keyword}`, '_blank');
         }
 
         function openBaiduMap(place) {
-            const info = getSmartInfo(place); const keyword = encodeURIComponent(info.name);
-            window.open(`https://map.baidu.com/search/${keyword}`, '_blank');
+            const info = getSmartInfo(place); navigator.clipboard.writeText(info.name).catch(()=>{});
+            const keyword = encodeURIComponent(info.name);
+            // 모바일 바이두 지도 검색창으로 바로 연결되는 URL
+            window.open(`https://map.baidu.com/mobile/webapp/search/search/qt=s&wd=${keyword}`, '_blank');
         }
 
         function openDidi(place) {
