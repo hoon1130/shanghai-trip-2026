@@ -426,7 +426,7 @@
         // 🌟 Functions 🌟
         function speak(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = 0.8; window.speechSynthesis.speak(u); } catch(e){} }
         
-        async function fetchWeather() {
+                async function fetchWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.2222&longitude=121.4581&current_weather=true');
                 const data = await res.json();
@@ -437,7 +437,20 @@
                 let icon = 'fa-sun';
                 let desc = '맑음';
                 
-                if (code >= 1 && code <= 3) { icon = 'fa-cloud-sun'; desc = '구름조금'; }
+                if (code >= 1 && code <= 3) { icon = 'fa-cloud-sun'; desc = '구름'; }
+                else if (code >= 45 && code <= 48) { icon = 'fa-smog'; desc = '안개'; }
+                else if (code >= 51 && code <= 67) { icon = 'fa-cloud-showers-heavy'; desc = '비'; }
+                else if (code >= 71 && code <= 77) { icon = 'fa-snowflake'; desc = '눈'; }
+                else if (code >= 80 && code <= 82) { icon = 'fa-cloud-rain'; desc = '소나기'; }
+                else if (code >= 95) { icon = 'fa-bolt'; desc = '뇌우'; }
+                
+                const el = document.getElementById('weather-display');
+                if(el) el.innerHTML = `<i class="fas ${icon} mr-2 text-indigo-500"></i>상해 ${temp}°C / ${desc}`;
+            } catch(e) {
+                const el = document.getElementById('weather-display');
+                if(el) el.innerText = '날씨 확인 중...';
+            }
+        }
                 else if (code >= 45 && code <= 48) { icon = 'fa-smog'; desc = '안개'; }
                 else if (code >= 51 && code <= 67) { icon = 'fa-cloud-showers-heavy'; desc = '비 옴'; }
                 else if (code >= 71 && code <= 77) { icon = 'fa-snowflake'; desc = '눈 옴'; }
