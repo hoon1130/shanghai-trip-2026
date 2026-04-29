@@ -40,38 +40,42 @@
             "와이탄": {name: "外滩", addr: "上海市黄浦区中山东一路"}
         };
 
-                                        const initialSpots = [
-            {cat: "핵심", nameKo: "푸동 T2", nameZh: "上海浦东国际机场2号航站楼", addr: "", subway: "지하철 2호선 / 자기부상"},
-            {cat: "핵심", nameKo: "롱양루역", nameZh: "龙阳路站", addr: "", subway: "2/7/16/18호선 Longyang Rd역"},
-            {cat: "핵심", nameKo: "루자주이역", nameZh: "陆家嘴地铁站", addr: "", subway: "2/14호선 Lujiazui역"},
-            {cat: "명소", nameKo: "난징동루", nameZh: "南京东路", addr: "https://surl.amap.com/1raycs1Tfz8", subway: "2/10호선 East Nanjing Rd역 7번출구"},
-            {cat: "명소", nameKo: "치바오", nameZh: "七宝古镇", addr: "", subway: "9호선 Qibao역 2번출구"},
-            {cat: "명소", nameKo: "정안사", nameZh: "静安寺", addr: "https://surl.amap.com/1M5SBkJie2Z", subway: "2/7/14호선 Jing'an Temple역 1번출구"},
-            {cat: "명소", nameKo: "남경서로", nameZh: "南京西路", addr: "https://surl.amap.com/1uSLDCN1o9iV", subway: "2/12/13호선 West Nanjing Rd역"},
-            {cat: "명소", nameKo: "우전", nameZh: "乌镇", addr: "https://surl.amap.com/1Ord7Ml1z6OW", subway: "시외 지역 (전용 차량 권장)"},
-            {cat: "명소", nameKo: "상하이 박물관", nameZh: "上海博物馆", addr: "", subway: "1/2/8호선 People's Square역 1번출구"},
-            {cat: "명소", nameKo: "도시계획 전시관", nameZh: "上海城市规划展示馆", addr: "", subway: "1/2/8호선 People's Square역 3번출구"},
-            {cat: "명소", nameKo: "윤봉길 기념관", nameZh: "梅园-尹奉吉义士生平事迹陈列室", addr: "https://surl.amap.com/1W3f3i9H89v", subway: "3/8호선 Hongkou Football Stadium역 1번출구"},
-            {cat: "맛집", nameKo: "게살국수", nameZh: "裕兴记(外滩店)", addr: "", subway: "2/10호선 East Nanjing Rd역 2번출구"},
-            {cat: "맛집", nameKo: "장씨네 게국수", nameZh: "庄氏隆兴·蟹粉面道", addr: "", subway: "2/10호선 East Nanjing Rd역 7번출구"},
-            {cat: "맛집", nameKo: "가정식 식당", nameZh: "上海姥姥家常饭馆", addr: "", subway: "2/10호선 East Nanjing Rd역 2번출구"},
-            {cat: "맛집", nameKo: "샤오롱바오", nameZh: "佳家汤包", addr: "", subway: "1/2/8호선 People's Square역 8번출구"},
-            {cat: "맛집", nameKo: "생전", nameZh: "小杨生煎", addr: "", subway: "체인점 (주요 역 근처 많음)"},
-            {cat: "맛집", nameKo: "생전 맛집", nameZh: "大壶春", addr: "", subway: "2/10호선 East Nanjing Rd역 2번출구"},
-            {cat: "맛집", nameKo: "상하이 전통요리", nameZh: "老吉士酒家", addr: "", subway: "1/7호선 Changshu Rd역 8번출구"},
-            {cat: "맛집", nameKo: "항저우 요리", nameZh: "桂满陇", addr: "", subway: "2/7/14호선 Jing'an Temple역 3번출구"},
-            {cat: "맛집", nameKo: "생선구이", nameZh: "江边城外烤全鱼", addr: "", subway: "2/10호선 East Nanjing Rd역 7번출구"},
-            {cat: "맛집", nameKo: "훠궈(촉대협)", nameZh: "蜀大侠", addr: "", subway: "2/10호선 East Nanjing Rd역 6번출구"},
-            {cat: "맛집", nameKo: "훠궈(홍지에)", nameZh: "鸿姐老火锅", addr: "", subway: "2/10호선 East Nanjing Rd역 2번출구"},
-            {cat: "쇼핑/기타", nameKo: "신세계백화점", nameZh: "新世界城", addr: "", subway: "1/2/8호선 People's Square역 7번출구"},
-            {cat: "쇼핑/기타", nameKo: "제일백화점", nameZh: "第一百货商业中心", addr: "", subway: "1/2/8호선 People's Square역 19번출구"},
-            {cat: "쇼핑/기타", nameKo: "미니소", nameZh: "名创优品", addr: "", subway: "난징동루 거리 내 위치"},
-            {cat: "쇼핑/기타", nameKo: "토끼사탕", nameZh: "大白兔", addr: "", subway: "예원/난징동루 상점가"},
-            {cat: "쇼핑/기타", nameKo: "로손", nameZh: "罗森便利店", addr: "", subway: ""},
-            {cat: "쇼핑/기타", nameKo: "패밀리마트", nameZh: "全家便利店", addr: "", subway: ""},
-            {cat: "쇼핑/기타", nameKo: "대형마트(따룬파)", nameZh: "大润发", addr: "https://surl.amap.com/8IacSH7IcrX", subway: ""},
-            {cat: "쇼핑/기타", nameKo: "현지 마트", nameZh: "联华生活鲜", addr: "", subway: ""},
-            {cat: "쇼핑/기타", nameKo: "마사지(도원향)", nameZh: "桃源乡(南京东路店)", addr: "", subway: "2/10호선 East Nanjing Rd역 2번출구 100m"}
+                                                        const initialSpots = [
+            {cat: "핵심", nameKo: "푸동 T2", nameZh: "上海浦东国际机场2号航站楼", addr: "", subway: "지하철 2호선 浦东国际机场(Pudong Int'l Airport)역 | 자기부상 직결"},
+            {cat: "핵심", nameKo: "롱양루역", nameZh: "龙阳路站", addr: "", subway: "2/7/16/18호선 龙阳路(Longyang Rd)역"},
+            {cat: "핵심", nameKo: "루자주이역", nameZh: "陆가嘴地铁站", addr: "", subway: "2/14호선 陆家嘴(Lujiazui)역"},
+            {cat: "명소", nameKo: "난징동루", nameZh: "南京东路", addr: "", subway: "2/10호선 南京东路(East Nanjing Rd)역 7번출구 도보 1분"},
+            {cat: "명소", nameKo: "치바오", nameZh: "七宝古镇", addr: "", subway: "9호선 七宝(Qibao)역 2번출구 도보 5분 (400m)"},
+            {cat: "명소", nameKo: "정안사", nameZh: "静安寺", addr: "", subway: "2/7/14호선 静安寺(Jing'an Temple)역 1번출구 도보 2분 (100m)"},
+            {cat: "명소", nameKo: "남경서로", nameZh: "南京西路", addr: "", subway: "2/12/13호선 南京西路(West Nanjing Rd)역"},
+            {cat: "명소", nameKo: "우전", nameZh: "乌镇", addr: "", subway: "시외지역 | 전용차량 또는 시외버스 이용"},
+            {cat: "명소", nameKo: "주가각", nameZh: "朱家角", addr: "", subway: "17호선 朱家角(Zhujiajiao)역 1번출구 도보 15분 (1.1km)"},
+            {cat: "명소", nameKo: "루쉰공원", nameZh: "鲁迅公园", addr: "", subway: "3/8호선 虹口足球场(Hongkou Football Stadium)역 1번출구 도보 5분 (450m)"},
+            {cat: "명소", nameKo: "우캉멘션", nameZh: "武康大楼", addr: "", subway: "10/11호선 交通大学(Jiaotong Univ)역 1번출구 도보 5분 (400m)"},
+            {cat: "명소", nameKo: "티엔즈팡", nameZh: "田子坊", addr: "", subway: "9호선 打浦桥(Dapuqiao)역 1번출구 도보 1분"},
+            {cat: "명소", nameKo: "상하이 박물관", nameZh: "上海博物馆", addr: "", subway: "1/2/8호선 人民广场(People's Square)역 1번출구 도보 3분 (200m)"},
+            {cat: "명소", nameKo: "도시계획 전시관", nameZh: "上海城市规划展示馆", addr: "", subway: "1/2/8호선 人民广场(People's Square)역 3번출구 도보 1분 (100m)"},
+            {cat: "명소", nameKo: "윤봉길 기념관", nameZh: "梅园-尹奉길义士生平사적陈列室", addr: "", subway: "3/8호선 虹口足球场(Hongkou Football Stadium)역 1번출구 도보 7분 (500m)"},
+            {cat: "맛집", nameKo: "게살국수", nameZh: "裕兴记(外滩店)", addr: "", subway: "2/10호선 南京东路(East Nanjing Rd)역 2번출구 도보 8분 (500m)"},
+            {cat: "맛집", nameKo: "장씨네 게국수", nameZh: "庄氏隆兴·蟹粉面道", addr: "", subway: "2/10호선 南京东路(East Nanjing Rd)역 7번출구 도보 3분 (200m)"},
+            {cat: "맛집", nameKo: "가정식 식당 (상해라오라오)", nameZh: "上海姥姥家常饭馆", addr: "", subway: "2/10호선 南京东路(East Nanjing Rd)역 2번출구 도보 10분 (650m)"},
+            {cat: "맛집", nameKo: "샤오롱바오 (가가탕포)", nameZh: "佳家탕包", addr: "", subway: "1/2/8호선 People's Square(Renmin Guangchang)역 8번출구 도보 5분 (400m)"},
+            {cat: "맛집", nameKo: "생전 (샤오양)", nameZh: "小杨生煎", addr: "", subway: "2/10호선 East Nanjing Rd(Nanjing Dong Lu)역 7번출구 인근"},
+            {cat: "맛집", nameKo: "생전 맛집 (따후춘)", nameZh: "大壶春", addr: "", subway: "2/10호선 East Nanjing Rd(Nanjing Dong Lu)역 2번출구 도보 6분 (400m)"},
+            {cat: "맛집", nameKo: "상하이 전통요리 (老吉士)", nameZh: "老吉士酒家", addr: "", subway: "1/7호선 Changshu Rd(Changshu Lu)역 8번출구 도보 8분 (550m)"},
+            {cat: "맛집", nameKo: "항저우 요리 (구이만롱)", nameZh: "桂满陇", addr: "", subway: "2/7/14호선 Jing'an Temple(Jing An Si)역 3번출구 도보 3분"},
+            {cat: "맛집", nameKo: "생선구이 (강변성외)", nameZh: "江边城外烤全鱼", addr: "", subway: "2/10호선 East Nanjing Rd(Nanjing Dong Lu)역 7번출구 직결"},
+            {cat: "맛집", nameKo: "훠궈 (촉대협)", nameZh: "蜀大侠", addr: "", subway: "2/10호선 East Nanjing Rd(Nanjing Dong Lu)역 6번출구 도보 5분 (300m)"},
+            {cat: "맛집", nameKo: "훠궈 (홍지에)", nameZh: "鸿姐老火锅", addr: "", subway: "2/10호선 East Nanjing Rd(Nanjing Dong Lu)역 2번출구 도보 3분 (200m)"},
+            {cat: "쇼핑/기타", nameKo: "신세계백화점", nameZh: "新世界城", addr: "", subway: "1/2/8호선 People's Square(Renmin Guangchang)역 7번출구 바로앞"},
+            {cat: "쇼핑/기타", nameKo: "제일백화점", nameZh: "第一百货商业中心", addr: "", subway: "1/2/8호선 People's Square(Renmin Guangchang)역 19번출구 바로앞"},
+            {cat: "쇼핑/기타", nameKo: "미니소 (Miniso)", nameZh: "名创优品", addr: "", subway: "2/10호선 East Nanjing Rd(Nanjing Dong Lu)역 도보 3분"},
+            {cat: "쇼핑/기타", nameKo: "토끼사탕 (대백토)", nameZh: "大白兔", addr: "", subway: "예원/난징동루 상점가 내 위치"},
+            {cat: "쇼핑/기타", nameKo: "로손 (Lawson)", nameZh: "罗森便利店", addr: "", subway: "상해 전역 곳곳 위치"},
+            {cat: "쇼핑/기타", nameKo: "패밀리마트", nameZh: "全家便利店", addr: "", subway: "상해 전역 곳곳 위치"},
+            {cat: "쇼핑/기타", nameKo: "대형마트 (따룬파)", nameZh: "大润发", addr: "", subway: "지하철역 연계 필요"},
+            {cat: "쇼핑/기타", nameKo: "현지 마트", nameZh: "联华생활鲜", addr: "", subway: "상해 전역 곳곳 위치"},
+            {cat: "쇼핑/기타", nameKo: "도원향 (마사지)", nameZh: "桃源乡(南京东路店)", addr: "", subway: "2/10호선 East Nanjing Rd(Nanjing Dong Lu)역 2번출구 도보 2분 (100m)"}
         ];
 
         const initialShanghai = [
@@ -404,7 +408,9 @@
                     <div class="bg-white dark:bg-slate-900 p-5 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm active:scale-[0.98] transition-transform">
                         <div class="flex justify-between items-start mb-2">
                             <div><span class="text-[10px] font-black text-brand-500 bg-brand-50 px-2 py-1 rounded-md mb-2 inline-block">${s.cat}</span>
-                            <h4 class="font-black text-lg">${s.nameKo}</h4><p class="text-xs font-bold text-slate-400 mt-1">${s.nameZh}</p></div>
+                            <h4 class="font-black text-lg">${s.nameKo}</h4>
+                            <p class="text-xs font-bold text-slate-400 mt-1">${s.nameZh}</p>
+                            ${s.subway ? `<div onclick="window.open('https://metro.nuua.travel/ko/shanghai', '_blank')" class="text-[12px] font-black text-indigo-600 mt-3 flex items-start bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 rounded-xl border border-indigo-100 dark:border-indigo-800 cursor-pointer active:scale-95 transition-transform"><i class="fas fa-subway mt-0.5 mr-2"></i><span class="flex-1">${s.subway}</span></div>` : ''}</div>
                             <button onclick="openSpotModal('${s.key}')" class="text-slate-300 p-2"><i class="fas fa-edit text-sm"></i></button>
                         </div>
                         <p class="text-[12px] font-medium text-slate-500 mb-3">${s.addr}</p>
@@ -418,12 +424,12 @@
 
         function openSpotModal(key = null) {
             document.getElementById('spot-key').value = key || ''; document.getElementById('spot-modal').classList.remove('hidden');
-            if(key) { const s = spotData.find(i => i.key === key); if(s) { document.getElementById('spot-cat').value = s.cat; document.getElementById('spot-name-ko').value = s.nameKo; document.getElementById('spot-name-zh').value = s.nameZh; document.getElementById('spot-addr').value = s.addr; document.getElementById('spot-delete-btn').classList.remove('hidden'); } }
+            if(key) { const s = spotData.find(i => i.key === key); if(s) { document.getElementById('spot-cat').value = s.cat; document.getElementById('spot-name-ko').value = s.nameKo; document.getElementById('spot-name-zh').value = s.nameZh; document.getElementById('spot-subway').value = s.subway || ''; document.getElementById('spot-addr').value = s.addr; document.getElementById('spot-delete-btn').classList.remove('hidden'); } }
             else { document.getElementById('spot-modal').querySelectorAll('input').forEach(i => i.value = ''); document.getElementById('spot-delete-btn').classList.add('hidden'); }
         }
         function closeSpotModal() { document.getElementById('spot-modal').classList.add('hidden'); }
         function saveSpot() {
-            const k = document.getElementById('spot-key').value, d = { cat: document.getElementById('spot-cat').value, nameKo: document.getElementById('spot-name-ko').value, nameZh: document.getElementById('spot-name-zh').value, addr: document.getElementById('spot-addr').value };
+            const k = document.getElementById('spot-key').value, d = { cat: document.getElementById('spot-cat').value, nameKo: document.getElementById('spot-name-ko').value, nameZh: document.getElementById('spot-name-zh').value, subway: document.getElementById('spot-subway').value, addr: document.getElementById('spot-addr').value };
             if(!d.nameKo || !d.nameZh) return alert('명칭을 입력해주세요.');
             if(k) db.ref(`${basePath}/spots/${k}`).update(d); else db.ref(`${basePath}/spots`).push(d);
             closeSpotModal();
@@ -435,10 +441,18 @@
                 const data = s.val();
                 if(data) {
                     spotData = Object.entries(data).map(([k, v]) => ({...v, key: k}));
-                    // Migration: Add missing initial items by nameZh
+                    // Migration: Add missing initial items or update subway info
                     initialSpots.forEach(init => {
-                        const exists = spotData.some(item => item.nameZh === init.nameZh);
-                        if (!exists) db.ref(`${basePath}/spots`).push(init);
+                        const existingItem = spotData.find(item => item.nameZh === init.nameZh);
+                        if (!existingItem) {
+                            db.ref(`${basePath}/spots`).push(init);
+                        } else {
+                            // Force update subway and clean up http addresses
+                            db.ref(`${basePath}/spots/${existingItem.key}`).update({ 
+                                subway: init.subway,
+                                addr: init.addr
+                            });
+                        }
                     });
                 } else {
                     initialSpots.forEach(i => db.ref(`${basePath}/spots`).push(i));
