@@ -662,7 +662,9 @@
                     <div class="bg-white dark:bg-slate-900 p-5 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm active:scale-[0.98] transition-transform">
                         <div class="flex justify-between items-start mb-2">
                             <div><span class="text-[10px] font-black text-brand-500 bg-brand-50 px-2 py-1 rounded-md mb-2 inline-block">${s.cat}</span>
-                            <h4 class="font-black text-lg">${s.nameKo}</h4><p class="text-xs font-bold text-slate-400 mt-1">${s.nameZh}</p></div>
+                            <h4 class="font-black text-lg">${s.nameKo}</h4>
+                            <p class="text-xs font-bold text-slate-400 mt-1">${s.nameZh}</p>
+                            ${s.subway ? `<p class="text-[10px] font-bold text-indigo-600 mt-2 flex items-center bg-indigo-50 dark:bg-indigo-900/20 px-2 py-1.5 rounded-lg w-fit"><i class="fas fa-subway mr-1.5"></i>${s.subway}</p>` : ''}</div>
                             <button onclick="openSpotModal('${s.key}')" class="text-slate-300 p-2"><i class="fas fa-edit text-sm"></i></button>
                         </div>
                         <p class="text-[12px] font-medium text-slate-500 mb-3">${s.addr}</p>
@@ -676,12 +678,12 @@
 
         function openSpotModal(key = null) {
             document.getElementById('spot-key').value = key || ''; document.getElementById('spot-modal').classList.remove('hidden');
-            if(key) { const s = spotData.find(i => i.key === key); if(s) { document.getElementById('spot-cat').value = s.cat; document.getElementById('spot-name-ko').value = s.nameKo; document.getElementById('spot-name-zh').value = s.nameZh; document.getElementById('spot-addr').value = s.addr; document.getElementById('spot-delete-btn').classList.remove('hidden'); } }
+            if(key) { const s = spotData.find(i => i.key === key); if(s) { document.getElementById('spot-cat').value = s.cat; document.getElementById('spot-name-ko').value = s.nameKo; document.getElementById('spot-name-zh').value = s.nameZh; document.getElementById('spot-subway').value = s.subway || ''; document.getElementById('spot-addr').value = s.addr; document.getElementById('spot-delete-btn').classList.remove('hidden'); } }
             else { document.getElementById('spot-modal').querySelectorAll('input').forEach(i => i.value = ''); document.getElementById('spot-delete-btn').classList.add('hidden'); }
         }
         function closeSpotModal() { document.getElementById('spot-modal').classList.add('hidden'); }
         function saveSpot() {
-            const k = document.getElementById('spot-key').value, d = { cat: document.getElementById('spot-cat').value, nameKo: document.getElementById('spot-name-ko').value, nameZh: document.getElementById('spot-name-zh').value, addr: document.getElementById('spot-addr').value };
+            const k = document.getElementById('spot-key').value, d = { cat: document.getElementById('spot-cat').value, nameKo: document.getElementById('spot-name-ko').value, nameZh: document.getElementById('spot-name-zh').value, subway: document.getElementById('spot-subway').value, addr: document.getElementById('spot-addr').value };
             if(!d.nameKo || !d.nameZh) return alert('명칭을 입력해주세요.');
             if(k) db.ref(`${basePath}/spots/${k}`).update(d); else db.ref(`${basePath}/spots`).push(d);
             closeSpotModal();
