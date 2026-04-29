@@ -40,7 +40,7 @@
             "와이탄": {name: "外滩", addr: "上海市黄浦区中山东一路"}
         };
 
-                                                                        const initialSpots = [
+                                                                                const initialSpots = [
             {cat: "핵심", nameKo: "푸동 T2", nameZh: "上海浦东国际机场2号航站楼", addr: "", subway: "浦东国际机场(Pudong Guoji Jichang) 푸동공항역 | 2호선/자기부상"},
             {cat: "핵심", nameKo: "롱양루역", nameZh: "龙阳路站", addr: "", subway: "龙阳路(Longyang Lu) 롱양루역 | 2/7/16/18호선"},
             {cat: "핵심", nameKo: "루자주이역", nameZh: "陆家嘴地铁站", addr: "", subway: "陆家嘴(Lujiazui) 루자주이역 | 2/14호선"},
@@ -53,12 +53,17 @@
             {cat: "명소", nameKo: "주가각", nameZh: "朱家角", addr: "", subway: "朱家角(Zhu Jia Jiao) 주가각역 | 1번출구 도보 15분(1.1km)"},
             {cat: "명소", nameKo: "루쉰공원", nameZh: "鲁迅公园", addr: "", subway: "虹口足球场(Hongkou Zuqiu Chang) 홍구축구장역 | 1번출구 도보 5분"},
             {cat: "명소", nameKo: "우캉멘션", nameZh: "武康大楼", addr: "", subway: "交通大学(Jiao Tong Da Xue) 교통대학역 | 1번출구 도보 5분"},
-            {cat: "명소", nameKo: "티엔즈팡", nameZh: "田子坊", addr: "", subway: "打浦桥(Da Pu Qiao) 타포교역 | 1번출구 도보 1분"},
+            {cat: "명소", nameKo: "티엔즈팡", nameZh: "田子坊", addr: "", subway: "打浦桥(Da Pu Qiao) 타포교역 | 9호선 1번출구 도보 1분"},
             {cat: "명소", nameKo: "상하이 박물관", nameZh: "上海博物馆", addr: "", subway: "人民广场(Renmin Guangchang) 인민광장역 | 1번출구 도보 3분"},
             {cat: "명소", nameKo: "도시계획 전시관", nameZh: "上海城市规划展示馆", addr: "", subway: "人民广场(Renmin Guangchang) 인민광장역 | 3번출구 도보 1분"},
             {cat: "명소", nameKo: "윤봉길 기념관", nameZh: "梅园-尹奉길义士生平사적陈列室", addr: "", subway: "虹口足球场(Hongkou Zuqiu Chang) 홍구축구장역 | 1번출구 도보 7분"},
             {cat: "명소", nameKo: "동방명주", nameZh: "东方明珠", addr: "", subway: "陆家嘴(Lujiazui) 루자주이역 | 1번출구 도보 5분"},
             {cat: "명소", nameKo: "와이탄 야경", nameZh: "外滩", addr: "", subway: "南京东路(Nanjing Dong Lu) 난징동루역 | 2번출구 도보 10분"},
+            {cat: "명소", nameKo: "신천지", nameZh: "上海新天地", addr: "", subway: "新天地(Xin Tian Di) 신천지역 | 6번출구 도보 2분"},
+            {cat: "명소", nameKo: "예원/예원상성", nameZh: "豫园商城", addr: "", subway: "豫园(Yu Yuan) 예원역 | 1번출구 도보 5분"},
+            {cat: "명소", nameKo: "임시정부 유적지", nameZh: "大韩民国临时政府旧址", addr: "", subway: "新天地(Xin Tian Di) 신천지역 | 6번출구 도보 3분"},
+            {cat: "명소", nameKo: "디즈니랜드", nameZh: "上海迪士尼度假区", addr: "", subway: "迪士尼(Di Shi Ni) 디즈니역 | 1번출구 도보 5분"},
+            {cat: "명소", nameKo: "인민광장", nameZh: "人民广场", addr: "", subway: "人民广场(Renmin Guangchang) 인민광장역 | 1/2/8호선"},
             {cat: "맛집", nameKo: "점보시푸드 (IFC)", nameZh: "珍宝海鲜(国金中心店)", addr: "", subway: "陆家嘴(Lujiazui) 루자주이역 | 6번출구 직결"},
             {cat: "맛집", nameKo: "게살국수", nameZh: "裕兴记(外滩店)", addr: "", subway: "南京东路(Nanjing Dong Lu) 난징동루역 | 2번출구 도보 8분"},
             {cat: "맛집", nameKo: "장씨네 게국수", nameZh: "庄氏隆兴·蟹粉面道", addr: "", subway: "南京东路(Nanjing Dong Lu) 난징동루역 | 7번출구 도보 3분"},
@@ -71,15 +76,18 @@
             {cat: "맛집", nameKo: "생선구이 (강변성외)", nameZh: "江边城外烤全鱼", addr: "", subway: "南京东路(Nanjing Dong Lu) 난징동루역 | 7번출구 직결"},
             {cat: "맛집", nameKo: "훠궈 (촉대협)", nameZh: "蜀大侠", addr: "", subway: "南京东路(Nanjing Dong Lu) 난징동루역 | 6번출구 도보 5분"},
             {cat: "맛집", nameKo: "훠궈 (홍지에)", nameZh: "鸿姐老火锅", addr: "", subway: "南京东路(Nanjing Dong Lu) 난징동루역 | 2번출구 도보 3분"},
+            {cat: "맛집", nameKo: "점도덕 (신천지)", nameZh: "点都德(新天地店)", addr: "", subway: "新天地(Xin Tian Di) 신천지역 | 2번출구 도보 5분"},
+            {cat: "맛집", nameKo: "양꼬치 (난징동루)", nameZh: "很久以前羊肉串(南京东路)", addr: "", subway: "南京东路(Nanjing Dong Lu) 난징동루역 | 7번출구 도보 3분"},
+            {cat: "맛집", nameKo: "하이디라오 (인민광장)", nameZh: "海底捞(人民广场店)", addr: "", subway: "人民广场(Renmin Guangchang) 인민광장역 | 19번출구 도보 2분"},
             {cat: "쇼핑/기타", nameKo: "신세계백화점", nameZh: "新世界城", addr: "", subway: "人民广场(Renmin Guangchang) 인민광장역 | 7번출구 바로앞"},
             {cat: "쇼핑/기타", nameKo: "제일백화점", nameZh: "第一百货商业中心", addr: "", subway: "人民广场(Renmin Guangchang) 인민광장역 | 19번출구 바로앞"},
             {cat: "쇼핑/기타", nameKo: "미니소 (Miniso)", nameZh: "名创优品", addr: "", subway: "南京东路(Nanjing Dong Lu) 난징동루역 | 도보 3분"},
             {cat: "쇼핑/기타", nameKo: "토끼사탕 (대백토)", nameZh: "大白兔", addr: "", subway: "豫园(Yuyuan) 예원역 | 1번출구 도보 5분"},
             {cat: "쇼핑/기타", nameKo: "로손 (Lawson)", nameZh: "罗森便利店", addr: "", subway: "상해 시내 곳곳 위치"},
             {cat: "쇼핑/기타", nameKo: "패밀리마트", nameZh: "全家便利店", addr: "", subway: "상해 시내 곳곳 위치"},
-            {cat: "쇼핑/기타", nameKo: "대형마트 (따룬파)", nameZh: "大润发", addr: "", subway: "지하철역 연계 필요"},
             {cat: "쇼핑/기타", nameKo: "현지 마트", nameZh: "联华생활鲜", addr: "", subway: "상해 시내 곳곳 위치"},
-            {cat: "쇼핑/기타", nameKo: "도원향 (마사지)", nameZh: "桃源乡(南京东路店)", addr: "", subway: "南京东路(Nanjing Dong Lu) 난징동루역 | 2번출구 도보 2분"}
+            {cat: "쇼핑/기타", nameKo: "도원향 (마사지)", nameZh: "桃源乡(南京东路店)", addr: "", subway: "南京东路(Nanjing Dong Lu) 난징동루역 | 2번출구 도보 2분"},
+            {cat: "쇼핑/기타", nameKo: "릴리안 베이커리 (난징동루)", nameZh: "莉莲蛋挞(南京东路)", addr: "", subway: "南京东路(Nanjing Dong Lu) 난징동루역 | 2번출구 도보 1분"}
         ];
 
         const initialShanghai = [
@@ -214,7 +222,7 @@
 
         function speak(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = 0.8; window.speechSynthesis.speak(u); } catch(e){} }
         
-                async function fetchWeather() {
+        async function fetchWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.2222&longitude=121.4581&current_weather=true');
                 const data = await res.json();
@@ -240,20 +248,10 @@
 
         function getSmartInfo(input) {
             if(!input) return {name: "", addr: ""};
-            
-            // "A -> B" 또는 "A → B" 패턴에서 목적지(B)만 추출
             let destination = input;
             const arrowMatch = input.match(/(?:->|→)\s*([^(\n]+)/);
-            if (arrowMatch) {
-                destination = arrowMatch[1].trim();
-            } else if (input.includes("->")) {
-                const parts = input.split("->");
-                destination = parts[parts.length - 1].trim();
-            } else if (input.includes("→")) {
-                const parts = input.split("→");
-                destination = parts[parts.length - 1].trim();
-            }
-
+            if (arrowMatch) destination = arrowMatch[1].trim();
+            else if (input.includes("->")) { const parts = input.split("->"); destination = parts[parts.length - 1].trim(); }
             const query = destination.toLowerCase().replace(/\s+/g, '');
             for (let key in smartMapDict) { if (query.includes(key)) return smartMapDict[key]; }
             return {name: destination, addr: ""};
@@ -261,6 +259,11 @@
 
         function openAmap(place) {
             const info = getSmartInfo(place); navigator.clipboard.writeText(info.name).catch(()=>{});
+            if (info.addr && info.addr.startsWith('http')) {
+                const link = document.createElement('a'); link.href = info.addr; link.target = '_blank'; link.rel = 'noopener noreferrer';
+                document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                return;
+            }
             const keyword = encodeURIComponent(info.name); const ua = navigator.userAgent.toLowerCase();
             if (ua.indexOf("iphone") > -1) window.location.href = `iosamap://poi?sourceApplication=sh_trip&name=${keyword}`;
             else if (ua.indexOf("android") > -1) window.location.href = `androidamap://poi?sourceApplication=sh_trip&keywords=${keyword}`;
@@ -270,15 +273,9 @@
         function openBaiduMap(place) {
             const info = getSmartInfo(place); navigator.clipboard.writeText(info.name).catch(()=>{});
             const keyword = encodeURIComponent(info.name);
-            // 별도 브라우저 새창을 강제하기 위해 앵커 태그 활용
-            const url = `https://map.baidu.com/mobile/webapp/search/search/qt=s&wd=${keyword}`;
-            const link = document.createElement('a');
-            link.href = url;
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const webUrl = `https://map.baidu.com/mobile/webapp/search/search/qt=s&wd=${keyword}`;
+            const link = document.createElement('a'); link.href = webUrl; link.target = '_blank'; link.rel = 'noopener noreferrer';
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
         function openDidi(place) {
@@ -291,37 +288,12 @@
             setTimeout(() => { if (Date.now() - start < 1500) { window.location.href = fallbackU; setTimeout(() => { if (Date.now() - start < 3000) window.location.href = alipayU; }, 1500); } }, 1000);
         }
 
-        function scrollToCurrentTask() {
-            try {
-                const now = new Date();
-                const shTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Shanghai"}));
-                const todayStr = `${(shTime.getMonth() + 1).toString().padStart(2, '0')}-${shTime.getDate().toString().padStart(2, '0')}`;
-                const curM = shTime.getHours() * 60 + shTime.getMinutes();
-                let targetId = null; let minD = Infinity;
-                itineraryData.forEach(item => {
-                    if (item.date && item.date.includes(todayStr) && item.time) {
-                        const timeArr = item.time.split('~');
-                        if(timeArr.length > 0) {
-                            const [h, m] = timeArr[0].split(':').map(Number);
-                            if(!isNaN(h)) {
-                                const diff = (h * 60 + m) - curM;
-                                if (diff >= -60 && diff < minD) { minD = diff; targetId = `card-${item.key}`; }
-                            }
-                        }
-                    }
-                });
-                if (targetId) {
-                    const el = document.getElementById(targetId);
-                    if (el) setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.parentElement.classList.add('ring-2', 'ring-brand-500', 'rounded-[2.5rem]', 'p-1'); }, 500);
-                }
-            } catch(e) {}
-        }
-
         function showTab(id) { 
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
             document.getElementById(id).classList.add('active'); 
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.replace('text-brand-500', 'text-slate-400')); 
-            event.currentTarget.classList.replace('text-slate-400', 'text-brand-500'); 
+            const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(id));
+            if(targetBtn) targetBtn.classList.replace('text-slate-400', 'text-brand-500');
             window.scrollTo(0,0); 
             if(id === 'schedule') scrollToCurrentTask(); 
             if(id === 'spot') renderSpots(); 
@@ -338,35 +310,28 @@
 
         function renderList(list) {
             const groups = {};
-            list.forEach(item => { 
-                if(item.date) {
-                    if(!groups[item.date]) groups[item.date] = []; 
-                    groups[item.date].push(item); 
-                }
-            });
+            list.forEach(item => { if(item.date) { if(!groups[item.date]) groups[item.date] = []; groups[item.date].push(item); } });
             const listEl = document.getElementById('itinerary-list');
             if(listEl) {
                 listEl.innerHTML = Object.keys(groups).map(date => `
                     <div class="mb-8">
-                        <h3 class="day-header text-[18px] font-black text-slate-800 dark:text-slate-200 mb-4 border-l-4 border-brand-500 pl-3">${date}</h3>
+                        <h3 class="day-header text-[18px] font-black text-indigo-600 mb-4 border-l-4 border-indigo-500 pl-3">${date}</h3>
                         <div class="space-y-4">${groups[date].map(item => {
                             const placeStr = item.place || '';
+                            const hideKeywords = ["기상", "조식", "정비", "자유 일정", "체크아웃", "인천공항", "집으로", "인천 공항", "공항 이동"];
+                            const shouldHide = hideKeywords.some(k => placeStr.includes(k));
                             return `
-                            <div id="card-${item.key}" class="card-grad p-6 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-[0_4px_20px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-transform">
-                                <div class="flex justify-between items-center mb-3"><span class="text-[11px] font-black bg-brand-500 text-white px-3 py-1.5 rounded-lg tracking-tighter shadow-md">${item.time || ''}</span><button onclick="openItineraryForm('${item.key}')" class="text-slate-300 hover:text-brand-500 transition-colors"><i class="fas fa-ellipsis-h text-lg"></i></button></div>
-                                <h4 class="font-black text-xl mb-3 leading-tight tracking-tight">${placeStr}</h4>
+                            <div id="card-${item.key}" class="card-grad p-6 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm">
+                                <div class="flex justify-between items-center mb-3"><span class="text-[11px] font-black bg-indigo-500 text-white px-3 py-1.5 rounded-lg shadow-md">${item.time || ''}</span><button onclick="openItineraryForm('${item.key}')" class="text-slate-300 hover:text-indigo-500"><i class="fas fa-ellipsis-h text-lg"></i></button></div>
+                                <h4 class="font-black text-xl mb-3 leading-tight">${placeStr}</h4>
                                 ${item.memo ? `<p class="text-[13px] font-bold text-slate-600 dark:text-slate-400 mb-5 leading-relaxed whitespace-pre-wrap">${item.memo}</p>` : ''}
-                                ${ (function() {
-                                    const hideKeywords = ["기상", "조식", "정비", "자유 일정", "체크아웃", "인천공항", "집으로", "인천 공항", "공항 이동"];
-                                    const shouldHide = hideKeywords.some(k => placeStr.includes(k));
-                                    return shouldHide ? '' : `
+                                ${shouldHide ? '' : `
                                 <div class="flex gap-2 pt-1">
                                     <button onclick="openAmap('${placeStr}')" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-[10px] shadow-sm border border-slate-200 dark:border-slate-700">지도1</button>
                                     <button onclick="openBaiduMap('${placeStr}')" class="flex-1 py-3.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-2xl font-black text-[10px] shadow-sm border border-slate-200 dark:border-slate-700">지도2</button>
                                     <button onclick="openDidi('${placeStr}')" class="flex-1 py-3.5 bg-slate-900 text-white rounded-2xl font-black text-[10px] shadow-lg">디디호출</button>
                                     ${item.tipkey ? `<button onclick="openTipModal('${item.tipkey}')" class="w-12 py-3.5 bg-amber-50 text-amber-600 rounded-2xl font-black text-xs border border-amber-200"><i class="fas fa-star"></i></button>` : ''}
-                                </div>`;
-                                })() }
+                                </div>`}
                             </div>`;
                         }).join('')}
                         </div>
@@ -377,7 +342,13 @@
         function renderGuideItinerary() {
             const guideEl = document.getElementById('guide-itinerary-list');
             if(guideEl) {
-                guideEl.innerHTML = guideItinerary.map(day => `
+                guideEl.innerHTML = `
+                    <div class="bg-gradient-to-br from-indigo-950 to-slate-900 text-white p-6 rounded-[2.5rem] shadow-xl relative overflow-hidden mb-6 border border-slate-700">
+                        <h2 class="text-2xl font-black mb-1 text-yellow-400 italic">Pro Guide Pick</h2>
+                        <p class="text-[12px] font-bold opacity-80 leading-snug uppercase tracking-widest mt-1">아버지와 아이를 위한 동선 최적화</p>
+                        <i class="fas fa-gem absolute -right-4 -bottom-4 text-7xl opacity-10"></i>
+                    </div>
+                ` + guideItinerary.map(day => `
                     <div class="mb-10">
                         <div class="flex items-center mb-5"><div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black mr-3 shadow-lg">D</div><h3 class="text-[16px] font-black text-slate-800 dark:text-slate-100">${day.date}</h3></div>
                         <div class="space-y-6 ml-5 border-l-2 border-indigo-100 dark:border-slate-800 pl-6 relative">
@@ -403,7 +374,8 @@
         }
 
         function filterSpots(cat) { currentSpotCat = cat; document.querySelectorAll('.category-chip').forEach(btn => btn.classList.toggle('active', btn.dataset.cat === cat)); renderSpots(); }
-                        function renderSpots() {
+        
+        function renderSpots() {
             const search = document.getElementById('spot-search').value.toLowerCase();
             const filtered = spotData.filter(s => (currentSpotCat === '전체' || s.cat === currentSpotCat) && (s.nameKo.toLowerCase().includes(search) || s.nameZh.toLowerCase().includes(search) || (s.addr && s.addr.toLowerCase().includes(search))));
             const listEl = document.getElementById('spot-list');
@@ -417,7 +389,7 @@
                             <div><span class="text-[10px] font-black text-indigo-500 bg-indigo-50 px-2 py-1 rounded-md mb-2 inline-block">${s.cat}</span>
                             <h4 class="font-black text-lg">${s.nameKo}</h4>
                             <p class="text-xs font-bold text-slate-400 mt-1">${s.nameZh}</p>
-                            ${s.subway ? `<div onclick="openMetro('${searchKey}')" class="text-[13px] font-black text-indigo-600 mt-3 flex items-start bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 rounded-xl border border-indigo-100 dark:border-indigo-800 cursor-pointer active:scale-95 transition-transform"><i class="fas fa-subway mt-0.5 mr-2"></i><span class="flex-1">${s.subway}</span></div>` : ''}</div>
+                            ${s.subway ? `<div onclick="openMetro('${searchKey}')" class="text-[13px] font-black text-indigo-600 mt-3 flex items-start bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 rounded-xl border border-indigo-100 dark:border-indigo-800 cursor-pointer active:scale-95 transition-transform"><i class="fas fa-subway mt-0.5 mr-2"></i><span class="flex-1 font-black underline underline-offset-4">${s.subway}</span></div>` : ''}</div>
                             <button onclick="openSpotModal('${s.key}')" class="text-slate-300 p-2"><i class="fas fa-edit text-sm"></i></button>
                         </div>
                         <p class="text-[12px] font-medium text-slate-500 mb-3">${s.addr || ''}</p>
@@ -429,10 +401,19 @@
                 }).join('') || '<div class="text-center text-slate-400 py-10 font-bold">검색 결과가 없습니다.</div>';
             }
         }
+
         function openMetro(keyword) {
-            if(keyword) { navigator.clipboard.writeText(keyword).catch(()=>{}); }
+            if(keyword) { 
+                const el = document.createElement('textarea');
+                el.value = keyword;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+            }
             window.open('https://metro.nuua.travel/ko/shanghai', '_blank');
         }
+
         function openSpotModal(key = null) {
             document.getElementById('spot-key').value = key || ''; document.getElementById('spot-modal').classList.remove('hidden');
             if(key) { const s = spotData.find(i => i.key === key); if(s) { document.getElementById('spot-cat').value = s.cat; document.getElementById('spot-name-ko').value = s.nameKo; document.getElementById('spot-name-zh').value = s.nameZh; document.getElementById('spot-addr').value = s.addr || ''; document.getElementById('spot-delete-btn').classList.remove('hidden'); } }
@@ -446,6 +427,7 @@
             closeSpotModal();
         }
         function deleteSpot() { const k = document.getElementById('spot-key').value; if(k && confirm("삭제하시겠습니까?")) { db.ref(`${basePath}/spots/${k}`).remove(); closeSpotModal(); } }
+        
         function loadSpots() {
             if(!db) return;
             db.ref(`${basePath}/spots`).on('value', s => {
@@ -457,10 +439,12 @@
                         if (!existingItem) {
                             db.ref(`${basePath}/spots`).push(init);
                         } else {
-                            db.ref(`${basePath}/spots/${existingItem.key}`).update({ 
-                                subway: init.subway,
-                                addr: init.addr
-                            });
+                            if (existingItem.subway !== init.subway || existingItem.addr !== init.addr) {
+                                db.ref(`${basePath}/spots/${existingItem.key}`).update({ 
+                                    subway: init.subway,
+                                    addr: init.addr
+                                });
+                            }
                         }
                     });
                 } else {
@@ -482,7 +466,7 @@
                                     <p class="text-base font-black dark:text-white leading-tight">${p.ko}</p>
                                     <p class="text-[11px] text-brand-500 font-bold mt-2 uppercase">${p.py}</p>
                                 </div>
-                                <button onclick="event.stopPropagation(); speak('${p.zh}')" class="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-400 flex items-center justify-center text-xl active:text-brand-500 shadow-inner border border-slate-100 dark:border-slate-700"><i class="fas fa-volume-up"></i></button>
+                                <button onclick="event.stopPropagation(); speak('${p.zh}')" class="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-slate-800 text-slate-400 flex items-center justify-center text-xl active:text-indigo-500 shadow-inner border border-slate-100 dark:border-slate-700"><i class="fas fa-volume-up"></i></button>
                             </div>`).join('')}
                     </div>`).join(''); 
             }
@@ -493,7 +477,7 @@
         function showFlashcard(zh, ko, py) { document.getElementById('flash-zh').innerText = zh; document.getElementById('flash-ko').innerText = ko; document.getElementById('flash-py').innerText = `[ ${py} ]`; document.getElementById('flashcard').classList.remove('hidden'); }
 
         function addExpense() { const d = document.getElementById('exp-desc').value, a = document.getElementById('exp-amt').value; if(d && a && db) { db.ref(`${basePath}/expenses`).push({desc: d, amt: Number(a), krwAmt: Math.round(Number(a) * exchangeRate)}); document.getElementById('exp-desc').value = ''; document.getElementById('exp-amt').value = ''; } }
-        function loadExpenses() { if(db) db.ref(`${basePath}/expenses`).on('value', s => { const data = s.val() || {}; let tC = 0, tK = 0; document.getElementById('expense-list').innerHTML = Object.entries(data).map(([k, v]) => { tC += v.amt; const kAmt = v.krwAmt || Math.round(v.amt * exchangeRate); tK += kAmt; return `<div class="flex justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 text-xs mb-2 shadow-sm"><div class="flex flex-col"><span class="font-bold">${v.desc}</span><span class="text-[10px] text-slate-400">${kAmt.toLocaleString()} ₩</span></div><span class="font-black text-brand-500 text-sm">${v.amt.toLocaleString()} ¥ <button onclick="db.ref('${basePath}/expenses/${k}').remove()" class="ml-2 text-slate-300">✕</button></span></div>`; }).join(''); document.getElementById('total-expense').innerHTML = `${tC.toLocaleString()} ¥ <span class="text-xs font-bold text-slate-400 ml-1">(${tK.toLocaleString()} ₩)</span>`; }); }
+        function loadExpenses() { if(db) db.ref(`${basePath}/expenses`).on('value', s => { const data = s.val() || {}; let tC = 0, tK = 0; document.getElementById('expense-list').innerHTML = Object.entries(data).map(([k, v]) => { tC += v.amt; const kAmt = v.krwAmt || Math.round(v.amt * exchangeRate); tK += kAmt; return `<div class="flex justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 text-xs mb-2 shadow-sm"><div class="flex flex-col"><span class="font-bold">${v.desc}</span><span class="text-[10px] text-slate-400">${kAmt.toLocaleString()} ₩</span></div><span class="font-black text-indigo-500 text-sm">${v.amt.toLocaleString()} ¥ <button onclick="db.ref('${basePath}/expenses/${k}').remove()" class="ml-2 text-slate-300">✕</button></span></div>`; }).join(''); document.getElementById('total-expense').innerHTML = `${tC.toLocaleString()} ¥ <span class="text-xs font-bold text-slate-400 ml-1">(${tK.toLocaleString()} ₩)</span>`; }); }
 
         function openChecklistModal(type, key = null) {
             document.getElementById('checklist-type').value = type; document.getElementById('checklist-key').value = key || '';
@@ -510,8 +494,8 @@
                 const data = s.val() || {}; const items = Object.entries(data).map(([k, v]) => ({...v, key: k}));
                 if(items.length === 0) { [...initialChecklist, ...initialShopping].forEach(i => db.ref(`${basePath}/checklist`).push(i)); return; }
                 const packEl = document.getElementById('packing-list'), shopEl = document.getElementById('shopping-list');
-                if(packEl) packEl.innerHTML = items.filter(i => i.type === 'packing').map(i => `<div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 mb-2"><div onclick="openChecklistModal('packing', '${i.key}')" class="flex-1"><p class="font-bold text-sm">${i.title}</p>${i.memo ? `<p class="text-[10px] text-slate-400">${i.memo}</p>` : ''}</div><input type="checkbox" ${i.checked ? 'checked' : ''} onchange="db.ref('${basePath}/checklist/${i.key}').update({checked: this.checked})" class="w-5 h-5 accent-brand-500"></div>`).join('');
-                if(shopEl) shopEl.innerHTML = items.filter(i => i.type === 'shopping').map(i => `<div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 mb-2"><div onclick="openChecklistModal('shopping', '${i.key}')" class="flex-1"><p class="font-black text-sm">${i.title}</p>${i.memo ? `<p class="text-[11px] text-slate-500 mt-1">${i.memo}</p>` : ''}</div><input type="checkbox" ${i.checked ? 'checked' : ''} onchange="db.ref('${basePath}/checklist/${i.key}').update({checked: this.checked})" class="w-5 h-5 accent-purple-500"></div>`).join('');
+                if(packEl) packEl.innerHTML = items.filter(i => i.type === 'packing').map(i => `<div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-800 mb-2"><div onclick="openChecklistModal('packing', '${i.key}')" class="flex-1"><p class="font-bold text-sm">${i.title}</p>${i.memo ? `<p class="text-[10px] text-slate-400">${i.memo}</p>` : ''}</div><input type="checkbox" ${i.checked ? 'checked' : ''} onchange="db.ref('${basePath}/checklist/${i.key}').update({checked: this.checked})" class="w-5 h-5 accent-indigo-500"></div>`).join('');
+                if(shopEl) shopEl.innerHTML = items.filter(i => i.type === 'shopping').map(i => `<div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-800 mb-2"><div onclick="openChecklistModal('shopping', '${i.key}')" class="flex-1"><p class="font-black text-sm">${i.title}</p>${i.memo ? `<p class="text-[11px] text-slate-500 mt-1">${i.memo}</p>` : ''}</div><input type="checkbox" ${i.checked ? 'checked' : ''} onchange="db.ref('${basePath}/checklist/${i.key}').update({checked: this.checked})" class="w-5 h-5 accent-purple-500"></div>`).join('');
             });
         }
 
@@ -524,18 +508,16 @@
         function saveItinerary() { const k = document.getElementById('edit-key').value, d = { date: document.getElementById('form-date').value, time: document.getElementById('form-time').value || "00:00", place: document.getElementById('form-place').value || "장소명", memo: document.getElementById('form-memo').value || "" }; if(k) db.ref(`${basePath}/itinerary/${k}`).update(d); else db.ref(`${basePath}/itinerary`).push(d); closeItineraryModal(); }
         function deleteItinerary() { const k = document.getElementById('edit-key').value; if(k && confirm("삭제할까요?")) { db.ref(`${basePath}/itinerary/${k}`).remove(); closeItineraryModal(); } }
         function loadItinerary() {
-            renderList(initialShanghai);
             if (db) {
                 db.ref(`${basePath}/itinerary`).on('value', s => {
                     const data = s.val(); 
                     if(data) { 
                         itineraryData = Object.entries(data).map(([k, v]) => ({...v, key: k}));
                         itineraryData.sort((a, b) => {
-                            const dateA = a.date ? a.date.replace(/[^0-9]/g, "") : "";
-                            const dateB = b.date ? b.date.replace(/[^0-9]/g, "") : "";
-                            const timeA = a.time || "";
-                            const timeB = b.time || "";
-                            return dateA.localeCompare(dateB) || timeA.localeCompare(timeB);
+                            const dateA = String(a.date || "").replace(/[^0-9]/g, "");
+                            const dateB = String(b.date || "").replace(/[^0-9]/g, "");
+                            if (dateA !== dateB) return dateA.localeCompare(dateB);
+                            return String(a.time || "").localeCompare(String(b.time || ""));
                         });
                         renderList(itineraryData); scrollToCurrentTask();
                     } else initialShanghai.forEach(i => db.ref(`${basePath}/itinerary`).push(i));
@@ -543,6 +525,33 @@
             }
         }
 
+        function scrollToCurrentTask() {
+            try {
+                const now = new Date();
+                const shTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Shanghai"}));
+                const todayStr = `${(shTime.getMonth() + 1).toString().padStart(2, '0')}-${shTime.getDate().toString().padStart(2, '0')}`;
+                const curM = shTime.getHours() * 60 + shTime.getMinutes();
+                let targetId = null; let minD = Infinity;
+                itineraryData.forEach(item => {
+                    if (item.date && item.date.includes(todayStr) && item.time) {
+                        const timeArr = item.time.split('~');
+                        if(timeArr.length > 0) {
+                            const tStr = timeArr[0].includes(':') ? timeArr[0] : '00:00';
+                            const [h, m] = tStr.split(':').map(Number);
+                            if(!isNaN(h)) {
+                                const diff = (h * 60 + m) - curM;
+                                if (diff >= -60 && diff < minD) { minD = diff; targetId = `card-${item.key}`; }
+                            }
+                        }
+                    }
+                });
+                if (targetId) {
+                    const el = document.getElementById(targetId);
+                    if (el) setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.parentElement.classList.add('ring-2', 'ring-indigo-500', 'rounded-[2.5rem]', 'p-1'); }, 500);
+                }
+            } catch(e) {}
+        }
+        
         document.addEventListener('DOMContentLoaded', () => {
             const firebaseConfig = { databaseURL: "https://nhatrang-trip-default-rtdb.asia-southeast1.firebasedatabase.app" };
             try { if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); db = firebase.database(); } catch(e) { console.error(e); }
