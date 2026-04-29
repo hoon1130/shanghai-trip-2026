@@ -495,6 +495,8 @@
         }
 
         function toggleTheme() { document.documentElement.classList.toggle('dark'); const icon = document.getElementById('theme-icon'); if(icon) icon.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun text-yellow-400 text-sm' : 'fas fa-moon text-slate-500 text-sm'; }
+<<<<<<< HEAD
+        
         
         function openPapagoCamera() {
             const appUrl = 'naverpapago://image';
@@ -508,6 +510,24 @@
             }, 2500);
         }
 
+            }, 2500);
+        }
+
+=======
+        
+        function openPapagoCamera() {
+            const appUrl = 'naverpapago://image';
+            const webUrl = 'https://papago.naver.com/?sk=auto&tk=ko&hn=0&st=';
+            const start = Date.now();
+            window.location.href = appUrl;
+            setTimeout(() => {
+                if (Date.now() - start < 3000) {
+                    window.open(webUrl, '_blank');
+                }
+            }, 2500);
+        }
+
+>>>>>>> 1c36efb58111008602657909c3d8bf6e20258099
             }, 2000);
         }
 
