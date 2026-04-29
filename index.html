@@ -212,7 +212,7 @@
             </select>
             <input type="text" id="spot-name-ko" placeholder="한글 명칭 (예: 예원)" class="w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base outline-none">
             <input type="text" id="spot-name-zh" placeholder="중문 명칭 (예: 豫园)" class="w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base outline-none">
-            <input type="text" id="spot-addr" placeholder="고덕지도 URL 또는 상세 주소 (선택)" class="w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base outline-none">
+            <input type="text" id="spot-addr" placeholder="상세 주소 (선택)" class="w-full p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border-none font-black text-base outline-none">
             <div class="flex space-x-3 pt-2">
                 <button onclick="saveSpot()" class="flex-1 bg-slate-900 dark:bg-brand-500 text-white py-4 rounded-2xl font-black text-lg shadow-lg active:scale-95 transition-transform">저장</button>
                 <button onclick="closeSpotModal()" class="flex-1 bg-slate-200 dark:bg-slate-700 py-4 rounded-2xl font-black text-lg active:scale-95 transition-transform">닫기</button>
@@ -258,7 +258,7 @@
             "점보시푸드": {name: "珍宝海鲜(国金中心店)", addr: "上海市浦东新区세기大道8호国金中心L3"},
             "예원": {name: "豫园", addr: "https://surl.amap.com/1BdPkxz682G"},
             "마시청": {name: "上海马戏城", addr: "上海市静안区共和新路2266号"},
-            "궁연": {name: "宫宴(上海)", addr: "上海시静安区江宁路445号"},
+            "궁연": {name: "宫宴(上海)", addr: "上海시静안区江宁路445号"},
             "징안쓰": {name: "静安寺", addr: "https://surl.amap.com/1M5SBkJie2Z"},
             "정안사": {name: "静安寺", addr: "https://surl.amap.com/1M5SBkJie2Z"},
             "임시정부": {name: "大韩民国临时政府旧址", addr: "https://surl.amap.com/1BHdwBHA7C1"},
@@ -274,7 +274,7 @@
             "티엔즈팡": {name: "田子坊", addr: "https://surl.amap.com/1NjYT9vh3zx"},
             "자연박물관": {name: "上海自然博物馆", addr: "上海시静안구北京西路510号"},
             "그린마사지": {name: "Green Massage", addr: "上海시黄浦区淮해중路300号"},
-            "드래곤플라이": {name: "Dragonfly蜻蜓", addr: "上海시浦동新区陆家嘴环路1318号"},
+            "드래곤플라이": {name: "Dragonfly蜻蜓", addr: "上海시浦동新区陆가嘴环路1318号"},
             "동방화건강": {name: "东方和健康", addr: "上海시黄浦구南京东路479号"},
             "도원향": {name: "桃源乡(南京东路店)", addr: "上海시黄浦区南京东로"},
             "빈장다다오": {name: "滨江大道", addr: "上海시浦东新区滨江大道"},
@@ -305,7 +305,7 @@
             {cat: "명소", nameKo: "우전", nameZh: "乌镇", addr: "https://surl.amap.com/1Ord7Ml1z6OW", subway: "시외 지역 (전용 차량 권장)"},
             {cat: "명소", nameKo: "상하이 박물관", nameZh: "上海博物馆", addr: "", subway: "1/2/8호선 People's Square역 1번출구"},
             {cat: "명소", nameKo: "도시계획 전시관", nameZh: "上海城市规划展示馆", addr: "", subway: "1/2/8호선 People's Square역 3번출구"},
-            {cat: "명소", nameKo: "윤봉길 기념관", nameZh: "梅园-尹奉吉义士生平事迹陈列室", addr: "https://surl.amap.com/1W3f3i9H89v", subway: "3/8호선 Hongkou Football Stadium역 1번출구"},
+            {cat: "명소", nameKo: "윤봉길 기념관", nameZh: "梅园-尹奉길义士生平사적陈列室", addr: "https://surl.amap.com/1W3f3i9H89v", subway: "3/8호선 Hongkou Football Stadium역 1번출구"},
             {cat: "맛집", nameKo: "게살국수", nameZh: "裕兴记(外滩店)", addr: "", subway: "2/10호선 East Nanjing Rd역 2번출구"},
             {cat: "맛집", nameKo: "장씨네 게국수", nameZh: "庄氏隆兴·蟹粉面道", addr: "", subway: "2/10호선 East Nanjing Rd역 7번출구"},
             {cat: "맛집", nameKo: "가정식 식당 (상해라오라오)", nameZh: "上海姥姥家常饭馆", addr: "", subway: "2/10호선 East Nanjing Rd역 2번출구"},
@@ -324,8 +324,8 @@
             {cat: "쇼핑/기타", nameKo: "로손 (Lawson)", nameZh: "罗森便利店", addr: "", subway: ""},
             {cat: "쇼핑/기타", nameKo: "패밀리마트", nameZh: "全家便利店", addr: "", subway: ""},
             {cat: "쇼핑/기타", nameKo: "대형마트 (따룬파)", nameZh: "大润发", addr: "https://surl.amap.com/8IacSH7IcrX", subway: ""},
-            {cat: "쇼핑/기타", nameKo: "현지 마트 (롄화)", nameZh: "联华生活鲜", addr: "", subway: ""},
-            {cat: "쇼핑/기타", nameKo: "도원향 (마사지)", nameZh: "桃源乡(南京东路店)", addr: "", subway: "2/10호선 East Nanjing Rd역 2번출구 100m"}
+            {cat: "쇼핑/기타", nameKo: "롄화 마트 (현지)", nameZh: "联华生活鲜", addr: "", subway: ""},
+            {cat: "쇼핑/기타", nameKo: "도원향 (마사지)", nameZh: "桃源乡(南京동路店)", addr: "", subway: "2/10호선 East Nanjing Rd역 2번출구 100m"}
         ];
 
         const initialShanghai = [
@@ -348,32 +348,6 @@
             {date: "05-08(금)", time: "16:00~18:00", place: "오후 자유 일정 (티엔즈팡)", memo: "티엔즈팡", tipkey: "tianzifang"},
             {date: "05-09(토)", time: "16:20~19:20", place: "숙소 -> 푸동 공항", memo: "출국", tipkey: ""},
             {date: "05-09(토)", time: "20:00", place: "수하물 찾고 귀가", memo: "귀가", tipkey: "home"}
-        ];
-
-        const guideItinerary = [
-            {date: "Day 1 푸동 & 화려한 첫날", items: [
-                { time: "12:30", place: "IFC 몰 (점보시푸드)", memo: "첫 식사 추천", map: "점보시푸드", tipkey: "ifc" },
-                { time: "15:30", place: "예원 & 상성", memo: "효도 정원", map: "예원", tipkey: "yuyuan" },
-                { time: "18:30", place: "빈장다다오 야경", memo: "산책로", map: "빈장다다오", tipkey: "binjiang" },
-                { time: "20:00", place: "마시청 서커스", memo: "최고의 공연", map: "마시청", tipkey: "circus_tip" },
-                { time: "22:00", place: "Dragonfly (푸동)", memo: "피로 회복", map: "드래곤플라이", tipkey: "dragonfly" }
-            ]},
-            {date: "Day 2 올드 상해 & 몰입 체험", items: [
-                { time: "11:00", place: "궁연 (Gongyan)", memo: "전통의상 체험", map: "궁연", tipkey: "gongyan" },
-                { time: "15:00", place: "임시정부 & 신천지", memo: "역사 관람", map: "신천지", tipkey: "history" },
-                { time: "18:00", place: "우캉루 (조계지)", memo: "가장 예쁜 거리", map: "우캉루", tipkey: "wukang" },
-                { time: "20:00", place: "Green Massage", memo: "발 마사지 추천", map: "그린마사지", tipkey: "green" }
-            ]},
-            {date: "Day 3 꿈의 나라 디즈니랜드", items: [
-                { time: "08:30", place: "상해 디즈니랜드", memo: "주토피아 공략", map: "디즈니", tipkey: "disney" }
-            ]},
-            {date: "Day 4 마지막 밤의 야경", items: [
-                { time: "10:30", place: "상해 자연박물관", memo: "아이 추천", map: "자연박물관", tipkey: "nature" },
-                { time: "13:30", place: "현저우이치엔 (양꼬치)", memo: "자동구이", map: "양꼬치", tipkey: "yang" },
-                { time: "16:00", place: "티엔즈팡", memo: "기념품 쇼핑", map: "티엔즈팡", tipkey: "tianzifang" },
-                { time: "18:30", place: "와이탄 야경", memo: "최고의 야경", map: "와이탄", tipkey: "waitan" },
-                { time: "20:30", place: "Oriental Aroma (동방화건강)", memo: "가성비 마사지", map: "동방화건강", tipkey: "aroma" }
-            ]}
         ];
 
         const placeTipsData = {
@@ -415,48 +389,23 @@
             ]}
         ];
 
-        const initialChecklist = [
-            { title: "여권 & 비자", memo: "만료일 확인", type: "packing" }
-        ];
-
-        const initialShopping = [
-            { title: "대백토 우유사탕 🐰", memo: "선물용", type: "shopping" }
-        ];
-
         // 🌟 Functions 🌟
         function speak(text) { try { const u = new SpeechSynthesisUtterance(text); u.lang = 'zh-CN'; u.rate = 0.8; window.speechSynthesis.speak(u); } catch(e){} }
         
-                async function fetchWeather() {
+        async function fetchWeather() {
             try {
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.2222&longitude=121.4581&current_weather=true');
                 const data = await res.json();
                 const cw = data.current_weather;
                 const temp = Math.round(cw.temperature);
                 const code = cw.weathercode;
-                
-                let icon = 'fa-sun';
-                let desc = '맑음';
-                
+                let icon = 'fa-sun'; let desc = '맑음';
                 if (code >= 1 && code <= 3) { icon = 'fa-cloud-sun'; desc = '구름'; }
                 else if (code >= 45 && code <= 48) { icon = 'fa-smog'; desc = '안개'; }
                 else if (code >= 51 && code <= 67) { icon = 'fa-cloud-showers-heavy'; desc = '비'; }
                 else if (code >= 71 && code <= 77) { icon = 'fa-snowflake'; desc = '눈'; }
                 else if (code >= 80 && code <= 82) { icon = 'fa-cloud-rain'; desc = '소나기'; }
                 else if (code >= 95) { icon = 'fa-bolt'; desc = '뇌우'; }
-                
-                const el = document.getElementById('weather-display');
-                if(el) el.innerHTML = `<i class="fas ${icon} mr-2 text-indigo-500"></i>상해 ${temp}°C / ${desc}`;
-            } catch(e) {
-                const el = document.getElementById('weather-display');
-                if(el) el.innerText = '날씨 확인 중...';
-            }
-        }
-                else if (code >= 45 && code <= 48) { icon = 'fa-smog'; desc = '안개'; }
-                else if (code >= 51 && code <= 67) { icon = 'fa-cloud-showers-heavy'; desc = '비 옴'; }
-                else if (code >= 71 && code <= 77) { icon = 'fa-snowflake'; desc = '눈 옴'; }
-                else if (code >= 80 && code <= 82) { icon = 'fa-cloud-rain'; desc = '소나기'; }
-                else if (code >= 95) { icon = 'fa-bolt'; desc = '뇌우'; }
-                
                 const el = document.getElementById('weather-display');
                 if(el) el.innerHTML = `<i class="fas ${icon} mr-2 text-indigo-500"></i>상해 ${temp}°C / ${desc}`;
             } catch(e) {
@@ -471,16 +420,8 @@
             if(!input) return {name: "", addr: ""};
             let destination = input;
             const arrowMatch = input.match(/(?:->|→)\s*([^(\n]+)/);
-            if (arrowMatch) {
-                destination = arrowMatch[1].trim();
-            } else if (input.includes("->")) {
-                const parts = input.split("->");
-                destination = parts[parts.length - 1].trim();
-            } else if (input.includes("→")) {
-                const parts = input.split("→");
-                destination = parts[parts.length - 1].trim();
-            }
-
+            if (arrowMatch) destination = arrowMatch[1].trim();
+            else if (input.includes("->")) { const parts = input.split("->"); destination = parts[parts.length - 1].trim(); }
             const query = destination.toLowerCase().replace(/\s+/g, '');
             for (let key in smartMapDict) { if (query.includes(key)) return smartMapDict[key]; }
             return {name: destination, addr: ""};
@@ -521,7 +462,8 @@
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
             document.getElementById(id).classList.add('active'); 
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.replace('text-brand-500', 'text-slate-400')); 
-            event.currentTarget.classList.replace('text-slate-400', 'text-brand-500'); 
+            const targetBtn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(id));
+            if(targetBtn) targetBtn.classList.replace('text-slate-400', 'text-brand-500');
             window.scrollTo(0,0); 
             if(id === 'schedule') scrollToCurrentTask(); 
             if(id === 'spot') renderSpots(); 
@@ -570,7 +512,13 @@
         function renderGuideItinerary() {
             const guideEl = document.getElementById('guide-itinerary-list');
             if(guideEl) {
-                guideEl.innerHTML = guideItinerary.map(day => `
+                guideEl.innerHTML = `
+                    <div class="bg-gradient-to-br from-indigo-950 to-slate-900 text-white p-6 rounded-[2.5rem] shadow-xl relative overflow-hidden mb-6 border border-slate-700">
+                        <h2 class="text-2xl font-black mb-1 text-yellow-400 italic">Pro Guide Pick</h2>
+                        <p class="text-[12px] font-bold opacity-80 leading-snug uppercase tracking-widest mt-1">아버지와 아이를 위한 동선 최적화</p>
+                        <i class="fas fa-gem absolute -right-4 -bottom-4 text-7xl opacity-10"></i>
+                    </div>
+                ` + guideItinerary.map(day => `
                     <div class="mb-10">
                         <div class="flex items-center mb-5"><div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black mr-3 shadow-lg">D</div><h3 class="text-[16px] font-black text-slate-800 dark:text-slate-100">${day.date}</h3></div>
                         <div class="space-y-6 ml-5 border-l-2 border-indigo-100 dark:border-slate-800 pl-6 relative">
@@ -694,11 +642,10 @@
                     if(data) { 
                         itineraryData = Object.entries(data).map(([k, v]) => ({...v, key: k}));
                         itineraryData.sort((a, b) => {
-                            const dateA = a.date ? a.date.replace(/[^0-9]/g, "") : "";
-                            const dateB = b.date ? b.date.replace(/[^0-9]/g, "") : "";
-                            const timeA = a.time || "";
-                            const timeB = b.time || "";
-                            return dateA.localeCompare(dateB) || timeA.localeCompare(timeB);
+                            const dateA = String(a.date || "").replace(/[^0-9]/g, "");
+                            const dateB = String(b.date || "").replace(/[^0-9]/g, "");
+                            if (dateA !== dateB) return dateA.localeCompare(dateB);
+                            return String(a.time || "").localeCompare(String(b.time || ""));
                         });
                         renderList(itineraryData); scrollToCurrentTask();
                     } else initialShanghai.forEach(i => db.ref(`${basePath}/itinerary`).push(i));
@@ -717,7 +664,8 @@
                     if (item.date && item.date.includes(todayStr) && item.time) {
                         const timeArr = item.time.split('~');
                         if(timeArr.length > 0) {
-                            const [h, m] = timeArr[0].split(':').map(Number);
+                            const tStr = timeArr[0].includes(':') ? timeArr[0] : '00:00';
+                            const [h, m] = tStr.split(':').map(Number);
                             if(!isNaN(h)) {
                                 const diff = (h * 60 + m) - curM;
                                 if (diff >= -60 && diff < minD) { minD = diff; targetId = `card-${item.key}`; }
@@ -733,6 +681,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            const firebaseConfig = { databaseURL: "https://nhatrang-trip-default-rtdb.asia-southeast1.firebasedatabase.app" };
+            try { if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); db = firebase.database(); } catch(e) { console.error(e); }
+            
             const cny = document.getElementById('cny-input'), krw = document.getElementById('krw-input');
             if(cny && krw) {
                 cny.addEventListener('input', (e) => krw.value = e.target.value ? Math.round(e.target.value * exchangeRate) : '');
@@ -753,13 +704,8 @@
                         };
                     };
                 }).catch(()=>{});
-
                 let refreshing;
-                navigator.serviceWorker.addEventListener('controllerchange', () => {
-                    if (refreshing) return;
-                    window.location.reload();
-                    refreshing = true;
-                });
+                navigator.serviceWorker.addEventListener('controllerchange', () => { if (refreshing) return; window.location.reload(); refreshing = true; });
             }
         });
     </script>
