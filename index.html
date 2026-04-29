@@ -89,7 +89,7 @@
                 <input type="text" id="spot-search" oninput="renderSpots()" placeholder="장소 검색 (명칭, 주소...)" class="w-full p-4 pl-11 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-bold text-sm outline-none shadow-sm">
             </div>
             <div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                <button onclick="filterSpots('내 주변')" class="category-chip px-5 py-2 rounded-full text-xs font-black shadow-sm bg-red-50 text-red-600 border-red-100" data-cat="내 주변"><i class="fas fa-location-arrow mr-1 text-[10px]"></i>내 주변</button>
+                
                 <button onclick="filterSpots('전체')" class="category-chip active px-5 py-2 rounded-full text-xs font-black shadow-sm bg-white dark:bg-slate-900" data-cat="전체">전체</button>
                 <button onclick="filterSpots('핵심')" class="category-chip px-5 py-2 rounded-full text-xs font-black shadow-sm bg-white dark:bg-slate-900" data-cat="핵심">핵심</button>
                 <button onclick="filterSpots('명소')" class="category-chip px-5 py-2 rounded-full text-xs font-black shadow-sm bg-white dark:bg-slate-900" data-cat="명소">명소</button>
@@ -496,8 +496,12 @@
 
         function toggleTheme() { document.documentElement.classList.toggle('dark'); const icon = document.getElementById('theme-icon'); if(icon) icon.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun text-yellow-400 text-sm' : 'fas fa-moon text-slate-500 text-sm'; }
         function openPapagoCamera() {
-            const appUrl = 'naverpapago://image';
+            const isAndroid = /Android/i.test(navigator.userAgent);
             const webUrl = 'https://papago.naver.com/?sk=auto&tk=ko&hn=0&st=';
+            let appUrl = 'naverpapago://image';
+            if (isAndroid) {
+                appUrl = 'intent://image#Intent;scheme=naverpapago;package=com.naver.labs.translator;end';
+            }
             const start = Date.now();
             window.location.href = appUrl;
             setTimeout(() => {
