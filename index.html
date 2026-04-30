@@ -120,7 +120,7 @@
                 <div id="expense-summary" class="flex w-full h-3 rounded-full bg-slate-100 dark:bg-slate-800 mb-4 overflow-hidden hidden"></div>
                 <div id="expense-legend" class="flex flex-wrap gap-3 mb-6 text-[10px] font-black hidden"></div>
                 <div class="flex gap-2 mb-6">
-                    <select id="exp-cat" class="w-[84px] pl-2 pr-1 py-4 rounded-xl border dark:bg-slate-800 dark:text-white dark:border-slate-700 font-black text-[11px] outline-none bg-slate-50">
+                    <select id="exp-cat" class="w-20 p-4 rounded-xl border dark:bg-slate-800 dark:text-white dark:border-slate-700 font-black text-[11px] outline-none bg-slate-50">
                         <option value="식비">🍔 식비</option><option value="교통">🚕 교통</option><option value="쇼핑">🛍️ 쇼핑</option><option value="기타">✨ 기타</option>
                     </select>
                     <input type="text" id="exp-desc" placeholder="지출 내역" class="flex-1 min-w-0 p-4 rounded-xl border dark:bg-slate-800 dark:text-white dark:border-slate-700 font-bold text-sm outline-none">
@@ -533,49 +533,30 @@
             const info = getSmartInfo(place); 
             const encodedName = encodeURIComponent(info.name);
             const encodedAddr = encodeURIComponent(info.addr || '');
-            const ua = navigator.userAgent.toLowerCase();
+            
+            // Clipboard backup
             navigator.clipboard.writeText(info.name).catch(()=>{});
             
             const start = Date.now();
             
-            // 1. 단독 앱 호출 스킴 (Mainland Didi)
-            let appUrl = `diditaxi://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}`;
-            
-            // 안드로이드의 경우 인텐트 방식이 더 안정적일 수 있음
-            if (ua.indexOf("android") > -1) {
-                // 앱이 있으면 실행, 없으면 알리페이로 넘어가도록 구성
-                appUrl = `intent://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}#Intent;scheme=diditaxi;package=com.sdu.didi.psnger;end`;
-            }
-            
-            // 2. 백업 경로 (알리페이 내 디디 미니 프로그램)
-            const fallbackUrl = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${encodedName}%26end_address%3D${encodedAddr}`;
-            
-            // 앱 실행 시도
-            window.location.href = appUrl;
-            
-            // 앱이 안 열릴 경우(시간 지연 발생 시) 2초 후 알리페이 호출
-            setTimeout(() => {
-                if (Date.now() - start < 2500) {
-                    window.location.href = fallbackUrl;
-                }
-            }, 2000);
-        });
-            
-            // 중국 본토용 디디 앱 스킴
+            // App URL Schemes
             const mainlandApp = `diditaxi://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}`;
-            // 알리페이 디디 미니 프로그램
+            const globalApp = `OneTravel://route/?end_name=${encodedName}&end_address=${encodedAddr}`;
             const alipayMini = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${encodedName}%26end_address%3D${encodedAddr}`;
             
-            const start = Date.now();
-            // 단일 호출 시도 (여러 번 호출하면 브라우저 경고창 발생)
+            // Call Sequence
             window.location.href = mainlandApp;
             
-            // 앱이 안 열릴 경우를 대비한 대기 시간 후 알리페이 호출
             setTimeout(() => {
-                if (Date.now() - start < 2500) {
-                    window.location.href = alipayMini;
+                if (Date.now() - start < 1500) {
+                    window.location.href = globalApp;
+                    setTimeout(() => {
+                        if (Date.now() - start < 3000) {
+                            window.location.href = alipayMini;
+                        }
+                    }, 1500);
                 }
-            }, 2000);
+            }, 1000);
         }
 
         function getDistance(lat1, lon1, lat2, lon2) {
