@@ -556,32 +556,21 @@
             const ua = navigator.userAgent.toLowerCase();
             const isMobile = /android|iphone|ipad|ipod|mobi|mini|tablet/i.test(ua);
             
-            // 1. 클립보드 복사 (최대한 조용히 처리)
-            const el = document.createElement('textarea');
-            el.value = info.name;
-            el.style.cssText = "position:fixed;pointer-events:none;z-index:-9999;opacity:0;";
-            document.body.appendChild(el);
-            el.select();
-            try { document.execCommand('copy'); } catch(e) {}
-            document.body.removeChild(el);
-            
             if (isMobile) {
-                // 2. 디디추싱 본토 앱 (Passenger App) 스킴 - 최우선 순위
+                // 1. 디디추싱 본토 앱 스킴 즉시 실행 (시스템 팝업 유도)
                 const mainlandUrl = `didipassenger://passenger/createOrder?toName=${encodedName}&toAddress=${encodedAddr}`;
-                
-                // 즉시 실행 (고덕지도와 동일한 방식)
                 window.location.href = mainlandUrl;
-                
-                // 3. 상단 안내 배너 표시 (브라우저 차단 시 수동으로 열 수 있게 안내)
-                const bannerId = 'didi-notice-banner';
-                if (!document.getElementById(bannerId)) {
-                    const banner = document.createElement('div');
-                    banner.id = bannerId;
-                    banner.className = 'fixed top-0 left-0 right-0 z-[1000] bg-slate-900 text-white p-4 text-center font-black text-xs shadow-2xl';
-                    banner.innerHTML = `디디 앱이 열리지 않나요? <a href="${mainlandUrl}" class="underline text-brand-500 ml-2 font-black">[앱 직접 열기]</a>`;
-                    document.body.appendChild(banner);
-                    setTimeout(() => { if(banner) banner.remove(); }, 6000); 
-                }
+
+                // 2. 앱 실행 시도 후 클립보드 복사 (앱 미설치 시 대비)
+                setTimeout(() => {
+                    const el = document.createElement('textarea');
+                    el.value = info.name;
+                    el.style.cssText = "position:fixed;pointer-events:none;z-index:-9999;opacity:0;";
+                    document.body.appendChild(el);
+                    el.select();
+                    try { document.execCommand('copy'); } catch(e) {}
+                    document.body.removeChild(el);
+                }, 500);
             } else {
                 // PC 브라우저일 경우 바이두 지도로 연결
                 window.open(`https://map.baidu.com/mobile/webapp/search/search/qt=s&wd=${encodedName}`, '_blank');
