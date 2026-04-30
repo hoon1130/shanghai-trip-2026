@@ -550,27 +550,6 @@
                     window.location.href = fallbackUrl;
                 }
             }, 2000);
-        });
-            
-            const start = Date.now();
-            
-            // 1. 단독 앱 호출 스킴 (Mainland Didi)
-            let appUrl = `diditaxi://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}`;
-            
-            if (ua.indexOf("android") > -1) {
-                appUrl = `intent://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}#Intent;scheme=diditaxi;package=com.sdu.didi.psnger;end`;
-            }
-            
-            // 2. 백업 경로 (알리페이 내 디디 미니 프로그램)
-            const fallbackUrl = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${encodedName}%26end_address%3D${encodedAddr}`;
-            
-            window.location.href = appUrl;
-            
-            setTimeout(() => {
-                if (Date.now() - start < 2500) {
-                    window.location.href = fallbackUrl;
-                }
-            }, 2000);
         }
 
         function getDistance(lat1, lon1, lat2, lon2) {
