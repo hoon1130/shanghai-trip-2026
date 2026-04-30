@@ -123,7 +123,7 @@
                 <div id="expense-summary" class="flex w-full h-3 rounded-full bg-slate-100 dark:bg-slate-800 mb-4 overflow-hidden hidden"></div>
                 <div id="expense-legend" class="flex flex-wrap gap-3 mb-6 text-[10px] font-black hidden"></div>
                 <div class="flex gap-2 mb-6">
-                    <select id="exp-cat" class="w-[90px] pl-1 pr-0 py-4 text-[10px] rounded-xl border dark:bg-slate-800 dark:text-white dark:border-slate-700 font-black outline-none bg-slate-50">
+                    <select id="exp-cat" class="w-[98px] pl-2 pr-0 py-4 text-[11px] rounded-xl border dark:bg-slate-800 dark:text-white dark:border-slate-700 font-black outline-none bg-slate-50">
                         <option value="식비">🍔 식비</option><option value="교통">🚕 교통</option><option value="쇼핑">🛍️ 쇼핑</option><option value="기타">✨ 기타</option>
                     </select>
                     <input type="text" id="exp-desc" placeholder="지출 내역" class="flex-1 min-w-0 p-4 rounded-xl border dark:bg-slate-800 dark:text-white dark:border-slate-700 font-bold text-sm outline-none">
@@ -276,8 +276,25 @@
     </div>
 
     <script>
-        const basePath = 'shanghai_2026_v30_final'; const exchangeRate = 215.94;
+        const basePath = 'shanghai_2026_v30_final'; 
+        let exchangeRate = 215.94; // 기본값 (API 실패 시 대비)
         let db = null, itineraryData = [], spotData = [], currentSpotCat = '전체';
+
+        async function fetchExchangeRate() {
+            try {
+                // CORS 문제 해결을 위해 open.er-api.com 사용
+                const res = await fetch('https://open.er-api.com/v6/latest/CNY');
+                const data = await res.json();
+                if (data && data.rates && data.rates.KRW) {
+                    exchangeRate = parseFloat(data.rates.KRW).toFixed(2);
+                    const displayEl = document.getElementById('exchange-rate-display');
+                    if (displayEl) displayEl.innerText = `1¥ = ${exchangeRate}₩`;
+                    console.log(`실시간 환율 업데이트 완료: ${exchangeRate}`);
+                }
+            } catch (e) {
+                console.error('환율 정보 가져오기 실패:', e);
+            }
+        }
 
         // --- Data Injection ---
         const smartMapDict = {
@@ -537,19 +554,39 @@
             const encodedName = encodeURIComponent(info.name);
             const encodedAddr = encodeURIComponent(info.addr || '');
             const ua = navigator.userAgent.toLowerCase();
-            navigator.clipboard.writeText(info.name).catch(()=>{});
             
-            const mainlandApp = `diditaxi://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}`;
-            const alipayMini = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${encodedName}%26end_address%3D${encodedAddr}`;
+            // 모바일 기기 감지 로직 강화
+            const isMobile = /android|iphone|ipad|ipod|mobi|mini|tablet/i.test(ua);
             
-            // For direct app launch without redundant browser prompts on many Android devices
-            if (ua.indexOf("android") > -1) {
-                // Simplified call to reduce browser security blocks
-                window.location.href = mainlandApp;
-                setTimeout(() => { window.location.href = alipayMini; }, 2500);
+            // 클립보드 복사 (앱 실행 실패 대비)
+            const el = document.createElement('textarea');
+            el.value = info.name;
+            document.body.appendChild(el);
+            el.select();
+            try { document.execCommand('copy'); } catch(e) {}
+            document.body.removeChild(el);
+            
+            if (isMobile) {
+                // 1. 알리페이 내 디디 미니앱 (가장 안정적이고 범용적)
+                const alipayScheme = `alipays://platformapi/startapp?appId=20000067&page=pages%2Findex%2Findex%3FendName%3D${encodedName}%26endAddress%3D${encodedAddr}`;
+                
+                // 2.Standalone 디디 앱 (본토용)
+                const mainlandScheme = `didipassenger://passenger/createOrder?toName=${encodedName}&toAddress=${encodedAddr}`;
+                
+                const start = Date.now();
+                
+                // 알리페이 스킴 우선 시도
+                window.location.href = alipayScheme;
+                
+                // 알리페이 미설치 시 본토 앱 시도 (약간의 시간차)
+                setTimeout(() => {
+                    if (Date.now() - start < 2000) {
+                        window.location.href = mainlandScheme;
+                    }
+                }, 1000);
             } else {
-                window.location.href = mainlandApp;
-                setTimeout(() => { window.location.href = alipayMini; }, 2000);
+                // PC 브라우저일 경우 바이두 지도로 직접 연결
+                window.open(`https://map.baidu.com/mobile/webapp/search/search/qt=s&wd=${encodedName}`, '_blank');
             }
         }
 
@@ -823,7 +860,7 @@
                 cny.addEventListener('input', (e) => krw.value = e.target.value ? Math.round(e.target.value * exchangeRate) : '');
                 krw.addEventListener('input', (e) => cny.value = e.target.value ? (e.target.value / exchangeRate).toFixed(2) : '');
             }
-            fetchWeather(); renderPhrases(); loadItinerary(); loadExpenses(); loadChecklist(); loadSpots();
+            fetchWeather(); fetchExchangeRate(); renderPhrases(); loadItinerary(); loadExpenses(); loadChecklist(); loadSpots();
         });
     </script>
 </body>
