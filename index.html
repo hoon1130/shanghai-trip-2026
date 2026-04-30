@@ -506,8 +506,33 @@
 
         function toggleTheme() { document.documentElement.classList.toggle('dark'); const icon = document.getElementById('theme-icon'); if(icon) icon.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun text-yellow-400 text-sm' : 'fas fa-moon text-slate-500 text-sm'; }
 
+        // 🌟 파파고 앱 강제 실행 (안드로이드 Intent & 아이폰 스킴 완벽 분리) 🌟
         function openPapagoCamera() {
-            window.open('https://papago.naver.com/?sk=auto&tk=ko&hn=0&st=', '_blank');
+            const ua = navigator.userAgent.toLowerCase();
+            const isAndroid = ua.indexOf("android") > -1;
+            const isIOS = ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1;
+            const webUrl = "https://papago.naver.com/"; // 앱 없을 때 우회할 웹 주소
+
+            if (isAndroid) {
+                // 안드로이드: 구글 공식 Intent 방식 (크롬 차단 무시하고 직행)
+                // S.browser_fallback_url 덕분에 앱이 없어도 구글플레이로 안 가고 웹으로 즉시 깔끔하게 이동합니다.
+                const intentUrl = "intent://#Intent;package=com.naver.labs.translator;scheme=naverpapago;S.browser_fallback_url=" + encodeURIComponent(webUrl) + ";end;";
+                window.location.href = intentUrl;
+            } else if (isIOS) {
+                // 아이폰: 사파리 커스텀 스킴
+                const start = Date.now();
+                window.location.href = "naverpapago://";
+                
+                // 아이폰은 앱 미설치 시 에러를 뱉지 않고 무시하므로 짧은 타이머로 웹 우회
+                setTimeout(() => {
+                    if (Date.now() - start < 1500) {
+                        window.open(webUrl, '_blank');
+                    }
+                }, 800);
+            } else {
+                // PC 등 기타 환경
+                window.open(webUrl, '_blank');
+            }
         }
 
         async function translateAction() {
