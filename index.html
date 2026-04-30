@@ -506,45 +506,8 @@
 
         function toggleTheme() { document.documentElement.classList.toggle('dark'); const icon = document.getElementById('theme-icon'); if(icon) icon.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun text-yellow-400 text-sm' : 'fas fa-moon text-slate-500 text-sm'; }
 
-        // 🌟 파파고 앱 강제 실행 (안드로이드 크롬 보안 정책 우회용 공식 Intent) 🌟
         function openPapagoCamera() {
-            const ua = navigator.userAgent.toLowerCase();
-            const isAndroid = ua.indexOf("android") > -1;
-            const isIOS = ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1;
-            const webUrl = "https://papago.naver.com/";
-
-            if (isAndroid) {
-                // 안드로이드: 크롬에서 자바스크립트 자동 실행 차단을 뚫는 유일한 방법 (Intent)
-                // 패키지명(com.naver.labs.translator)을 정확히 타겟팅하여 앱을 무조건 깨웁니다.
-                // 앱이 없으면 구글플레이스토어로 가지 않고 S.browser_fallback_url에 지정된 웹으로 갑니다.
-                const intentUrl = "intent://#Intent;package=com.naver.labs.translator;scheme=papago;end;";
-                
-                // 크롬 차단을 막기 위해 iframe 꼼수가 아닌 직접 href로 꽂아 넣습니다.
-                window.location.href = intentUrl;
-                
-                // 보험: Intent 호출 후 1.5초 뒤에도 여전히 이 페이지에 머물러 있다면 (앱 미설치/호출 실패 시) 웹으로 이동
-                const start = Date.now();
-                setTimeout(() => {
-                    if (Date.now() - start < 2000) {
-                        window.open(webUrl, '_blank');
-                    }
-                }, 1500);
-
-            } else if (isIOS) {
-                // 아이폰: 사파리 커스텀 스킴
-                const start = Date.now();
-                window.location.href = "papago://";
-                
-                // 아이폰은 앱 미설치 시 에러 없이 무시하므로 타이머로 웹 우회
-                setTimeout(() => {
-                    if (Date.now() - start < 1500) {
-                        window.open(webUrl, '_blank');
-                    }
-                }, 800);
-            } else {
-                // PC 등 기타 환경
-                window.open(webUrl, '_blank');
-            }
+            window.open('https://papago.naver.com/?sk=auto&tk=ko&hn=0&st=', '_blank');
         }
 
         async function translateAction() {
@@ -622,7 +585,11 @@
                             ${s.subway ? `<div onclick="openMetro('${searchKey}')" class="text-[12px] font-black text-indigo-600 mt-3 flex items-start bg-indigo-50 dark:bg-indigo-900/30 px-3 py-2 rounded-xl border border-indigo-100 cursor-pointer"><i class="fas fa-subway mt-0.5 mr-2"></i><span class="flex-1 underline font-black">${s.subway}</span></div>`:''}</div>
                             <button onclick="openSpotModal('${s.key}')" class="text-slate-300 p-2"><i class="fas fa-edit text-sm"></i></button>
                         </div>
-                        <div class="flex gap-2 mt-4"><button onclick="openAmap('${s.nameZh}')" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl font-black text-[10px]">고덕지도</button><button onclick="openBaiduMap('${s.nameZh}')" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl font-black text-[10px]">바이두지도</button></div>
+                        <div class="flex gap-2 mt-4">
+                            <button onclick="openAmap('${s.nameZh}')" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl font-black text-[10px]">고덕지도</button>
+                            <button onclick="openBaiduMap('${s.nameZh}')" class="flex-1 py-2.5 bg-slate-100 dark:bg-slate-800 rounded-xl font-black text-[10px]">바이두지도</button>
+                            <button onclick="openDidi('${s.nameKo}')" class="flex-1 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[10px] shadow-md">디디호출</button>
+                        </div>
                     </div>`;
                 }).join('') || '<div class="text-center py-10 font-bold">결과 없음</div>';
             }
