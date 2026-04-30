@@ -506,32 +506,44 @@
 
         function toggleTheme() { document.documentElement.classList.toggle('dark'); const icon = document.getElementById('theme-icon'); if(icon) icon.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun text-yellow-400 text-sm' : 'fas fa-moon text-slate-500 text-sm'; }
 
-        // 🌟 파파고 앱 카메라 화면 다이렉트 실행 (iOS 공식 스킴 & Android 공식 Intent 적용) 🌟
+       // 🌟 파파고 앱 카메라 화면 실행 (iframe 꼼수 + 타임아웃 제거) 🌟
         function openPapagoCamera() {
             const ua = navigator.userAgent.toLowerCase();
+            const isAndroid = ua.indexOf("android") > -1;
             const webUrl = "https://papago.naver.com/";
+            const schemeUrl = "naverpapago://scan";
 
-            if (ua.indexOf("android") > -1) {
-                // 안드로이드: 완벽하게 구성된 공식 Intent 호출 (scheme=naverpapago 포함 필수)
-                // 패키지명과 스킴을 모두 기재하여 브라우저 차단을 뚫고 카메라 화면(scan)으로 직행합니다.
-                const intentUrl = "intent://scan#Intent;scheme=naverpapago;package=com.naver.labs.translator;S.browser_fallback_url=" + encodeURIComponent(webUrl) + ";end;";
-                window.location.href = intentUrl;
+            if (isAndroid) {
+                // 안드로이드: 브라우저가 href 이동을 차단하는 것을 막기 위해
+                // 화면에 보이지 않는 iframe을 만들어 그 안에서 인텐트를 실행시킵니다.
+                // fallback 파라미터는 앱스토어 납치의 주범이므로 제거합니다.
+                const intentUrl = "intent://scan#Intent;scheme=naverpapago;package=com.naver.labs.translator;end;";
                 
-            } else if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1) {
-                // 아이폰: 정확한 공식 스킴(naverpapago://) 적용 + 카메라 화면(scan) 직행
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = intentUrl;
+                document.body.appendChild(iframe);
+                
+                // 앱이 없어서 iframe 실행이 실패하더라도 에러만 나고 멈출 뿐 
+                // 웹으로 튕기거나 앱스토어로 가지 않습니다.
+                // 대신 안전하게 사용자에게 선택권을 주는 새 창을 띄웁니다.
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                    // 앱이 안 떴을 경우를 대비해 1.5초 후 웹버전을 조용히 새 탭으로 띄움
+                    window.open(webUrl, '_blank');
+                }, 1500);
+
+            } else {
+                // 아이폰 및 기타: 
+                // 아이폰은 iframe 꼼수가 안 먹히므로 기존 방식 유지
                 const start = Date.now();
-                window.location.href = "naverpapago://scan";
+                window.location.href = schemeUrl;
                 
-                // 아이폰은 앱 미설치 시 에러 없이 무시하므로 타이머로 웹 우회
                 setTimeout(() => {
                     if (Date.now() - start < 1500) {
                         window.open(webUrl, '_blank');
                     }
-                }, 800);
-                
-            } else {
-                // PC 등 기타 환경
-                window.open(webUrl, '_blank');
+                }, 1000);
             }
         }
 
