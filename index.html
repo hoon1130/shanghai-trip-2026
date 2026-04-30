@@ -144,7 +144,7 @@
             <div class="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-md space-y-4 mb-6">
                 <div class="flex justify-between items-center px-1">
                     <h3 class="font-black text-brand-500 italic uppercase tracking-tighter flex items-center text-sm"><i class="fas fa-magic mr-2 text-xl"></i>In-App Translator</h3>
-                    <button onclick="openPapagoCamera()" class="text-[10px] font-black text-slate-400 underline uppercase flex items-center"><i class="fas fa-camera mr-1"></i>Camera</button>
+                    <button onclick="openPapagoCamera()" class="text-[13px] font-black text-slate-400 underline uppercase flex items-center shadow-sm bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-full"><i class="fas fa-camera mr-2 text-[15px]"></i>Camera</button>
                 </div>
                 <div class="space-y-3">
                     <div class="relative">
@@ -530,8 +530,33 @@
         }
 
         function openDidi(place) {
-            const info = getSmartInfo(place); navigator.clipboard.writeText(info.name).catch(()=>{});
-            window.location.href = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${encodeURIComponent(info.name)}%26end_address%3D${encodeURIComponent(info.addr)}`;
+            const info = getSmartInfo(place); 
+            const encodedName = encodeURIComponent(info.name);
+            const encodedAddr = encodeURIComponent(info.addr || '');
+            
+            // Clipboard backup
+            navigator.clipboard.writeText(info.name).catch(()=>{});
+            
+            const start = Date.now();
+            
+            // App URL Schemes
+            const mainlandApp = `diditaxi://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}`;
+            const globalApp = `OneTravel://route/?end_name=${encodedName}&end_address=${encodedAddr}`;
+            const alipayMini = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${encodedName}%26end_address%3D${encodedAddr}`;
+            
+            // Call Sequence
+            window.location.href = mainlandApp;
+            
+            setTimeout(() => {
+                if (Date.now() - start < 1500) {
+                    window.location.href = globalApp;
+                    setTimeout(() => {
+                        if (Date.now() - start < 3000) {
+                            window.location.href = alipayMini;
+                        }
+                    }, 1500);
+                }
+            }, 1000);
         }
 
         function getDistance(lat1, lon1, lat2, lon2) {
