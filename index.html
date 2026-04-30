@@ -533,7 +533,33 @@
             const info = getSmartInfo(place); 
             const encodedName = encodeURIComponent(info.name);
             const encodedAddr = encodeURIComponent(info.addr || '');
+            const ua = navigator.userAgent.toLowerCase();
             navigator.clipboard.writeText(info.name).catch(()=>{});
+            
+            const start = Date.now();
+            
+            // 1. 단독 앱 호출 스킴 (Mainland Didi)
+            let appUrl = `diditaxi://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}`;
+            
+            // 안드로이드의 경우 인텐트 방식이 더 안정적일 수 있음
+            if (ua.indexOf("android") > -1) {
+                // 앱이 있으면 실행, 없으면 알리페이로 넘어가도록 구성
+                appUrl = `intent://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}#Intent;scheme=diditaxi;package=com.sdu.didi.psnger;end`;
+            }
+            
+            // 2. 백업 경로 (알리페이 내 디디 미니 프로그램)
+            const fallbackUrl = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${encodedName}%26end_address%3D${encodedAddr}`;
+            
+            // 앱 실행 시도
+            window.location.href = appUrl;
+            
+            // 앱이 안 열릴 경우(시간 지연 발생 시) 2초 후 알리페이 호출
+            setTimeout(() => {
+                if (Date.now() - start < 2500) {
+                    window.location.href = fallbackUrl;
+                }
+            }, 2000);
+        });
             
             // 중국 본토용 디디 앱 스킴
             const mainlandApp = `diditaxi://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}`;
