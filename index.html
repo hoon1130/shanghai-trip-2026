@@ -550,30 +550,46 @@
         }
 
         function openDidi(place) {
-            const info = getSmartInfo(place); 
-            const encodedName = encodeURIComponent(info.name);
-            const encodedAddr = encodeURIComponent(info.addr || '');
-            const ua = navigator.userAgent.toLowerCase();
-            const isMobile = /android|iphone|ipad|ipod|mobi|mini|tablet/i.test(ua);
-            
-            if (isMobile) {
-                // 1. 디디추싱 본토 앱 스킴 즉시 실행 (시스템 팝업 유도)
-                const mainlandUrl = `didipassenger://passenger/createOrder?toName=${encodedName}&toAddress=${encodedAddr}`;
-                window.location.href = mainlandUrl;
-
-                // 2. 앱 실행 시도 후 클립보드 복사 (앱 미설치 시 대비)
-                setTimeout(() => {
+            try {
+                // 1. 목적지 정보 가져오기 (기존 getSmartInfo 활용)
+                const info = getSmartInfo(place); 
+                const name = encodeURIComponent(info.name); 
+                const addr = encodeURIComponent(info.addr);
+                
+                // 2. 앱 호출용 URL과 웹 버전 URL 세팅
+                const appUrl = `diditaxi://7.0/direct?type=destination&name=${name}&address=${addr}`;
+                const webUrl = `https://common.diditaxi.com.cn/general/web/index.html?destName=${name}&destAddress=${addr}`;
+                
+                // 3. 만약을 위해 백그라운드에서 주소 조용히 복사 (귀찮은 alert 팝업 제거)
+                const fallbackCopy = (text) => {
                     const el = document.createElement('textarea');
-                    el.value = info.name;
+                    el.value = text;
                     el.style.cssText = "position:fixed;pointer-events:none;z-index:-9999;opacity:0;";
                     document.body.appendChild(el);
                     el.select();
                     try { document.execCommand('copy'); } catch(e) {}
                     document.body.removeChild(el);
-                }, 500);
-            } else {
-                // PC 브라우저일 경우 바이두 지도로 연결
-                window.open(`https://map.baidu.com/mobile/webapp/search/search/qt=s&wd=${encodedName}`, '_blank');
+                };
+                
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(info.name).catch(() => fallbackCopy(info.name));
+                } else {
+                    fallbackCopy(info.name);
+                }
+
+                // 4. 디디 앱 다이렉트 실행
+                const start = Date.now();
+                window.location.href = appUrl;
+                
+                // 5. 1.5초 후에도 현재 페이지에 머물러 있다면 (앱이 안 켜졌다면) 웹 버전으로 자동 이동
+                setTimeout(() => { 
+                    if (Date.now() - start < 2000) { 
+                        window.location.href = webUrl; 
+                    }
+                }, 1500);
+                
+            } catch(e) { 
+                console.error("Didi Error:", e);
             }
         }
 
