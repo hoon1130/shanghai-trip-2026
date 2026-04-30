@@ -549,18 +549,19 @@
             setTimeout(() => { if (Date.now() - start < 2500) window.open(webUrl, '_blank'); }, 2000);
         }
 
+        // 🌟 디디추싱 강제 호출 및 알리페이 우회 (404 에러 해결 & 클립보드 복사 완벽 호환) 🌟
         function openDidi(place) {
             try {
-                // 1. 목적지 정보 가져오기 (기존 getSmartInfo 활용)
+                // 1. 목적지 정보 가져오기
                 const info = getSmartInfo(place); 
                 const name = encodeURIComponent(info.name); 
                 const addr = encodeURIComponent(info.addr);
                 
-                // 2. 앱 호출용 URL과 웹 버전 URL 세팅
+                // 2. 호출용 URL 세팅 (디디 본앱 & 알리페이 미니앱)
                 const appUrl = `diditaxi://7.0/direct?type=destination&name=${name}&address=${addr}`;
-                const webUrl = `https://common.diditaxi.com.cn/general/web/index.html?destName=${name}&destAddress=${addr}`;
+                const alipayDidi = `alipays://platformapi/startapp?appId=20000067&query=destinationName%3D${name}%26destinationAddress%3D${addr}`;
                 
-                // 3. 만약을 위해 백그라운드에서 주소 조용히 복사 (귀찮은 alert 팝업 제거)
+                // 3. 목적지 클립보드 복사 (모바일 호환성을 위해 구형/신형 방식 모두 적용, 팝업 없음)
                 const fallbackCopy = (text) => {
                     const el = document.createElement('textarea');
                     el.value = text;
@@ -570,23 +571,23 @@
                     try { document.execCommand('copy'); } catch(e) {}
                     document.body.removeChild(el);
                 };
-                
+
                 if (navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(info.name).catch(() => fallbackCopy(info.name));
                 } else {
                     fallbackCopy(info.name);
                 }
 
-                // 4. 디디 앱 다이렉트 실행
+                // 4. 즉시 디디 앱 다이렉트 실행
                 const start = Date.now();
                 window.location.href = appUrl;
                 
-                // 5. 1.5초 후에도 현재 페이지에 머물러 있다면 (앱이 안 켜졌다면) 웹 버전으로 자동 이동
+                // 5. 앱이 안 켜졌다면 (1초 후) 알리페이 디디로 자동 전환 (죽은 웹사이트 연결 안 함)
                 setTimeout(() => { 
-                    if (Date.now() - start < 2000) { 
-                        window.location.href = webUrl; 
+                    if (Date.now() - start < 1500) { 
+                        window.location.href = alipayDidi; 
                     }
-                }, 1500);
+                }, 1000);
                 
             } catch(e) { 
                 console.error("Didi Error:", e);
