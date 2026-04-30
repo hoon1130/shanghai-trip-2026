@@ -506,29 +506,28 @@
 
         function toggleTheme() { document.documentElement.classList.toggle('dark'); const icon = document.getElementById('theme-icon'); if(icon) icon.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun text-yellow-400 text-sm' : 'fas fa-moon text-slate-500 text-sm'; }
 
-        // 🌟 파파고 앱 강제 실행 (타이머 0초, 바탕화면 아이콘 강제 클릭 방식) 🌟
+        // 🌟 파파고 앱 강제 실행 (디디추싱 성공 방식 완벽 100% 이식) 🌟
         function openPapagoCamera() {
-            const ua = navigator.userAgent.toLowerCase();
-            const webUrl = "https://papago.naver.com/";
-
-            if (ua.indexOf("android") > -1) {
-                // 안드로이드: 스킴(주소)을 찾느라 버벅이지 않도록, 
-                // "파파고 앱의 바탕화면 아이콘을 눌러라"라는 시스템 명령(MAIN, LAUNCHER)을 직접 쏩니다.
-                // 앱이 지워진 상태일 때만 S.browser_fallback_url을 통해 0초 만에 웹으로 부드럽게 넘어갑니다.
-                const intentUrl = "intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.naver.labs.translator;S.browser_fallback_url=" + encodeURIComponent(webUrl) + ";end;";
-                window.location.href = intentUrl;
-                
-            } else if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1) {
-                // 아이폰: 사파리 전용 스킴 (아이폰은 앱이 없으면 에러 없이 무시하므로 기존 방식 유지)
-                const start = Date.now();
-                window.location.href = "papago://";
-                setTimeout(() => {
-                    if (Date.now() - start < 1500) window.open(webUrl, '_blank');
-                }, 800);
-                
-            } else {
-                window.open(webUrl, '_blank');
-            }
+            const appU = "naverpapago://"; // 1차 시도 (파파고 메인 스킴)
+            const fallbackU = "papago://"; // 2차 시도 (예비 스킴)
+            const webU = "https://papago.naver.com/"; // 3차 시도 (앱 없을 때 웹사이트)
+            
+            const start = Date.now(); 
+            window.location.href = appU;
+            
+            setTimeout(() => { 
+                // 1초 뒤에도 앱이 안 켜졌으면 2차 스킴 시도
+                if (Date.now() - start < 1500) { 
+                    window.location.href = fallbackU; 
+                    
+                    setTimeout(() => { 
+                        // 그래도 안 켜지면 구글플레이 대신 깔끔하게 새 창으로 웹사이트 열기
+                        if (Date.now() - start < 3000) {
+                            window.open(webU, '_blank'); 
+                        } 
+                    }, 1500); 
+                } 
+            }, 1000);
         }
 
         async function translateAction() {
