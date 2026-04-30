@@ -538,6 +538,22 @@
             
             const start = Date.now();
             
+            // 지도 앱들과 동일하게 intent:// 대신 diditaxi:// 직접 호출 방식을 사용하여 플레이스토어 이동 방지
+            const appUrl = `diditaxi://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}`;
+            const fallbackUrl = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${encodedName}%26end_address%3D${encodedAddr}`;
+            
+            window.location.href = appUrl;
+            
+            // 앱이 열리지 않으면 2초 후 알리페이 미니 프로그램으로 전환
+            setTimeout(() => {
+                if (Date.now() - start < 2500) {
+                    window.location.href = fallbackUrl;
+                }
+            }, 2000);
+        });
+            
+            const start = Date.now();
+            
             // 1. 단독 앱 호출 스킴 (Mainland Didi)
             let appUrl = `diditaxi://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}`;
             
