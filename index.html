@@ -507,28 +507,35 @@
         function toggleTheme() { document.documentElement.classList.toggle('dark'); const icon = document.getElementById('theme-icon'); if(icon) icon.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun text-yellow-400 text-sm' : 'fas fa-moon text-slate-500 text-sm'; }
 
       function openPapagoCamera() {
-        const ua = navigator.userAgent.toLowerCase();
-        const webUrl = "https://papago.naver.com/";
-        const isMobile = /android|iphone|ipad|ipod|mobi|mini|tablet/i.test(ua);
+       const ua = navigator.userAgent.toLowerCase();
+       const webUrl = "https://papago.naver.com/";
+       const isMobile = /android|iphone|ipad|ipod|mobi|mini|tablet/i.test(ua);
    
-        if (isMobile) {
-            if (ua.indexOf("android") > -1) {
-                // 안드로이드: 공식 스킴(naverpapago)과 카메라 경로(scan)를 명시한 Intent 주소
-                // 앱이 있으면 시스템 팝업을 띄우고, 없으면 S.browser_fallback_url로 지정된 웹사이트를 엽니다.
-                const intentUrl =
-    "intent://scan#Intent;scheme=naverpapago;package=com.naver.labs.translator;S.browser_fallback_url=" +
-    encodeURIComponent(webUrl) + ";end;";
-                window.location.href = intentUrl;
-            } else {
-                // 아이폰/아이패드: naverpapago:// 공식 스킴 사용 및 scan(카메라) 경로 추가
-                const start = Date.now();
-                window.location.href = "naverpapago://scan";
+       if (isMobile) {
+           if (ua.indexOf("android") > -1) {
+               // 안드로이드: 공식 스킴(naverpapago)과 카메라 경로(scan)를 명시한 Intent 주소
+               // 앱이 있으면 시스템 팝업을 띄우고, 없으면 S.browser_fallback_url로 지정된 웹사이트를 엽니다.
+               const intentUrl =
+   "intent://scan#Intent;scheme=naverpapago;package=com.naver.labs.translator;S.browser_fallback_url=" +
+   encodeURIComponent(webUrl) + ";end;";
+               window.location.href = intentUrl;
+           } else {
+               // 아이폰/아이패드: naverpapago:// 공식 스킴 사용 및 scan(카메라) 경로 추가
+               const start = Date.now();
+               window.location.href = "naverpapago://scan";
    
-                // 앱이 설치되지 않아 반응이 없을 경우, 1.5초 후 웹으로 리다이렉트
-                setTimeout(() => {
-                    if (Date.now() - start < 2000) {
-                        window.open(webUrl, '_blank');
-                    }
+               // 앱이 설치되지 않아 반응이 없을 경우, 1.5초 후 웹으로 리다이렉트
+               setTimeout(() => {
+                   if (Date.now() - start < 2000) {
+                       window.open(webUrl, '_blank');
+                   }
+               }, 1500);
+           }
+       } else {
+           // PC 브라우저일 경우 웹사이트 열기
+           window.open(webUrl, '_blank');
+       }
+   }
 
         async function translateAction() {
             const input = document.getElementById('trans-input').value.trim(), resultBox = document.getElementById('trans-result-box'), resultText = document.getElementById('trans-result-text'), speakBtn = document.getElementById('trans-speak-btn'), btnIcon = document.getElementById('trans-btn-icon');
