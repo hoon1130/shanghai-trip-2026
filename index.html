@@ -120,7 +120,7 @@
                 <div id="expense-summary" class="flex w-full h-3 rounded-full bg-slate-100 dark:bg-slate-800 mb-4 overflow-hidden hidden"></div>
                 <div id="expense-legend" class="flex flex-wrap gap-3 mb-6 text-[10px] font-black hidden"></div>
                 <div class="flex gap-2 mb-6">
-                    <select id="exp-cat" class="w-20 p-4 rounded-xl border dark:bg-slate-800 dark:text-white dark:border-slate-700 font-black text-[11px] outline-none bg-slate-50">
+                    <select id="exp-cat" class="w-[84px] pl-2 pr-1 py-4 rounded-xl border dark:bg-slate-800 dark:text-white dark:border-slate-700 font-black text-[11px] outline-none bg-slate-50">
                         <option value="식비">🍔 식비</option><option value="교통">🚕 교통</option><option value="쇼핑">🛍️ 쇼핑</option><option value="기타">✨ 기타</option>
                     </select>
                     <input type="text" id="exp-desc" placeholder="지출 내역" class="flex-1 min-w-0 p-4 rounded-xl border dark:bg-slate-800 dark:text-white dark:border-slate-700 font-bold text-sm outline-none">
@@ -533,30 +533,23 @@
             const info = getSmartInfo(place); 
             const encodedName = encodeURIComponent(info.name);
             const encodedAddr = encodeURIComponent(info.addr || '');
-            
-            // Clipboard backup
             navigator.clipboard.writeText(info.name).catch(()=>{});
             
-            const start = Date.now();
-            
-            // App URL Schemes
+            // 중국 본토용 디디 앱 스킴
             const mainlandApp = `diditaxi://taxi/create_order?to_name=${encodedName}&to_address=${encodedAddr}`;
-            const globalApp = `OneTravel://route/?end_name=${encodedName}&end_address=${encodedAddr}`;
+            // 알리페이 디디 미니 프로그램
             const alipayMini = `alipays://platformapi/startapp?appId=20000067&page=pages/index/index&query=end_name%3D${encodedName}%26end_address%3D${encodedAddr}`;
             
-            // Call Sequence
+            const start = Date.now();
+            // 단일 호출 시도 (여러 번 호출하면 브라우저 경고창 발생)
             window.location.href = mainlandApp;
             
+            // 앱이 안 열릴 경우를 대비한 대기 시간 후 알리페이 호출
             setTimeout(() => {
-                if (Date.now() - start < 1500) {
-                    window.location.href = globalApp;
-                    setTimeout(() => {
-                        if (Date.now() - start < 3000) {
-                            window.location.href = alipayMini;
-                        }
-                    }, 1500);
+                if (Date.now() - start < 2500) {
+                    window.location.href = alipayMini;
                 }
-            }, 1000);
+            }, 2000);
         }
 
         function getDistance(lat1, lon1, lat2, lon2) {
