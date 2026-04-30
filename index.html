@@ -185,7 +185,7 @@
         </div>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 glass-header flex bottom-nav z-50">
+    <nav class="fixed bottom-0 left-0 right-0 glass-header flex bottom-nav z-50 shadow-2xl">
         <button onclick="showTab('schedule')" id="nav-schedule" class="tab-btn flex-1 flex flex-col items-center justify-center text-brand-500"><i class="fas fa-route text-[22px] mb-1"></i><span class="text-[9px] font-black uppercase tracking-tighter">Plan</span></button>
         <button onclick="showTab('spot')" id="nav-spot" class="tab-btn flex-1 flex flex-col items-center justify-center text-slate-400"><i class="fas fa-map-marked-alt text-[22px] mb-1"></i><span class="text-[9px] font-black uppercase tracking-tighter">Spot</span></button>
         <button onclick="showTab('ledger')" id="nav-ledger" class="tab-btn flex-1 flex flex-col items-center justify-center text-slate-400"><i class="fas fa-wallet text-[22px] mb-1"></i><span class="text-[9px] font-black uppercase tracking-tighter">Money</span></button>
@@ -508,13 +508,12 @@
             const keyword = encodeURIComponent(info.name); 
             const ua = navigator.userAgent.toLowerCase();
             navigator.clipboard.writeText(info.name).catch(()=>{});
-            if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1) {
-                window.location.href = `iosamap://poi?sourceApplication=sh_trip&name=${keyword}`;
-            } else if (ua.indexOf("android") > -1) {
-                window.location.href = `androidamap://poi?sourceApplication=sh_trip&keywords=${keyword}`;
-            } else {
-                window.open(`https://uri.amap.com/search?keyword=${keyword}`, '_blank');
-            }
+            const start = Date.now();
+            let appUrl = `androidamap://poi?sourceApplication=sh_trip&keywords=${keyword}`;
+            if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1) appUrl = `iosamap://poi?sourceApplication=sh_trip&name=${keyword}`;
+            const webUrl = `https://uri.amap.com/search?keyword=${keyword}`;
+            window.location.href = appUrl;
+            setTimeout(() => { if (Date.now() - start < 2500) window.open(webUrl, '_blank'); }, 2000);
         }
 
         function openBaiduMap(place) {
@@ -522,14 +521,12 @@
             const keyword = encodeURIComponent(info.name);
             const ua = navigator.userAgent.toLowerCase();
             navigator.clipboard.writeText(info.name).catch(()=>{});
-            
-            if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1) {
-                window.location.href = `baidumap://map/geocoder?address=${keyword}&src=sh_trip`;
-            } else if (ua.indexOf("android") > -1) {
-                window.location.href = `bdapp://map/geocoder?src=sh_trip&address=${keyword}`;
-            } else {
-                window.open(`https://map.baidu.com/mobile/webapp/search/search/qt=s&wd=${keyword}`, '_blank');
-            }
+            const start = Date.now();
+            let appUrl = `bdapp://map/geocoder?src=sh_trip&address=${keyword}`;
+            if (ua.indexOf("iphone") > -1 || ua.indexOf("ipad") > -1) appUrl = `baidumap://map/geocoder?address=${keyword}&src=sh_trip`;
+            const webUrl = `https://map.baidu.com/mobile/webapp/search/search/qt=s&wd=${keyword}`;
+            window.location.href = appUrl;
+            setTimeout(() => { if (Date.now() - start < 2500) window.open(webUrl, '_blank'); }, 2000);
         }
 
         function openDidi(place) {
@@ -750,7 +747,7 @@
             return {name: destination, addr: ""};
         }
 
-        function openTipModal(tipkey) { document.getElementById('tip-content').innerHTML = (placeTipsData[tipkey] || "꿀팁 준비 중!").replace(/\n/g, '<br>'); document.getElementById('tip-modal').classList.remove('hidden'); }
+        function openTipModal(tipkey) { document.getElementById('tip-content').innerHTML = (placeTipsData[tipkey] || "꿀팁 준비 중!").replace(/\\n/g, '<br>'); document.getElementById('tip-modal').classList.remove('hidden'); }
         function closeTipModal() { document.getElementById('tip-modal').classList.add('hidden'); }
         function showFlashcard(zh, ko, py) { document.getElementById('flash-zh').innerText = zh; document.getElementById('flash-ko').innerText = ko; document.getElementById('flash-py').innerText = py; document.getElementById('flashcard').classList.remove('hidden'); }
 
