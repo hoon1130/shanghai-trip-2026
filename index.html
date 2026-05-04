@@ -529,8 +529,20 @@
 
         function toggleTheme() { document.documentElement.classList.toggle('dark'); const icon = document.getElementById('theme-icon'); if(icon) icon.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun text-yellow-400 text-sm' : 'fas fa-moon text-slate-500 text-sm'; }
 
-      function openPapagoCamera() {
-            window.open('https://papago.naver.com/?sk=auto&tk=ko&hn=0&st=', '_blank');
+        function openPapagoCamera() {
+            const appUrl = 'naverpapago://'; // 파파고 앱 실행 스킴
+            const webUrl = 'https://papago.naver.com/?sk=auto&tk=ko&hn=0&st=';
+            const start = Date.now();
+            
+            // 앱 실행 시도
+            window.location.href = appUrl;
+            
+            // 1.5초 내에 앱이 실행되지 않으면(페이지 이탈이 없으면) 웹 페이지로 이동
+            setTimeout(() => {
+                if (Date.now() - start < 2000) {
+                    window.open(webUrl, '_blank');
+                }
+            }, 1500);
         }
 
         async function translateAction() {
@@ -580,6 +592,9 @@
 
             recognition.onerror = (event) => {
                 console.error('Speech recognition error', event.error);
+                if (event.error === 'not-allowed') {
+                    alert('마이크 권한이 거부되었습니다. HTTPS 환경이거나 로컬 서버(Live Server 등) 환경인지 확인해 주세요.');
+                }
                 stopRecognition();
             };
 
