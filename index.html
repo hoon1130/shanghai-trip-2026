@@ -147,7 +147,15 @@
             <div class="bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 shadow-md space-y-4 mb-6">
                 <div class="flex justify-between items-center px-1">
                     <h3 class="font-black text-brand-500 italic uppercase tracking-tighter flex items-center text-sm"><i class="fas fa-magic mr-2 text-xl"></i>In-App Translator</h3>
-                    <button onclick="openPapagoCamera()" class="text-[13px] font-black text-slate-400 underline uppercase flex items-center shadow-sm bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-full transition-transform active:scale-95"><i class="fas fa-camera mr-2 text-[15px]"></i>Camera</button>
+                    <div class="flex items-center space-x-2">
+                        <button id="mic-kr" onclick="startVoice('ko-KR')" class="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 flex items-center justify-center shadow-sm border border-indigo-100 active:scale-90 transition-transform">
+                            <span class="text-[10px] font-black mr-0.5">🇰🇷</span><i class="fas fa-microphone text-xs"></i>
+                        </button>
+                        <button id="mic-zh" onclick="startVoice('zh-CN')" class="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 flex items-center justify-center shadow-sm border border-indigo-100 active:scale-90 transition-transform">
+                            <span class="text-[10px] font-black mr-0.5">🇨🇳</span><i class="fas fa-microphone text-xs"></i>
+                        </button>
+                        <button onclick="openPapagoCamera()" class="text-[12px] font-black text-slate-400 underline uppercase flex items-center shadow-sm bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-full transition-transform active:scale-95 ml-2"><i class="fas fa-camera mr-2 text-[14px]"></i>Camera</button>
+                    </div>
                 </div>
                 <div class="space-y-3">
                     <div class="relative">
@@ -282,15 +290,30 @@
 
         async function fetchExchangeRate() {
             try {
-                // CORS 문제 해결을 위해 open.er-api.com 사용
-                const res = await fetch('https://open.er-api.com/v6/latest/CNY');
+                // 네이버 검색 기준 환율을 가져오기 위해 CORS 프록시 사용
+                const naverUrl = 'https://search.naver.com/search.naver?query=%EC%A4%91%EA%B5%AD%ED%99%98%EC%9C%A8';
+                const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(naverUrl)}`);
                 const data = await res.json();
-                if (data && data.rates && data.rates.KRW) {
-                    exchangeRate = parseFloat(data.rates.KRW).toFixed(2);
-                    const displayEl = document.getElementById('exchange-rate-display');
-                    if (displayEl) displayEl.innerText = `1¥ = ${exchangeRate}₩`;
-                    console.log(`실시간 환율 업데이트 완료: ${exchangeRate}`);
+                const html = data.contents;
+                
+                // 네이버 환율 박스의 주요 패턴 추출
+                const match = html.match(/<strong[^>]*class="[^"]*spt_con[^"]*"[^>]*>.*?<em>([\d.,]+)<\/em>/s) || 
+                              html.match(/<span class="s_value">([\d.,]+)<\/span>/);
+                
+                if (match && match[1]) {
+                    exchangeRate = parseFloat(match[1].replace(/,/g, '')).toFixed(2);
+                    console.log("네이버 실시간 환율 적용:", exchangeRate);
+                } else {
+                    // 실패 시 기존 API 백업
+                    const backupRes = await fetch('https://open.er-api.com/v6/latest/CNY');
+                    const backupData = await backupRes.json();
+                    if (backupData && backupData.rates && backupData.rates.KRW) {
+                        exchangeRate = parseFloat(backupData.rates.KRW).toFixed(2);
+                    }
                 }
+                
+                const displayEl = document.getElementById('exchange-rate-display');
+                if (displayEl) displayEl.innerText = `1¥ = ${exchangeRate}₩`;
             } catch (e) {
                 console.error('환율 정보 가져오기 실패:', e);
             }
@@ -521,6 +544,56 @@
                 resultText.innerText = translated; btnIcon.className = 'fas fa-paper-plane';
                 if (target === 'zh-CN') { speakBtn.classList.remove('hidden'); speakBtn.onclick = () => speak(translated); } else speakBtn.classList.add('hidden');
             } catch (e) { resultText.innerText = 'Error'; btnIcon.className = 'fas fa-paper-plane'; }
+        }
+
+        // --- Voice Recognition ---
+        let recognition = null;
+        function startVoice(lang) {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                return alert('이 브라우저는 음성 인식을 지원하지 않습니다.');
+            }
+            
+            const micBtn = lang === 'ko-KR' ? document.getElementById('mic-kr') : document.getElementById('mic-zh');
+            const originalColor = 'bg-indigo-50';
+            
+            if (recognition) {
+                recognition.stop();
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = lang;
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => {
+                micBtn.classList.remove('bg-indigo-50', 'text-indigo-600');
+                micBtn.classList.add('bg-red-500', 'text-white', 'animate-pulse');
+            };
+
+            recognition.onresult = (event) => {
+                const text = event.results[0][0].transcript;
+                document.getElementById('trans-input').value = text;
+                translateAction();
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error', event.error);
+                stopRecognition();
+            };
+
+            recognition.onend = () => {
+                stopRecognition();
+            };
+
+            function stopRecognition() {
+                micBtn.classList.add('bg-indigo-50', 'text-indigo-600');
+                micBtn.classList.remove('bg-red-500', 'text-white', 'animate-pulse');
+                recognition = null;
+            }
+
+            recognition.start();
         }
 
         function openAmap(place) {
