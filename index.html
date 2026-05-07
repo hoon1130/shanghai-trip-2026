@@ -290,58 +290,26 @@
 
         async function fetchExchangeRate() {
             try {
-                // 1차: 네이버 검색 HTML 파싱 (CORS 프록시)
-                const naverUrl = 'https://search.naver.com/search.naver?query=%EC%A4%91%EA%B5%AD+%EC%9C%84%EC%95%88+%ED%99%98%EC%9C%A8';
-                const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(naverUrl)}`, { signal: AbortSignal.timeout(6000) });
-                const data = await res.json();
-                const html = data.contents;
-                
-                // 다양한 패턴 시도
-                const patterns = [
-                    /<em[^>]*class="[^"]*spt_num[^"]*"[^>]*>([\d,]+(?:\.[\d]+)?)<\/em>/,
-                    /<strong[^>]*class="[^"]*spt_con[^"]*"[^>]*>.*?<em>([\d.,]+)<\/em>/s,
-                    /<span[^>]*class="[^"]*s_value[^"]*"[^>]*>([\d.,]+)<\/span>/,
-                    /<span class="s_value">([\d.,]+)<\/span>/,
-                    /"rate":"([\d.]+)"/,
-                    /1위안[^\d]*(\d+[.,]\d+)/
-                ];
-                let found = false;
-                for (const pat of patterns) {
-                    const m = html.match(pat);
-                    if (m && m[1]) {
-                        const val = parseFloat(m[1].replace(/,/g, ''));
-                        // 합리적인 환율 범위 검증 (150~250 사이)
-                        if (val > 150 && val < 250) {
-                            exchangeRate = val.toFixed(2);
-                            console.log('네이버 환율 적용:', exchangeRate);
-                            found = true;
-                            break;
-                        }
-                    }
+                // open.er-api.com: CNY 기준 KRW 환율 조회 (무료, 신뢰도 높음)
+                const r = await fetch('https://open.er-api.com/v6/latest/CNY');
+                const d = await r.json();
+                if (d?.rates?.KRW) {
+                    exchangeRate = parseFloat(d.rates.KRW).toFixed(2);
+                    console.log('환율 적용:', exchangeRate);
+                } else {
+                    throw new Error('KRW rate not found');
                 }
-                if (!found) throw new Error('패턴 미매칭');
             } catch (e) {
-                console.warn('네이버 크롤링 실패, API 백업 사용:', e.message);
+                console.warn('1차 API 실패, 백업 사용:', e.message);
                 try {
-                    // 2차 백업: open.er-api.com (CNY → KRW)
-                    const r = await fetch('https://open.er-api.com/v6/latest/CNY', { signal: AbortSignal.timeout(6000) });
-                    const d = await r.json();
-                    if (d?.rates?.KRW) {
-                        exchangeRate = parseFloat(d.rates.KRW).toFixed(2);
-                        console.log('er-api 환율 적용:', exchangeRate);
+                    // 백업: KRW 기준 CNY 역산
+                    const r2 = await fetch('https://open.er-api.com/v6/latest/KRW');
+                    const d2 = await r2.json();
+                    if (d2?.rates?.CNY) {
+                        exchangeRate = (1 / d2.rates.CNY).toFixed(2);
+                        console.log('백업 환율 적용:', exchangeRate);
                     }
-                } catch (e2) {
-                    console.warn('er-api 실패, 3차 백업 사용:', e2.message);
-                    try {
-                        // 3차 백업: exchangerate-api (KRW → CNY 역산)
-                        const r3 = await fetch('https://open.er-api.com/v6/latest/KRW', { signal: AbortSignal.timeout(6000) });
-                        const d3 = await r3.json();
-                        if (d3?.rates?.CNY) {
-                            exchangeRate = (1 / d3.rates.CNY).toFixed(2);
-                            console.log('역산 환율 적용:', exchangeRate);
-                        }
-                    } catch (e3) { console.error('모든 환율 API 실패:', e3); }
-                }
+                } catch (e2) { console.error('모든 환율 API 실패:', e2); }
             } finally {
                 const displayEl = document.getElementById('exchange-rate-display');
                 if (displayEl) displayEl.innerText = `1¥ = ${exchangeRate}₩`;
